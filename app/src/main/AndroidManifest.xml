@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.dmapp">
+
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme" >
+        <activity android:name=".MainActivity"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".npcs.NpcList"
+            android:label="NPCs"
+            android:screenOrientation="portrait" />
+        <activity android:name=".loot.LootList"
+            android:label="Loot"
+            android:screenOrientation="portrait" />
+        <activity android:name=".npcs.NpcInfo"
+            android:label="NPCs"
+            android:screenOrientation="portrait" />
+        <activity android:name=".loot.LootInfo"
+            android:label="Loot"
+            android:screenOrientation="portrait" />
+        <activity android:name=".cities.CityList"
+            android:label="Cities"
+            android:screenOrientation="portrait" />
+        <activity android:name=".cities.CityInfo"
+            android:label="Cities"
+            android:screenOrientation="portrait" />
+        <activity android:name=".cities.locations.LocationList"
+            android:label="Locations"
+            android:screenOrientation="portrait" />
+        <activity android:name=".cities.locations.LocationInfo"
+            android:label="Locations"
+            android:screenOrientation="portrait" />
+        <activity android:name=".presets.PresetList"
+            android:label="Presets"
+            android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="portrait" />
+        <activity android:name=".cities.distances.DistanceList"
+            android:label="Travel Times"
+            android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="portrait" />
+        <activity android:name=".databaseManagement" />
+        <activity android:name=".npcs.NpcDisplay" />
+        <activity android:name=".loot.LootDisplay" />
+        <activity android:name=".cities.CityDisplay" />
+
+    </application>
+
+</manifest>

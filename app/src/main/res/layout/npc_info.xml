@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/mainColor1">
+
+    <LinearLayout
+        android:id="@+id/npcLayout"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp">
+
+        <android.support.v7.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/backButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:src="@drawable/backarrow" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/npcdetails"
+                android:paddingEnd="25dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textSize="25sp" />
+
+        </android.support.v7.widget.LinearLayoutCompat>
+
+        <EditText
+            android:id="@+id/npcName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/info_bg1"
+            android:inputType="textCapSentences"
+            android:padding="10dp"
+            android:imeOptions="actionNext"
+            android:singleLine="true"
+            android:hint="@string/npcname" />
+
+        <Spinner
+            android:id="@+id/locationSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@android:drawable/btn_dropdown"
+            android:spinnerMode="dropdown"/>
+
+        <EditText
+            android:id="@+id/npcDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/info_bg1"
+            android:inputType="textCapSentences|textMultiLine"
+            android:padding="10dp"
+            android:hint="@string/descapp" />
+
+        <EditText
+            android:id="@+id/npcPlotHooks"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/info_bg1"
+            android:inputType="textCapSentences|textMultiLine"
+            android:padding="10dp"
+            android:hint="@string/plothooks" />
+
+        <EditText
+            android:id="@+id/npcNotes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/info_bg1"
+            android:inputType="textCapSentences|textMultiLine"
+            android:padding="10dp"
+            android:hint="@string/npcnotes" />
+
+        <android.support.v7.widget.LinearLayoutCompat
+            android:id="@+id/mediaLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/addVoice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="@string/addvoice"
+                android:background="@drawable/buttonbg"/>
+
+            <Button
+                android:id="@+id/stop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:text="@string/stop"
+                android:layout_marginStart="5dp"
+                android:background="@drawable/buttonbg"/>
+
+            <Button
+                android:id="@+id/play"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:text="@string/play"
+                android:layout_marginStart="5dp"
+                android:background="@drawable/buttonbg"/>
+
+            <Button
+                android:id="@+id/pause"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:text="@string/pause"
+                android:layout_marginStart="5dp"
+                android:background="@drawable/buttonbg"/>
+
+        </android.support.v7.widget.LinearLayoutCompat>
+
+        <android.support.v7.widget.LinearLayoutCompat
+            android:id="@+id/npcButtonLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="35dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/saveNpc"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/savechanges"
+                android:padding="10dp"
+                android:background="@drawable/buttonbg"/>
+
+        </android.support.v7.widget.LinearLayoutCompat>
+
+    </LinearLayout>
+</ScrollView>

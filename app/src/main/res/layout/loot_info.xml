@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="start"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:background="@color/mainColor3">
+
+    <android.support.v7.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/backButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:src="@drawable/backarrow" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/lootdetails"
+            android:paddingEnd="25dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textSize="25sp" />
+
+    </android.support.v7.widget.LinearLayoutCompat>
+
+    <EditText
+        android:id="@+id/lootName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/info_bg3"
+        android:inputType="textCapSentences"
+        android:padding="10dp"
+        android:imeOptions="actionNext"
+        android:singleLine="true"
+        android:hint="@string/lootname" />
+
+    <CheckBox
+        android:id="@+id/lootRequirements"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/info_bg3"
+        android:ems="10"
+        android:padding="10dp"
+        android:text="Requires Attunement" />
+
+    <Spinner
+        android:id="@+id/lootsRarity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:layout_marginTop="5dp"
+        android:background="@android:drawable/btn_dropdown"
+        android:spinnerMode="dropdown" />
+
+    <EditText
+        android:id="@+id/lootPrice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/info_bg3"
+        android:ems="10"
+        android:inputType="textCapSentences"
+        android:padding="10dp"
+        android:imeOptions="actionNext"
+        android:singleLine="true"
+        android:hint="@string/lootprice" />
+
+
+    <EditText
+        android:id="@+id/lootDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/info_bg3"
+        android:ems="10"
+        android:inputType="textCapSentences|textMultiLine"
+        android:padding="10dp"
+        android:hint="@string/lootdesc" />
+
+    <EditText
+        android:id="@+id/lootDetails"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/info_bg3"
+        android:ems="10"
+        android:inputType="textCapSentences|textMultiLine"
+        android:padding="10dp"
+        android:hint="@string/lootfun" />
+
+    <ImageView
+        android:id="@+id/lootImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:padding="10dp"
+        android:adjustViewBounds="true"
+        android:layout_gravity="center" />
+
+    <Button
+        android:id="@+id/addImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:padding="10dp"
+        android:text="@string/addimage"
+        android:background="@drawable/buttonbg" />
+
+    <android.support.v7.widget.LinearLayoutCompat
+        android:id="@+id/lootButtonLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/saveLoot"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/savechanges"
+                android:padding="10dp"
+                android:background="@drawable/buttonbg"/>
+
+    </android.support.v7.widget.LinearLayoutCompat>
+
+</LinearLayout>
