@@ -47,7 +47,7 @@ public class databaseManagement extends AppCompatActivity {
             public void onClick(View view) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
                 //builder.setTitle(R.string.app_name);
-                builder.setMessage("Are you sure you want to delete this data? Deleting cities will also get delete Locations & Distances for that city");
+                builder.setMessage("Are you sure you want to delete this data? Deleting cities will also delete Locations & Distances for that city");
                 builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         getApplicationContext().deleteDatabase("city_table");
