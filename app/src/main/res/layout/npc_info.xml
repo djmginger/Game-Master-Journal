@@ -2,8 +2,7 @@
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/mainColor1">
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:id="@+id/npcLayout"
@@ -32,6 +31,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/npcdetails"
+                android:textColor="#5BCBAE"
                 android:paddingEnd="25dp"
                 android:layout_weight="1"
                 android:gravity="center"
@@ -39,61 +39,114 @@
 
         </android.support.v7.widget.LinearLayoutCompat>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/npcname"
+
+            android:textSize="20sp" />
+
         <EditText
             android:id="@+id/npcName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
             android:background="@drawable/info_bg1"
             android:inputType="textCapSentences"
             android:padding="10dp"
             android:imeOptions="actionNext"
-            android:singleLine="true"
-            android:hint="@string/npcname" />
+            android:singleLine="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/location"
+            android:textSize="20sp" />
 
         <Spinner
             android:id="@+id/locationSpinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
             android:background="@android:drawable/btn_dropdown"
             android:spinnerMode="dropdown"/>
+
+        <android.support.v7.widget.LinearLayoutCompat
+            android:id="@+id/raceLayout"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/buttonbg3" >
+
+            <TextView
+                android:id="@+id/racePreset"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/race"
+                android:layout_weight="1"
+                android:padding="10dp"
+                android:textSize="18sp" />
+
+            <android.support.v7.widget.AppCompatImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/downarrow"
+                android:padding="10dp"
+                android:layout_gravity="center_vertical"/>
+
+        </android.support.v7.widget.LinearLayoutCompat>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/descriptionHeader"
+            android:textSize="20sp" />
 
         <EditText
             android:id="@+id/npcDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
             android:background="@drawable/info_bg1"
             android:inputType="textCapSentences|textMultiLine"
-            android:padding="10dp"
-            android:hint="@string/descapp" />
+            android:padding="10dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/plothooks"
+            android:textSize="20sp" />
 
         <EditText
             android:id="@+id/npcPlotHooks"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
             android:background="@drawable/info_bg1"
             android:inputType="textCapSentences|textMultiLine"
-            android:padding="10dp"
-            android:hint="@string/plothooks" />
+            android:padding="10dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/addnotes"
+            android:textSize="20sp" />
 
         <EditText
             android:id="@+id/npcNotes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
             android:background="@drawable/info_bg1"
             android:inputType="textCapSentences|textMultiLine"
-            android:padding="10dp"
-            android:hint="@string/npcnotes" />
+            android:padding="10dp" />
 
         <android.support.v7.widget.LinearLayoutCompat
             android:id="@+id/mediaLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="15dp"
             android:orientation="horizontal">
 
             <Button

@@ -34,12 +34,13 @@ public class MainActivity extends AppCompatActivity {
         DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
         int deviceHeight = (displayMetrics.heightPixels);
         int deviceWidth = (displayMetrics.widthPixels);
+        int imageWidth = (int) (deviceWidth * .40);
         int buttonWidth = (int) (deviceWidth * .65);
         int buttonWidth2 = (int) (deviceWidth * .5);
         int margin = (int)(deviceHeight * .08);
         int margin2 = (int)(deviceHeight * .10);
         int margin3 = (int)(deviceHeight * .04);
-        int margin4 = (int)(deviceHeight * .15);
+        int margin4 = (int)(deviceHeight * .13);
 
         LinearLayoutCompat.LayoutParams lparams = new LinearLayoutCompat.LayoutParams(buttonWidth, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
         lparams.setMargins(0, margin3, 0, 0);
@@ -82,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
 
         ImageView supportImage = new ImageView(this);
         supportImage.setImageResource(R.drawable.supportme);
-        LinearLayoutCompat.LayoutParams lparams4 = new LinearLayoutCompat.LayoutParams(LinearLayoutCompat.LayoutParams.WRAP_CONTENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
+        LinearLayoutCompat.LayoutParams lparams4 = new LinearLayoutCompat.LayoutParams(imageWidth, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
         lparams4.setMargins(0, margin4, 0, 0);
         lparams4.gravity = Gravity.CENTER_HORIZONTAL;
         supportImage.setLayoutParams(lparams4);
@@ -151,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
         }
         else
         {
-            Toast.makeText(this, "Press the back button again to close the application.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Press back again to exit.", Toast.LENGTH_SHORT).show();
             backButtonCount++;
         }
     }

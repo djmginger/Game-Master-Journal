@@ -57,8 +57,17 @@
                 android:id="@+id/npcUnderTitleLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+            </android.support.v7.widget.LinearLayoutCompat>
+
+            <android.support.v7.widget.LinearLayoutCompat
+                android:id="@+id/npcUnderTitleLayout2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:layout_marginBottom="35dp"
+                android:layout_marginBottom="25dp"
                 android:gravity="center"
                 android:orientation="horizontal">
             </android.support.v7.widget.LinearLayoutCompat>

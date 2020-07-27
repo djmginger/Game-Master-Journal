@@ -23,11 +23,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.dmapp.MainActivity;
 import com.example.dmapp.cities.citiesDBHelper;
 import com.example.dmapp.R;
+import com.example.dmapp.presets.PresetList;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -59,6 +61,8 @@ public class NpcInfo extends AppCompatActivity{
         citiesDBHelper mCityDBHelper = new citiesDBHelper(this);
         ImageView backButton = findViewById(R.id.backButton);
         final EditText npcName = findViewById(R.id.npcName);
+        final LinearLayoutCompat raceLayout = findViewById(R.id.raceLayout);
+        final TextView npcRace = findViewById(R.id.racePreset);
         final EditText npcDescription = findViewById(R.id.npcDescription);
         final EditText npcPlotHooks = findViewById(R.id.npcPlotHooks);
         final EditText npcNotes = findViewById(R.id.npcNotes);
@@ -96,6 +100,15 @@ public class NpcInfo extends AppCompatActivity{
         setNPCTitle(getIntent().getStringExtra("npcName")); //set the npc Title to what was passed in the intent. We use this to check to see if we need to UPDATE instead of INSERT when adding an npc
         //Log.d(TAG, "onCreate: The value of npcTitle is " + npcTitle);
 
+        raceLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, PresetList.class);
+                intent.putExtra("presetVariable", "Race");
+                startActivityForResult(intent, 1);
+            }
+        });
+
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -119,7 +132,7 @@ public class NpcInfo extends AppCompatActivity{
                 intent = new Intent();
                 intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
                 intent.setType("audio/*");
-                startActivityForResult(intent, 1);
+                startActivityForResult(intent, 2);
             }
         });
 
@@ -127,6 +140,7 @@ public class NpcInfo extends AppCompatActivity{
             @Override
             public void onClick(View view) {
                 String name = npcName.getText().toString();
+                String race = npcRace.getText().toString();
                 String description = npcDescription.getText().toString();
                 String plotHooks = npcPlotHooks.getText().toString();
                 String notes = npcNotes.getText().toString();
@@ -137,7 +151,7 @@ public class NpcInfo extends AppCompatActivity{
                     if (addNPCValue != 0){
                         setNPCTitle(name); //if attempting to add a new npc, we set this value to pass to the DBHelper in order to check if we need to update an existing entry
                     }
-                    AddNPC(name, npcSpinnerLocation, description, notes, npcTitle, voice, plotHooks);
+                    AddNPC(name, npcSpinnerLocation, description, notes, npcTitle, voice, plotHooks, race);
                     if(addNPCValue == -1) {
                         Button deleteNPCButton = new Button(context);
                         deleteNPCButton.setText(R.string.deletenpc);
@@ -195,6 +209,7 @@ public class NpcInfo extends AppCompatActivity{
             Cursor npcInfo = mNpcDBHelper.getSpecificNPC(npcTitle);
             npcInfo.moveToFirst();
             npcName.setText(npcInfo.getString(1));
+            npcRace.setText(npcInfo.getString(7));
             npcDescription.setText(npcInfo.getString(3));
             npcNotes.setText(npcInfo.getString(4));
             Log.d(TAG, "onCreate: the value of plothooks is " + npcInfo.getString(6));
@@ -344,11 +359,17 @@ public class NpcInfo extends AppCompatActivity{
 
         Log.d(TAG, "onActivityResult: ResultCode is: " + resultCode);
 
-        mPlayer = new MediaPlayer();
-        mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        if (resultCode == 4){
+            String presetValue4 = data.getStringExtra("presetValue");
+            TextView npcRace = findViewById(R.id.racePreset);
+            npcRace.setText(presetValue4);
+        }
 
-        if(requestCode == 1 && resultCode == -1){
+        else if(requestCode == 2 && resultCode == -1){
             if ((data != null) && (data.getData() != null)){
+
+                mPlayer = new MediaPlayer();
+                mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
                 audioFileUri = data.getData();
 
@@ -420,6 +441,7 @@ public class NpcInfo extends AppCompatActivity{
                 });
             }
         }
+
         else{
             if(audioFileUri != null){
                 try{
@@ -448,14 +470,14 @@ public class NpcInfo extends AppCompatActivity{
         return ((name.length() != 0));
     }
 
-    private void AddNPC(final String name, final String location, final String description, final String notes, final String npcTitle, final String voice, final String plotHooks){
-
-        if(!(mNpcDBHelper.checkNonExistence(name))) { //if an npc with the entered name already exists, ask the user if they wish to update the entry
+    private void AddNPC(final String name, final String location, final String description, final String notes, final String npcTitle, final String voice, final String plotHooks, final String race){
+        setNPCTitle(name);
+        if(addNPCValue == 0 || !(mNpcDBHelper.checkNonExistence(name))) { //if an npc with the entered name already exists, ask the user if they wish to update the entry
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage(R.string.npcexists);
+            builder.setMessage(R.string.updateinfo);
             builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
-                    boolean insertNPC = mNpcDBHelper.addNPC(name, location, description, notes, npcTitle, voice, plotHooks);
+                    boolean insertNPC = mNpcDBHelper.addNPC(name, location, description, notes, npcTitle, voice, plotHooks, race, true);
                     if (insertNPC) {
                         toast("NPC Saved");
                     } else {
@@ -472,7 +494,7 @@ public class NpcInfo extends AppCompatActivity{
             AlertDialog alert = builder.create();
             alert.show();
         }else { //if the npc with the entered name does not exist, proceed as normal
-            boolean insertNPC = mNpcDBHelper.addNPC(name, location, description, notes, npcTitle, voice, plotHooks);
+            boolean insertNPC = mNpcDBHelper.addNPC(name, location, description, notes, npcTitle, voice, plotHooks, race, false);
             if (insertNPC) {
                 toast("NPC Saved");
             } else {

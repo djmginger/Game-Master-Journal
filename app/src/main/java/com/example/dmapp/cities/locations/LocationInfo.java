@@ -181,14 +181,14 @@ public class LocationInfo extends AppCompatActivity {
     private void AddLocation(final String name, final String description, final String plotHooks, final String notes, final String locationTitle){
         final String cityName = getIntent().getStringExtra("cityName");
         Log.d(TAG, "addLocation: cityname = " + cityName);
-        if(!(mLocationsDBHelper.checkNonExistence(name))) { //if a location with the entered name already exists, ask the user if they wish to update the entry
+        if(addLocationValue == 0 || !(mLocationsDBHelper.checkNonExistence(name))) { //if a location with the entered name already exists, ask the user if they wish to update the entry
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             //builder.setTitle(R.string.app_name);
-            builder.setMessage("A location with this name already exists. Would you like to update the existing entry with this info?");
+            builder.setMessage(R.string.updateinfo);
             //builder.setIcon(R.drawable.ic_launcher);
             builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
-                    boolean insertLocation = mLocationsDBHelper.addLocation(cityName, name, description, plotHooks, notes, locationTitle);
+                    boolean insertLocation = mLocationsDBHelper.addLocation(cityName, name, description, plotHooks, notes, locationTitle, true);
                     if (insertLocation) {
                         toast("Location saved");
                     } else {
@@ -205,7 +205,7 @@ public class LocationInfo extends AppCompatActivity {
             AlertDialog alert = builder.create();
             alert.show();
         }else { //if the location with the entered name does not exist, proceed as normal
-            boolean insertLocation = mLocationsDBHelper.addLocation(cityName, name, description, plotHooks, notes, locationTitle);
+            boolean insertLocation = mLocationsDBHelper.addLocation(cityName, name, description, plotHooks, notes, locationTitle, false);
             if (insertLocation) {
                 toast("Location saved");
             } else {

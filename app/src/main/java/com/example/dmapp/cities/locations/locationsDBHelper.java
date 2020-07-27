@@ -45,11 +45,11 @@ public class locationsDBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    boolean addLocation(String cityName, String locName, String description, String plothooks, String notes, String oldName){
+    boolean addLocation(String cityName, String locName, String description, String plothooks, String notes, String oldName, Boolean updateInfo){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
-        if(checkNonExistence(locName)) {  //if the npc does not exist, add a new one
+        if(!updateInfo) {  //if the location does not exist, add a new one
             contentValues.put(COL2, cityName);
             contentValues.put(COL3, locName);
             contentValues.put(COL4, description);
@@ -61,7 +61,7 @@ public class locationsDBHelper extends SQLiteOpenHelper {
             long result = db.insert(TABLE_NAME, null, contentValues); //result will be -1 if data was inserted incorrectly
             return (result != -1);
 
-        }else{  //if the npc does exist, update the current entry
+        }else{  //if the location does exist, update the current entry
             String query = "UPDATE " + TABLE_NAME + " SET " + COL3 + "=?" + "," + COL4 + "=?" + "," + COL5 + "=?" + "," + COL6 + "=?" + "WHERE " + COL3 + "=?";
             db.execSQL(query, new String [] {locName, description, plothooks, notes, oldName});
 
@@ -69,6 +69,17 @@ public class locationsDBHelper extends SQLiteOpenHelper {
 
             return true;
         }
+    }
+
+    public boolean updateCityName(String cityName, String oldName) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        String query = "UPDATE " + TABLE_NAME + " SET " + COL2 + "=?" + "WHERE " + COL2 + "=?";
+        db.execSQL(query, new String [] {cityName, oldName});
+
+        Log.d(TAG, "addLocation: Updating " + oldName + " to " + cityName + " to " + TABLE_NAME);
+
+        return true;
     }
 
     public Cursor getLocations(String cityName){

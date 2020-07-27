@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -19,13 +20,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.dmapp.cities.distances.DistanceList;
+import com.example.dmapp.cities.distances.distanceDBHelper;
 import com.example.dmapp.cities.locations.LocationList;
+import com.example.dmapp.cities.locations.locationsDBHelper;
 import com.example.dmapp.presets.PresetList;
 import com.example.dmapp.R;
 
 public class CityInfo extends AppCompatActivity {
 
     private citiesDBHelper mCityDBHelper;
+    private locationsDBHelper mLocationDBHelper;
+    private distanceDBHelper mDistanceDBHelper;
     private int addCityValue = 0;
     private String cityTitle = null;
     private final String TAG = "CityInfo";
@@ -39,11 +44,15 @@ public class CityInfo extends AppCompatActivity {
         LinearLayout layout = findViewById(R.id.cityLayout);
         context = this;
 
-
+        mLocationDBHelper = new locationsDBHelper(this);
+        mDistanceDBHelper = new distanceDBHelper(this);
         mCityDBHelper = new citiesDBHelper(this);
         ImageView backButton = findViewById(R.id.backButton);
         final EditText cityName = findViewById(R.id.cityName);
         final TextView cityEnvironment = findViewById(R.id.environmentPreset);
+        final LinearLayoutCompat environmentLayout = findViewById(R.id.environmentLayout);
+        final LinearLayoutCompat populationLayout = findViewById(R.id.populationLayout);
+        final LinearLayoutCompat economyLayout = findViewById(R.id.economyLayout);
         final TextView cityEconomy = findViewById(R.id.economyPreset);
         final TextView cityPopulation = findViewById(R.id.populationPreset);
         final EditText cityNotes = findViewById(R.id.cityNotes);
@@ -73,7 +82,7 @@ public class CityInfo extends AppCompatActivity {
             }
         });
 
-        cityEnvironment.setOnClickListener(new View.OnClickListener() {
+        environmentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context, PresetList.class);
@@ -82,7 +91,7 @@ public class CityInfo extends AppCompatActivity {
             }
         });
 
-        cityPopulation.setOnClickListener(new View.OnClickListener() {
+        populationLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context, PresetList.class);
@@ -91,7 +100,7 @@ public class CityInfo extends AppCompatActivity {
             }
         });
 
-        cityEconomy.setOnClickListener(new View.OnClickListener() {
+        economyLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context, PresetList.class);
@@ -137,13 +146,14 @@ public class CityInfo extends AppCompatActivity {
                 String economy = cityEconomy.getText().toString();
                 String notes = cityNotes.getText().toString();
 
-                //if the edit text values are non-zero, and there is no identical entry, then add the City data and remove editability again.
+                //if the edit text values are non-zero, and there is no identical entry, then add the City data.
                 if (CheckData(cityName)){
 
                     if (addCityValue != 0){
                         setCityTitle(name); //if attempting to add a new City, we set this value to pass to the DBHelper in order to check if we need to update an existing entry
                     }
-                        AddCity(name, environment, population, economy, notes, cityTitle);
+
+                    AddCity(name, environment, population, economy, notes, cityTitle);
                     Button deleteCityButton = new Button(context);
                     deleteCityButton.setText(R.string.deletecity);
                     deleteCityButton.setBackground(ContextCompat.getDrawable(context, R.drawable.buttonbg));
@@ -261,16 +271,21 @@ public class CityInfo extends AppCompatActivity {
         return ((name.length() != 0));
     }
 
-    private void AddCity(final String name, final String environment, final String population, final String economy, final String notes, final String cityTitle){
-
-        if(!(mCityDBHelper.checkNonExistence(name))) { //if a City with the entered name already exists, ask the user if they wish to update the entry
+    private void AddCity(final String name, final String environment, final String population, final String economy, final String notes, final String theCityTitle){
+        setCityTitle(name);
+        if(addCityValue == 0  || !(mCityDBHelper.checkNonExistence(name))) { //if we're updating an existing entry, then edit current DB values
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             //builder.setTitle(R.string.app_name);
-            builder.setMessage("A city with this name already exists. Would you like to update the existing entry with this info?");
+            builder.setMessage(R.string.updateinfo);
             //builder.setIcon(R.drawable.ic_launcher);
             builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
-                    boolean insertCity = mCityDBHelper.addCity(name, environment, population, economy, notes, cityTitle);
+                    boolean insertCity = mCityDBHelper.addCity(name, environment, population, economy, notes, theCityTitle, true);
+
+                    if(!name.equals(theCityTitle)) {
+                        mLocationDBHelper.updateCityName(name, theCityTitle);
+                        mDistanceDBHelper.updateCitiesName(name, theCityTitle);
+                    }
                     if (insertCity) {
                         toast("City saved");
                     } else {
@@ -287,7 +302,7 @@ public class CityInfo extends AppCompatActivity {
             AlertDialog alert = builder.create();
             alert.show();
         }else { //if the City with the entered name does not exist, proceed as normal
-            boolean insertCity = mCityDBHelper.addCity(name, environment, population, economy, notes, cityTitle);
+            boolean insertCity = mCityDBHelper.addCity(name, environment, population, economy, notes, cityTitle, false);
             if (insertCity) {
                 toast("City saved");
             } else {
@@ -300,6 +315,7 @@ public class CityInfo extends AppCompatActivity {
     public void onBackPressed() {
         if(addCityValue == 0) {
             Intent intent = new Intent(context, CityDisplay.class);
+            Log.d(TAG, "onBackPressed: City title = " + cityTitle);
             intent.putExtra("cityName", cityTitle);
             intent.putExtra("addCityValue", 0);
             startActivity(intent);

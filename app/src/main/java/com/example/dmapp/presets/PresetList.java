@@ -31,14 +31,11 @@ public class PresetList extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.preset_list);
         setPassedPresetVariable(this.getIntent().getStringExtra("presetVariable"));
-        Log.d(TAG, "onCreate: Passed Preset variable is " + getPassedPresetVariable());
+        Log.d(TAG, "onCreate: This presetList has a variable of " + getPassedPresetVariable());
 
         presetsDBHelper mPresetsDBHelper = new presetsDBHelper(this);
         DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
         int deviceHeight = (displayMetrics.heightPixels);
-
-        Cursor x = mPresetsDBHelper.getPresets();
-        Log.d(TAG, "onCreate: the amount of rows in the distance table is " + x.getCount());
 
         ImageView backButton = findViewById(R.id.backButton);
         final Button addEntry = findViewById(R.id.addEntry);
@@ -49,8 +46,6 @@ public class PresetList extends AppCompatActivity {
         params.height = (int)(deviceHeight * .70);
         presetListView.setLayoutParams(params);
 
-        // set up the RecyclerView with data from the database
-        //Log.d(TAG, "onCreate: Preset variable is " + getIntent().getStringExtra("presetVariable"));
         Cursor presets = mPresetsDBHelper.getSpecificPresets(getIntent().getStringExtra("presetVariable"));
         try {
             if (presets.moveToNext()) {
@@ -78,23 +73,28 @@ public class PresetList extends AppCompatActivity {
             public void onClick(View view) {
                 String customPresetValue = customPreset.getText().toString();
                 presetsDBHelper mPresetsDBHelper = new presetsDBHelper(addEntry.getContext());
-                if(mPresetsDBHelper.checkNonExistence(customPresetValue)) {
-                    mPresetsDBHelper.addPreset(getPassedPresetVariable(), customPresetValue);
-                    presetList.clear();
-                    Cursor presets = mPresetsDBHelper.getSpecificPresets(getPassedPresetVariable()); //Didn't work with getPassedPresetVariable, attempted hardcoded value to test. Still not functional
-                    try {
-                        if (presets.moveToNext()) {
-                            do {
-                                presetList.add(new Preset(presets.getString(2)));
-                            } while (presets.moveToNext());
+                if(!customPresetValue.equals("")) {
+                    if (mPresetsDBHelper.checkNonExistence(customPresetValue)) {
+                        mPresetsDBHelper.addPreset(getPassedPresetVariable(), customPresetValue);
+                        presetList.clear();
+                        Cursor presets = mPresetsDBHelper.getSpecificPresets(getPassedPresetVariable()); //Didn't work with getPassedPresetVariable, attempted hardcoded value to test. Still not functional
+                        try {
+                            if (presets.moveToNext()) {
+                                do {
+                                    presetList.add(new Preset(presets.getString(2)));
+                                } while (presets.moveToNext());
+                            }
+                        } finally {
+                            presets.close();
                         }
-                    } finally {
-                        presets.close();
+                        customPreset.setText("");
+                        presetAdapter.notifyDataSetChanged();
+                    } else {
+                        toast("This preset already exists!");
                     }
-                    customPreset.setText("");
-                    presetAdapter.notifyDataSetChanged();
-                } else {
-                    toast("This preset already exists!");
+                }
+                else {
+                    toast("Please enter a value!");
                 }
             }
         });

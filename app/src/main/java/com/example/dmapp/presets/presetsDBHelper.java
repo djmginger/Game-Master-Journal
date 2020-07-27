@@ -42,7 +42,7 @@ public class presetsDBHelper extends SQLiteOpenHelper {
         db.execSQL("INSERT INTO " + TABLE_NAME + " VALUES(5,'Environment', 'Hills')");
         db.execSQL("INSERT INTO " + TABLE_NAME + " VALUES(6,'Environment', 'Jungle')");
         db.execSQL("INSERT INTO " + TABLE_NAME + " VALUES(7,'Environment', 'Marine')");
-        db.execSQL("INSERT INTO " + TABLE_NAME + " VALUES(8,'Environment', 'Mountain')");
+        db.execSQL("INSERT INTO " + TABLE_NAME + " VALUES(8,'Environment', 'Mountains')");
         db.execSQL("INSERT INTO " + TABLE_NAME + " VALUES(9,'Environment', 'Polar')");
         db.execSQL("INSERT INTO " + TABLE_NAME + " VALUES(10,'Environment', 'Savanna')");
         db.execSQL("INSERT INTO " + TABLE_NAME + " VALUES(11,'Environment', 'Swamp')");
@@ -60,6 +60,15 @@ public class presetsDBHelper extends SQLiteOpenHelper {
         db.execSQL("INSERT INTO " + TABLE_NAME + " VALUES(23,'Economy', 'Magic')");
         db.execSQL("INSERT INTO " + TABLE_NAME + " VALUES(24,'Economy', 'Mining')");
         db.execSQL("INSERT INTO " + TABLE_NAME + " VALUES(25,'Economy', 'Theiving')");
+        db.execSQL("INSERT INTO " + TABLE_NAME + " VALUES(26,'Race', 'Dwarf')");
+        db.execSQL("INSERT INTO " + TABLE_NAME + " VALUES(27,'Race', 'Elf')");
+        db.execSQL("INSERT INTO " + TABLE_NAME + " VALUES(28,'Race', 'Faerie')");
+        db.execSQL("INSERT INTO " + TABLE_NAME + " VALUES(29,'Race', 'Goblin')");
+        db.execSQL("INSERT INTO " + TABLE_NAME + " VALUES(30,'Race', 'Gnome')");
+        db.execSQL("INSERT INTO " + TABLE_NAME + " VALUES(31,'Race', 'Halfling')");
+        db.execSQL("INSERT INTO " + TABLE_NAME + " VALUES(32,'Race', 'Human')");
+        db.execSQL("INSERT INTO " + TABLE_NAME + " VALUES(33,'Race', 'Orc')");
+        db.execSQL("INSERT INTO " + TABLE_NAME + " VALUES(34,'Race', 'Ogre')");
     }
 
     @Override

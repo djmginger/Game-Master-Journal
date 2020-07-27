@@ -1,128 +1,195 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/cityLayout"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="start"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
-    android:background="@color/mainColor2">
+    android:layout_height="match_parent">
 
-    <android.support.v7.widget.LinearLayoutCompat
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/cityLayout"
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:gravity="center"
-        android:orientation="horizontal">
+        android:layout_height="match_parent"
+        android:gravity="start"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp">
 
-        <ImageView
-            android:id="@+id/backButton"
-            android:layout_width="wrap_content"
+        <android.support.v7.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="0"
-            android:src="@drawable/backarrow" />
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/backButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:src="@drawable/backarrow" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/citydetails"
+                android:paddingEnd="25dp"
+                android:textColor="@color/mainColor2"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textSize="25sp" />
+
+        </android.support.v7.widget.LinearLayoutCompat>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/citydetails"
-            android:paddingEnd="25dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:textSize="25sp" />
+            android:layout_marginTop="15dp"
+            android:text="@string/cityname"
+            android:textSize="20sp" />
 
-    </android.support.v7.widget.LinearLayoutCompat>
+        <EditText
+            android:id="@+id/cityName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/info_bg2"
+            android:layout_marginTop="5dp"
+            android:inputType="textCapSentences"
+            android:padding="10dp"
+            android:imeOptions="actionDone"
+            android:singleLine="true" />
 
-    <EditText
-        android:id="@+id/cityName"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:background="@drawable/info_bg2"
-        android:inputType="textCapSentences"
-        android:padding="10dp"
-        android:imeOptions="actionDone"
-        android:singleLine="true"
-        android:hint="@string/cityname" />
+        <android.support.v7.widget.LinearLayoutCompat
+            android:id="@+id/environmentLayout"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/buttonbg2" >
 
-    <TextView
-        android:id="@+id/environmentPreset"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:layout_marginTop="5dp"
-        android:text="@string/environment"
-        android:textSize="18sp"
-        android:background="@drawable/buttonbg" />
+            <TextView
+                android:id="@+id/environmentPreset"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/environment"
+                android:layout_weight="1"
+                android:padding="10dp"
+                android:textSize="18sp" />
 
-    <TextView
-        android:id="@+id/populationPreset"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:layout_marginTop="5dp"
-        android:text="@string/pop"
-        android:textSize="18sp"
-        android:background="@drawable/buttonbg" />
+            <android.support.v7.widget.AppCompatImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/downarrow"
+                android:padding="10dp"
+                android:layout_gravity="center_vertical"/>
 
-    <TextView
-        android:id="@+id/economyPreset"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:layout_marginTop="5dp"
-        android:text="@string/eco"
-        android:textSize="18sp"
-        android:background="@drawable/buttonbg" />
+        </android.support.v7.widget.LinearLayoutCompat>
 
-    <Button
-        android:id="@+id/gotoLocations"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:layout_marginTop="10dp"
-        android:text="@string/viewlocations"
-        android:background="@drawable/buttonbg" />
+        <android.support.v7.widget.LinearLayoutCompat
+            android:id="@+id/populationLayout"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/buttonbg2" >
 
-    <Button
-        android:id="@+id/gotoDistance"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:layout_marginTop="10dp"
-        android:text="@string/viewtravel"
-        android:background="@drawable/buttonbg" />
+            <TextView
+                android:id="@+id/populationPreset"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/pop"
+                android:layout_weight="1"
+                android:padding="10dp"
+                android:textSize="18sp" />
 
-    <EditText
-        android:id="@+id/cityNotes"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:background="@drawable/info_bg2"
-        android:inputType="textCapSentences|textMultiLine"
-        android:padding="10dp"
-        android:hint="@string/citynotes" />
+            <android.support.v7.widget.AppCompatImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/downarrow"
+                android:padding="10dp"
+                android:layout_gravity="center_vertical"/>
 
-    <android.support.v7.widget.LinearLayoutCompat
-        android:id="@+id/cityButtonLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="35dp"
-        android:gravity="center"
-        android:orientation="horizontal">
+        </android.support.v7.widget.LinearLayoutCompat>
+
+        <android.support.v7.widget.LinearLayoutCompat
+            android:id="@+id/economyLayout"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/buttonbg2" >
+
+            <TextView
+                android:id="@+id/economyPreset"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/eco"
+                android:layout_weight="1"
+                android:padding="10dp"
+                android:textSize="18sp" />
+
+            <android.support.v7.widget.AppCompatImageView
+                android:id="@+id/downarrow1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/downarrow"
+                android:padding="10dp"
+                android:layout_gravity="center_vertical"/>
+
+        </android.support.v7.widget.LinearLayoutCompat>
 
         <Button
-            android:id="@+id/saveCity"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
+            android:id="@+id/gotoLocations"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:layout_marginTop="15dp"
+            android:text="@string/viewlocations"
+            android:background="@drawable/buttonbg" />
+
+        <Button
+            android:id="@+id/gotoDistance"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:layout_marginTop="15dp"
+            android:text="@string/viewtravel"
+            android:background="@drawable/buttonbg" />
+
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/savechanges"
-            android:padding="10dp"
-            android:background="@drawable/buttonbg"/>
+            android:layout_marginTop="15dp"
+            android:text="@string/citynotes"
+            android:textSize="20sp" />
 
-    </android.support.v7.widget.LinearLayoutCompat>
+        <EditText
+            android:id="@+id/cityNotes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/info_bg2"
+            android:inputType="textCapSentences|textMultiLine"
+            android:padding="10dp" />
 
-</LinearLayout>
+        <android.support.v7.widget.LinearLayoutCompat
+            android:id="@+id/cityButtonLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="35dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/saveCity"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/savechanges"
+                android:padding="10dp"
+                android:background="@drawable/buttonbg"/>
+
+        </android.support.v7.widget.LinearLayoutCompat>
+
+    </LinearLayout>
+</ScrollView>

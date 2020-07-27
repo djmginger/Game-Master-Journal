@@ -48,11 +48,11 @@ public class lootDBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public boolean addLoot(String name, String rarity, String price, String description, String details, String image, String requirements, String oldName){
+    public boolean addLoot(String name, String rarity, String price, String description, String details, String image, String requirements, String oldName, boolean updateLoot){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
-        if(checkNonExistence(name)) {  //if starting activity from clicking the Add Entry button
+        if(!updateLoot) {  //if starting activity from clicking the Add Entry button
             contentValues.put(COL2, name);
             contentValues.put(COL3, rarity);
             contentValues.put(COL4, price);

@@ -35,7 +35,7 @@ public class LocationList extends AppCompatActivity implements MyRecyclerViewAda
         String cityName = getIntent().getStringExtra("cityName");
 
         LinearLayoutCompat layout = findViewById(R.id.locationLayout);
-        layout.setBackgroundColor(getResources().getColor(R.color.mainColor2));
+        //layout.setBackgroundColor(getResources().getColor(R.color.mainColor2));
 
         // data to populate the RecyclerView with
 

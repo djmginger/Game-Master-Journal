@@ -3,6 +3,7 @@ package com.example.dmapp.loot;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
@@ -37,7 +38,7 @@ public class LootList extends AppCompatActivity implements MyRecyclerViewAdapter
 
         context = this;
         LinearLayoutCompat layout = findViewById(R.id.listLayout);
-        layout.setBackgroundColor(getResources().getColor(R.color.mainColor3));
+        //layout.setBackgroundColor(getResources().getColor(R.color.mainColor3));
 
         lootDBHelper mLootDBHelper = new lootDBHelper(this);
         DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
@@ -70,6 +71,7 @@ public class LootList extends AppCompatActivity implements MyRecyclerViewAdapter
         recyclerView.setLayoutParams(params);
 
         listTitle.setText("Loot");
+        listTitle.setTextColor(Color.parseColor("#6F94F8"));
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override

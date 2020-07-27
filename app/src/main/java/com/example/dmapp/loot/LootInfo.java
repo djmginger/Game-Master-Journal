@@ -283,15 +283,15 @@ public class LootInfo extends AppCompatActivity {
     }
 
     private void AddLoot(final String name, final String rarity, final String price, final String description, final String details, final String image, final String requirements, final String lootTitle){
-
-        if(!(mLootDBHelper.checkNonExistence(name))) { //if an npc with the entered name already exists, ask the user if they wish to update the entry
+        setLootTitle(name);
+        if(addLootValue == 0 || !(mLootDBHelper.checkNonExistence(name))) { //if we're updating an existing entry, then edit current DB values
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             //builder.setTitle(R.string.app_name);
-            builder.setMessage("An item with this name already exists. Would you like to update the existing entry with this info?");
+            builder.setMessage(R.string.updateinfo);
             //builder.setIcon(R.drawable.ic_launcher);
             builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
-                    boolean insertLoot = mLootDBHelper.addLoot(name, rarity, price, description, details, image, requirements, lootTitle);
+                    boolean insertLoot = mLootDBHelper.addLoot(name, rarity, price, description, details, image, requirements, lootTitle, true);
 
                     if (insertLoot) {
                         toast("Item saved");
@@ -309,7 +309,7 @@ public class LootInfo extends AppCompatActivity {
             AlertDialog alert = builder.create();
             alert.show();
         }else { //if the npc with the entered name does not exist, proceed as normal
-            boolean insertLoot = mLootDBHelper.addLoot(name, rarity, price, description, details, image, requirements, lootTitle);
+            boolean insertLoot = mLootDBHelper.addLoot(name, rarity, price, description, details, image, requirements, lootTitle, false);
             if (insertLoot) {
                 toast("Item saved");
             } else {

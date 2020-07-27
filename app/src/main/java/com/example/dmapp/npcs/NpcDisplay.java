@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -23,6 +24,7 @@ import android.widget.Toast;
 
 import com.example.dmapp.MainActivity;
 import com.example.dmapp.R;
+import com.example.dmapp.cities.CityDisplay;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -51,6 +53,7 @@ public class NpcDisplay extends AppCompatActivity{
         final TextView npcName = findViewById(R.id.npcTitle);
         LinearLayout npcLayout = findViewById(R.id.npcLayout);
         LinearLayoutCompat npcUnderTitleLayout = findViewById(R.id.npcUnderTitleLayout);
+        LinearLayoutCompat npcUnderTitleLayout2 = findViewById(R.id.npcUnderTitleLayout2);
         ImageView stop = findViewById(R.id.stop);
         ImageView play = findViewById(R.id.play);
         ImageView pause = findViewById(R.id.pause);
@@ -60,9 +63,7 @@ public class NpcDisplay extends AppCompatActivity{
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, NpcList.class);
-                startActivity(intent);
-                finish();
+                onBackPressed();
             }
         });
 
@@ -72,7 +73,7 @@ public class NpcDisplay extends AppCompatActivity{
         pause.setVisibility(View.INVISIBLE);
 
         //If coming to this activity from clicking on a name, get and fill out all fields with the data for the corresponding npc.
-        Cursor npcInfo = mNpcDBHelper.getSpecificNPC(getIntent().getStringExtra("npcName"));
+        final Cursor npcInfo = mNpcDBHelper.getSpecificNPC(getIntent().getStringExtra("npcName"));
         npcInfo.moveToFirst();
         npcTitle = npcInfo.getString(1);
         npcName.setText(npcInfo.getString(1));
@@ -85,11 +86,33 @@ public class NpcDisplay extends AppCompatActivity{
         if((!npcInfo.getString(2).equals("")) && (!npcInfo.getString(2).equals("No Location"))) {
             TextView npcLocation = new TextView(this);
             npcLocation.setText(String.format("%s %s", getString(R.string.locationHeader), npcInfo.getString(2)));
+            npcLocation.setPaintFlags(npcLocation.getPaintFlags() |   Paint.UNDERLINE_TEXT_FLAG);
             npcLocation.setTextSize(18);
             npcLocation.setTypeface(null, Typeface.ITALIC);
-            npcLocation.setTextColor(Color.parseColor("#666666"));
+            npcLocation.setTextColor(Color.parseColor("#6fd8f9"));
             npcLocation.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            npcLocation.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, CityDisplay.class);
+                    intent.putExtra("cityName", npcInfo.getString(2));
+                    intent.putExtra("addCityValue", 0);
+                    intent.putExtra("npcNav", true); //This is for back button navigation
+                    startActivity(intent);
+                }
+            });
+
             npcUnderTitleLayout.addView(npcLocation);
+        }
+
+        if((!npcInfo.getString(7).equals("")) && (!npcInfo.getString(7).equals("Race"))) {
+            TextView npcRace = new TextView(this);
+            npcRace.setText(String.format("%s %s", getString(R.string.raceHeader), npcInfo.getString(7)));
+            npcRace.setTextSize(18);
+            npcRace.setTypeface(null, Typeface.ITALIC);
+            npcRace.setTextColor(Color.parseColor("#666666"));
+            npcRace.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            npcUnderTitleLayout2.addView(npcRace);
         }
 
         if(!npcInfo.getString(3).equals("")) {
@@ -263,8 +286,13 @@ public class NpcDisplay extends AppCompatActivity{
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(context, NpcList.class);
-        startActivity(intent);
-        finish();
+        Boolean npcNav = getIntent().getBooleanExtra("cityNav", false);
+        if(npcNav){
+            super.onBackPressed();
+        } else {
+            Intent intent = new Intent(context, NpcList.class);
+            startActivity(intent);
+            finish();
+        }
     }
 }

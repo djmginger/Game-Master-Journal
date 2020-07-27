@@ -44,11 +44,11 @@ public class citiesDBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    boolean addCity(String name, String environment, String population, String economy, String notes, String oldName){
+    boolean addCity(String name, String environment, String population, String economy, String notes, String oldName, boolean updateCity){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
-        if(checkNonExistence(name)) {  //if the npc does not exist, add a new one
+        if(!updateCity) {  //if the npc does not exist, add a new one
             contentValues.put(COL2, name);
             contentValues.put(COL3, environment);
             contentValues.put(COL4, population);

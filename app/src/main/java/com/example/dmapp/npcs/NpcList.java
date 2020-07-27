@@ -42,7 +42,7 @@ public class NpcList extends AppCompatActivity implements MyRecyclerViewAdapter.
 
         context = this;
         LinearLayoutCompat layout = findViewById(R.id.npc_layout);
-        layout.setBackgroundColor(getResources().getColor(R.color.mainColor1));
+        //layout.setBackgroundColor(getResources().getColor(R.color.mainColor1));
 
         final npcDBHelper mNpcDBHelper = new npcDBHelper(this);
         final citiesDBHelper mcitiesDBHelper = new citiesDBHelper(this);

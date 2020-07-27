@@ -47,7 +47,7 @@ public class distanceDBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
-        if(checkNonExistence(cityFrom, cityTo)) {  //if the preset does not exist, add a new one
+        if(checkNonExistence(cityFrom, cityTo)) {  //if the distance does not exist, add a new one
             contentValues.put(COL2, cityFrom);
             contentValues.put(COL3, cityTo);
             contentValues.put(COL4, distance);
@@ -55,6 +55,20 @@ public class distanceDBHelper extends SQLiteOpenHelper {
             Log.d(TAG, "addCity: Adding " + cityFrom + ", " + cityTo + ", " + distance + " to " + TABLE_NAME);
             db.insert(TABLE_NAME, null, contentValues);
         }
+    }
+
+    public void updateCitiesName(String cityName, String oldName) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        Log.d(TAG, "updateCityName: so it at least gets to here");
+
+        String query = "UPDATE " + TABLE_NAME + " SET " + COL2 + "=?" + "WHERE " + COL2 + "=?";
+        db.execSQL(query, new String [] {cityName, oldName});
+
+        Log.d(TAG, "updateCityName: Now we're inbetween the queries");
+
+        String query2 = "UPDATE " + TABLE_NAME + " SET " + COL3 + "=?" + "WHERE " + COL3 + "=?";
+        db.execSQL(query2, new String [] {cityName, oldName});
     }
 
     public Cursor getDistances(String cityFrom){

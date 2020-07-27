@@ -8,7 +8,8 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:nestedScrollingEnabled="true">
 
         <LinearLayout
             android:id="@+id/cityLayout"
@@ -74,8 +75,13 @@
         </LinearLayout>
 
         <LinearLayout
+            android:orientation="vertical"
+            android:id="@+id/expandable_listview_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="25dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp">
 
             <ExpandableListView
                 android:groupIndicator="@null"
@@ -84,6 +90,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
             </ExpandableListView>
+
         </LinearLayout>
 
         <LinearLayout
@@ -93,20 +100,39 @@
             android:layout_height="wrap_content"
             android:gravity="start"
             android:paddingLeft="16dp"
-            android:paddingRight="16dp" />
+            android:paddingRight="16dp"
+            android:nestedScrollingEnabled="true" />
 
         <RelativeLayout
             android:id="@+id/distanceListLayout"
             android:layout_width="match_parent"
-            android:layout_height="fill_parent"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="25dp">
 
             <ListView
                 android:id="@+id/distanceListViewDisplay"
                 android:nestedScrollingEnabled="true"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
                 android:layout_width="match_parent"
                 android:layout_height="fill_parent" />
         </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/npcListTitleLayout"
+            android:orientation="vertical"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/npcListLayout"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:layout_width="match_parent"
+            android:layout_marginBottom="15dp"
+            android:layout_height="0dp"/>
 
     </LinearLayout>
 </android.support.v4.widget.NestedScrollView>

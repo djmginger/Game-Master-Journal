@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Game Master Notebook</string>
+    <string name="app_name">Game Master Journal</string>
     <string name="deletenpc">Delete NPC</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
@@ -32,15 +32,15 @@
     <string name="traveltime">Travel time</string>
     <string name="locationdetails">Location Details</string>
     <string name="locationname">Location Name</string>
-    <string name="desc">description</string>
+    <string name="desc">Description</string>
     <string name="addnotes">Additional Notes</string>
     <string name="locations">Locations</string>
     <string name="lootdetails">Loot Details</string>
-    <string name="lootname">Loot Name</string>
-    <string name="lootrarity">Loot Rarity</string>
-    <string name="lootprice">Loot Price</string>
-    <string name="lootdesc">Loot Description</string>
-    <string name="lootfun">Loot Function/Details/Usage</string>
+    <string name="lootname">Name</string>
+    <string name="lootrarity">Rarity</string>
+    <string name="lootprice">Price</string>
+    <string name="lootdesc">Description</string>
+    <string name="lootfun">Function/Details/Usage</string>
     <string name="addimage">Add an image</string>
     <string name="npcdetails">NPC Details</string>
     <string name="npcname">NPC Name</string>
@@ -68,4 +68,9 @@
     <string name="economyHeader">Economy:</string>
     <string name="travelTimeHeader">Travel Times to… </string>
     <string name="locationTitle">"Locations within "</string>
+    <string name="location">Location</string>
+    <string name="race">Race</string>
+    <string name="raceHeader">"Race:"</string>
+    <string name="npclisttitle">"NPCs in "</string>
+    <string name="updateinfo">Would you like to update the existing entry with this info?</string>
 </resources>

@@ -3,6 +3,7 @@ package com.example.dmapp.cities;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
@@ -37,7 +38,7 @@ public class CityList extends AppCompatActivity implements MyRecyclerViewAdapter
 
         context = this;
         LinearLayoutCompat layout = findViewById(R.id.listLayout);
-        layout.setBackgroundColor(getResources().getColor(R.color.mainColor2));
+        //layout.setBackgroundColor(getResources().getColor(R.color.mainColor2));
 
         citiesDBHelper mCitiesDBHelper = new citiesDBHelper(this);
         DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
@@ -72,6 +73,7 @@ public class CityList extends AppCompatActivity implements MyRecyclerViewAdapter
         params.height = (int)(deviceHeight * .75);
         recyclerView.setLayoutParams(params);
         listTitle.setText("Cities");
+        listTitle.setTextColor(Color.parseColor("#6FD8F8"));
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override

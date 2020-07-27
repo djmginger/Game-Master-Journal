@@ -15,6 +15,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     private final LayoutInflater mInflater;
     //For clickable rows
     private final OnNoteListener mOnNoteListener;
+    private final Boolean mCityList;
 
 
     // data is passed into the constructor
@@ -22,13 +23,27 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
         this.mInflater = LayoutInflater.from(context);
         this.mData = data;
         this.mOnNoteListener = onNoteListener;
+        this.mCityList = false;
+    }
+
+    public MyRecyclerViewAdapter(Context context, List<String> data, OnNoteListener onNoteListener, Boolean cityList) {
+        this.mInflater = LayoutInflater.from(context);
+        this.mData = data;
+        this.mOnNoteListener = onNoteListener;
+        this.mCityList = cityList;
     }
 
     // inflates the row layout from xml when needed
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.recyclerview_row, parent, false);
-        return new ViewHolder(view, mOnNoteListener);
+        if(!mCityList) {
+            View view = mInflater.inflate(R.layout.recyclerview_row, parent, false);
+            return new ViewHolder(view, mOnNoteListener);
+        }
+        else{
+            View view = mInflater.inflate(R.layout.recyclerview_row2, parent, false);
+            return new ViewHolder(view, mOnNoteListener);
+        }
     }
 
     // binds the data to the TextView in each row

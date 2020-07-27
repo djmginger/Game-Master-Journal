@@ -3,7 +3,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,12 +32,21 @@ class PresetAdapter extends ArrayAdapter<Preset> {
         mContext = context;
         presetList = list;
         variable = presetVariable;
+        Log.d(TAG, "PresetAdapter: the variable is " + variable);
         presetActivity = activity;
     }
 
     @NonNull
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+
+        if(variable.equals("Race")){
+
+            LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View contentView = inflater.inflate(R.layout.preset_item, null,false);
+            TextView presetTitle = contentView.findViewById(R.id.presetValue);
+            presetTitle.setBackground(mContext.getResources().getDrawable(R.drawable.info_bg5));
+        }
 
         View listItem = convertView;
         if(listItem == null) {
@@ -56,6 +67,7 @@ class PresetAdapter extends ArrayAdapter<Preset> {
                 Preset preset = getItem(position);
                 // Do what you want here...
                 String presetValue = preset.getValue();
+                Log.d(TAG, "onClick: The preset value selected is " + presetValue);
                 Intent intent = new Intent();
                 intent.putExtra("presetValue", presetValue);
                 int result;
@@ -70,9 +82,14 @@ class PresetAdapter extends ArrayAdapter<Preset> {
                     case "Economy":
                         result = 3;
                         break;
+                    case "Race":
+                        result = 4;
+                        break;
                     default:
                         result = 0;
                 }
+
+                Log.d(TAG, "onClick: The result of the click was " + result);
 
                 presetActivity.setResult(result, intent);
                 presetActivity.finish();

@@ -69,9 +69,7 @@ public class LootDisplay extends AppCompatActivity{
         lootInfo.moveToFirst();
         lootTitle = lootInfo.getString(1);
         lootName.setText(lootInfo.getString(1));
-        lootName.setTextColor(Color.parseColor("#5BCBAE"));
-        //lootName.setTextColor(getResources().getColor(R.color.mainColor1));
-        //lootName.setTypeface(null, Typeface.BOLD);
+        lootName.setTextColor(Color.parseColor("#6F94F8"));
         View line = new View(this);
         line.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 2));
         line.setBackgroundColor(Color.parseColor("#F1FDF4"));

@@ -20,6 +20,7 @@ public class npcDBHelper extends SQLiteOpenHelper {
     private static final String COL5 = "notes";
     private static final String COL6 = "voice";
     private static final String COL7 = "plothooks";
+    private static final String COL8 = "race";
 
     //* get the context of each instance of npcDBHelper
     public static synchronized npcDBHelper getInstance(Context context) {
@@ -29,14 +30,14 @@ public class npcDBHelper extends SQLiteOpenHelper {
         return sInstance;
     }
 
-    npcDBHelper(Context context){
+    public npcDBHelper(Context context){
         super(context, TABLE_NAME, null, 1);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
         String createTable = "CREATE TABLE " + TABLE_NAME + " (ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                COL2 + " TEXT, " + COL3 + " TEXT, " + COL4 + " TEXT, " + COL5 + " TEXT, " + COL6 + " TEXT, " + COL7 + " TEXT)";
+                COL2 + " TEXT, " + COL3 + " TEXT, " + COL4 + " TEXT, " + COL5 + " TEXT, " + COL6 + " TEXT, " + COL7 + " TEXT, " + COL8 + " TEXT)";
         db.execSQL(createTable);
     }
 
@@ -46,28 +47,29 @@ public class npcDBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    boolean addNPC(String name, String location, String description, String notes, String oldName, String voice, String plothooks){
+    boolean addNPC(String name, String location, String description, String notes, String oldName, String voice, String plothooks, String race, Boolean updateNpc){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
-        if(checkNonExistence(name)) {  //if the npc does not exist, add a new one
+        if(!updateNpc) {  //if the npc does not exist, add a new one
             contentValues.put(COL2, name);
             contentValues.put(COL3, location);
             contentValues.put(COL4, description);
             contentValues.put(COL5, notes);
             contentValues.put(COL6, voice);
             contentValues.put(COL7, plothooks);
+            contentValues.put(COL8, race);
 
-            Log.d(TAG, "addNPC: Adding " + name + ", " + location + ", " + description + ", " + notes + ", " + plothooks + " to " + TABLE_NAME);
+            Log.d(TAG, "addNPC: Adding " + name + ", " + race + ", " + location + ", " + description + ", " + notes + ", " + plothooks + " to " + TABLE_NAME);
             //long result =
             db.insert(TABLE_NAME, null, contentValues); //result will be -1 if data was inserted incorrectly
             return (true);
             //result != -1
         }else{  //if the npc does exist, update the current entry
-            String query = "UPDATE " + TABLE_NAME + " SET " + COL2 + "=?" + "," + COL3 + "=?" + "," + COL4 + "=?" + "," + COL5 + "=?" + "," + COL6 + "=?" + "," + COL7 + "=?" + "WHERE " + COL2 + "=?";
-            db.execSQL(query, new String [] {name, location, description, notes, voice, plothooks, oldName});
+            String query = "UPDATE " + TABLE_NAME + " SET " + COL2 + "=?" + "," + COL3 + "=?" + "," + COL4 + "=?" + "," + COL5 + "=?" + "," + COL6 + "=?" + "," + COL7 + "=?" + "," + COL8 + "=?" + "WHERE " + COL2 + "=?";
+            db.execSQL(query, new String [] {name, location, description, notes, voice, plothooks, race, oldName});
 
-            Log.d(TAG, "addNPC: Updating " + oldName + " to " + name + ", " + location + ", " + description + ", " + notes + ", " + plothooks + " to " + TABLE_NAME);
+            Log.d(TAG, "addNPC: Updating " + oldName + " to " + name + ", " + race + ", " + location + ", " + description + ", " + notes + ", " + plothooks + " to " + TABLE_NAME);
 
             return true;
         }
@@ -79,7 +81,7 @@ public class npcDBHelper extends SQLiteOpenHelper {
         return db.rawQuery(query, null);
     }
 
-    Cursor getLocationNPCS(String location){
+    public Cursor getLocationNPCS(String location){
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COL3 + "=?";
         return db.rawQuery(query, new String [] {location});

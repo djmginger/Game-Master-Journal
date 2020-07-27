@@ -8,9 +8,13 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutCompat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,27 +26,32 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.example.dmapp.MyRecyclerViewAdapter;
 import com.example.dmapp.R;
 import com.example.dmapp.cities.distances.Distance;
 import com.example.dmapp.cities.distances.DistanceAdapter;
 import com.example.dmapp.cities.distances.distanceDBHelper;
 import com.example.dmapp.cities.locations.locationsDBHelper;
+import com.example.dmapp.npcs.NpcDisplay;
+import com.example.dmapp.npcs.npcDBHelper;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public class CityDisplay extends AppCompatActivity{
+public class CityDisplay extends AppCompatActivity implements MyRecyclerViewAdapter.OnNoteListener{
 
     private final ArrayList<Distance> distanceListDisplay = new ArrayList<>();
     private DistanceAdapter distanceAdapter;
     private citiesDBHelper mCitiesDBHelper;
+    private npcDBHelper mNpcDBHelper;
     private distanceDBHelper mDistanceDBHelper;
     private int addLootValue = 0;
     private String cityTitle = null;
     private final String TAG = "LootInfo";
     private Context context;
     private ExpandableListView expandableListView;
+    private final ArrayList<String> npcList = new ArrayList<>();
 
     locationsDBHelper mLocationsDBHelper = new locationsDBHelper(this);
     ArrayList<String> locationNames = new ArrayList<>(); // parent of the exapandable list
@@ -60,6 +69,7 @@ public class CityDisplay extends AppCompatActivity{
         context = this;
 
         mCitiesDBHelper = new citiesDBHelper(this);
+        mNpcDBHelper = new npcDBHelper(this);
         mDistanceDBHelper = new distanceDBHelper(this);
         ImageView backButton = findViewById(R.id.backButton);
         ImageView editIcon = findViewById(R.id.editIcon);
@@ -74,19 +84,18 @@ public class CityDisplay extends AppCompatActivity{
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, CityList.class);
-                startActivity(intent);
-                finish();
+                onBackPressed();
             }
         });
 
 
         //If coming to this activity from clicking on a name, get and fill out all fields with the data for the corresponding npc.
+        Log.d(TAG, "onCreate: City name is " +getIntent().getStringExtra("cityName"));
         Cursor cityInfo = mCitiesDBHelper.getSpecificCity(getIntent().getStringExtra("cityName"));
         cityInfo.moveToFirst();
         cityTitle = cityInfo.getString(1);
         cityName.setText(cityInfo.getString(1));
-        cityName.setTextColor(Color.parseColor("#5BCBAE"));
+        cityName.setTextColor(Color.parseColor("#6FD8F8"));
         View line = new View(this);
         line.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 2));
         line.setBackgroundColor(Color.parseColor("#F1FDF4"));
@@ -121,7 +130,7 @@ public class CityDisplay extends AppCompatActivity{
             underTitleLayout.addView(cityEnviron);
         }
 
-        if(!cityInfo.getString(4).equals("")) {
+        if(!cityInfo.getString(4).equals("") && !cityInfo.getString(4).equals("Economy")) {
             TextView econLabel = new TextView(this);
             econLabel.setText(R.string.economyHeader);
             econLabel.setTextSize(16);
@@ -190,11 +199,17 @@ public class CityDisplay extends AppCompatActivity{
                     locationHooks.add(locationCursor.getString(4));
                     locationNotes.add(locationCursor.getString(5));
                 } while (locationCursor.moveToNext());
+
+                setUpAdapter();
+                LinearLayout expandableListViewContainer = findViewById(R.id.expandable_listview_container);
+                View line3 = new View(this);
+                line3.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 3));
+                line3.setBackgroundColor(Color.parseColor("#000000"));
+                expandableListViewContainer.addView(line3);
             }
         } finally {
             locationCursor.close();
         }
-        setUpAdapter();
 
         Cursor distanceCursor = mDistanceDBHelper.getDistances(getIntent().getStringExtra("cityName"));
 
@@ -235,13 +250,48 @@ public class CityDisplay extends AppCompatActivity{
             distanceCursor.close();
         }
 
-        DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
-        int deviceHeight = (displayMetrics.heightPixels);
-        int height = (int)(deviceHeight * .25);
+        int height = distanceListDisplay.size() * 155;
         ViewGroup.LayoutParams params = distanceListLayout.getLayoutParams();
         params.height = height;
         distanceListLayout.setLayoutParams(params);
 
+        //create a list of NPC's associated with the city
+
+        Cursor npcs = mNpcDBHelper.getLocationNPCS(cityTitle);
+        try {
+            if (npcs.moveToNext()) {
+                LinearLayout npcListTitleLayout = findViewById(R.id.npcListTitleLayout);
+                TextView npcTitle = new TextView(this);
+                npcTitle.setText(String.format("%s%s", getString(R.string.npclisttitle), cityTitle));
+                npcTitle.setTextSize(20);
+                npcTitle.setTextColor(Color.parseColor("#FE5F55"));
+                npcTitle.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                npcTitle.setTypeface(null, Typeface.BOLD);
+                npcListTitleLayout.addView(npcTitle);
+                View line2 = new View(this);
+                line2.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 3));
+                line2.setBackgroundColor(Color.parseColor("#000000"));
+                npcListTitleLayout.addView(line2);
+
+                do {
+                    npcList.add(npcs.getString(1));
+                } while (npcs.moveToNext());
+            }
+        } finally {
+            npcs.close();
+        }
+
+        RecyclerView recyclerView = findViewById(R.id.npcListLayout);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        DividerItemDecoration itemDecor = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+        recyclerView.addItemDecoration(itemDecor);
+        MyRecyclerViewAdapter adapter = new MyRecyclerViewAdapter(this, npcList, this, true);
+        recyclerView.setAdapter(adapter);
+        recyclerView.addItemDecoration(itemDecor);
+
+        ViewGroup.LayoutParams params2 = recyclerView.getLayoutParams();
+        params2.height = 165 * npcList.size();
+        recyclerView.setLayoutParams(params2);
 
         editIcon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -251,6 +301,7 @@ public class CityDisplay extends AppCompatActivity{
                 intent.putExtra("cityName", cityTitle);
                 intent.putExtra("addCityValue", 0);
                 startActivity(intent);
+                finish();
             }
         });
     }
@@ -319,7 +370,7 @@ public class CityDisplay extends AppCompatActivity{
         expandableListView = findViewById(R.id.expandable_listview);
         DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
         int deviceHeight = (displayMetrics.heightPixels);
-        int listHeight = (locationNames.size() * 150) + 250;
+        int listHeight = (locationNames.size() * 150) + 150;
         ViewGroup.LayoutParams params = expandableListView.getLayoutParams();
         params.height = listHeight;
         expandableListView.setLayoutParams(params);
@@ -348,7 +399,7 @@ public class CityDisplay extends AppCompatActivity{
 
                     String[] level2 = secondLevel.get(groupPosition);
                     Log.d(TAG, "onGroupExpand: secondLevel size is " + level2.length);
-                    int listHeight = (locationNames.size() * 150) + ((level2.length) * 150) + 250;
+                    int listHeight = (locationNames.size() * 150) + ((level2.length) * 150) + 150;
                     ExpandableListView expandableListView = ((CityDisplay) context).findViewById(R.id.expandable_listview);
                     ViewGroup.LayoutParams params = expandableListView.getLayoutParams();
                     params.height = listHeight;
@@ -360,7 +411,7 @@ public class CityDisplay extends AppCompatActivity{
         expandableListView.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
             @Override
             public void onGroupCollapse(int groupPosition) {
-                int listHeight = (locationNames.size() * 150) + 250;
+                int listHeight = (locationNames.size() * 150) + 150;
                 ViewGroup.LayoutParams params = expandableListView.getLayoutParams();
                 params.height = listHeight;
                 expandableListView.setLayoutParams(params);
@@ -369,9 +420,26 @@ public class CityDisplay extends AppCompatActivity{
     }
 
     @Override
-    public void onBackPressed() {
-        Intent intent = new Intent(context, CityList.class);
+    public void onNoteClick(int position) {
+        //If I want a reference of the list item I clicked on
+        //Pass in the position as an extra to the new activity you'll create
+        String npcName = npcList.get(position);
+        Intent intent = new Intent(this, NpcDisplay.class);
+        intent.putExtra("npcName", npcName);
+        intent.putExtra("addNPCValue", 0);
+        intent.putExtra("cityNav", true);
         startActivity(intent);
-        finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        Boolean npcNav = getIntent().getBooleanExtra("npcNav", false);
+        if(npcNav){
+            super.onBackPressed();
+        } else {
+            Intent intent = new Intent(context, CityList.class);
+            startActivity(intent);
+            finish();
+        }
     }
 }
