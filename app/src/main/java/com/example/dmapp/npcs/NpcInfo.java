@@ -1,19 +1,25 @@
 package com.example.dmapp.npcs;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutCompat;
+import android.text.Editable;
 import android.text.method.KeyListener;
 import android.util.Log;
 import android.view.View;
@@ -29,6 +35,8 @@ import android.widget.Toast;
 import com.example.dmapp.MainActivity;
 import com.example.dmapp.cities.citiesDBHelper;
 import com.example.dmapp.R;
+import com.example.dmapp.loot.LootInfo;
+import com.example.dmapp.loot.LootList;
 import com.example.dmapp.presets.PresetList;
 
 import java.io.IOException;
@@ -49,7 +57,9 @@ public class NpcInfo extends AppCompatActivity{
     private Context context;
     private Uri audioFileUri;
     boolean deleteExists = false;
-
+    private String image = "";
+    private ArrayAdapter<String> locationAdapter;
+    private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 672;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +68,7 @@ public class NpcInfo extends AppCompatActivity{
         context = this;
 
         mNpcDBHelper = new npcDBHelper(this);
-        citiesDBHelper mCityDBHelper = new citiesDBHelper(this);
+        final citiesDBHelper mCityDBHelper = new citiesDBHelper(this);
         ImageView backButton = findViewById(R.id.backButton);
         final EditText npcName = findViewById(R.id.npcName);
         final LinearLayoutCompat raceLayout = findViewById(R.id.raceLayout);
@@ -68,8 +78,10 @@ public class NpcInfo extends AppCompatActivity{
         final EditText npcNotes = findViewById(R.id.npcNotes);
         final LinearLayoutCompat buttonLayout = findViewById(R.id.npcButtonLayout);
 
-
-        Spinner locationSpinner = findViewById(R.id.locationSpinner);
+        final TextView addImageText = findViewById(R.id.addImageText);
+        final ImageView npcImage = findViewById(R.id.npcImage);
+        final ImageView addImage = findViewById(R.id.addImage);
+        final Spinner locationSpinner = findViewById(R.id.locationSpinner);
         Button addVoice = findViewById(R.id.addVoice);
         Button saveNpc = findViewById(R.id.saveNpc);
         Button stop = findViewById(R.id.stop);
@@ -78,20 +90,13 @@ public class NpcInfo extends AppCompatActivity{
 
         mPlayer = new MediaPlayer();
 
+        addImageText.setText(R.string.addimage);
+        npcImage.setVisibility(View.GONE);
+        addImage.setImageResource(R.drawable.addanimage);
+
         //Fill out the locationSpinner with available locations
 
-        locationSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                npcSpinnerLocation = locations.get(position);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-                Log.i("GTOUTOUT", "Nothing Selected");
-            }
-        });
+        //mMyListView.getAdapter()).notifyDataSetChanged();
 
         //if starting the activity from clicking an item, addNPCValue will be 0, otherwise, it's -1
         //we use this value to adjust the behavior of the editText values set during onCreate, and whether we need to check the name for an identical value when creating a new npc
@@ -123,6 +128,21 @@ public class NpcInfo extends AppCompatActivity{
             }
         });
 
+        addImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                    Intent intent = new Intent(Intent.ACTION_PICK);
+                    intent.setType("image/*");
+                    startActivityForResult(intent, 3);
+                }
+                else {
+                    requestStoragePermission();
+                }
+            }
+        });
+
         addVoice.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
@@ -151,7 +171,7 @@ public class NpcInfo extends AppCompatActivity{
                     if (addNPCValue != 0){
                         setNPCTitle(name); //if attempting to add a new npc, we set this value to pass to the DBHelper in order to check if we need to update an existing entry
                     }
-                    AddNPC(name, npcSpinnerLocation, description, notes, npcTitle, voice, plotHooks, race);
+                    AddNPC(name, npcSpinnerLocation, description, notes, npcTitle, voice, plotHooks, race, image);
                     if(addNPCValue == -1) {
                         Button deleteNPCButton = new Button(context);
                         deleteNPCButton.setText(R.string.deletenpc);
@@ -251,6 +271,39 @@ public class NpcInfo extends AppCompatActivity{
             buttonLayout.addView(deleteNPCButton);
             npcPlotHooks.setText(npcInfo.getString(6));
 
+            image = npcInfo.getString(8);
+            Uri imageUri = Uri.parse(image);
+            npcImage.setImageURI(imageUri);
+            npcImage.setVisibility(View.VISIBLE);
+            addImageText.setText(R.string.removeimage);
+            addImage.setImageResource(R.drawable.removeimage);
+
+            //change the behavior of the addImage button to become a remove button. Then if clicked, change it back.
+            addImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    npcImage.setImageURI(null);
+                    npcImage.setVisibility(View.GONE);
+                    addImageText.setText(R.string.addimage);
+                    addImage.setImageResource(R.drawable.addanimage);
+                    addImage.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+
+                            if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                                npcImage.setVisibility(View.VISIBLE);
+                                Intent intent = new Intent(Intent.ACTION_PICK);
+                                intent.setType("image/*");
+                                startActivityForResult(intent, 3);
+                            }
+                            else {
+                                requestStoragePermission();
+                            }
+                        }
+                    });
+                }
+            });
+
             try (Cursor cities = mCityDBHelper.getCities()) {
                 if (cities.moveToNext()) {
                     do {
@@ -263,9 +316,12 @@ public class NpcInfo extends AppCompatActivity{
                 if(!(locations.contains("No Location"))) {
                     locations.add("No Location");
                 }
+                if(!(locations.contains("Add New Location"))) {
+                    locations.add("Add New Location");
+                }
             }
 
-            ArrayAdapter<String> locationAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, locations);
+            locationAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, locations);
             locationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             locationSpinner.setAdapter(locationAdapter);
 
@@ -336,6 +392,9 @@ public class NpcInfo extends AppCompatActivity{
             if(!(locations.contains("No Location"))) {
                 locations.add("No Location");
             }
+            if(!(locations.contains("Add New Location"))) {
+                locations.add("Add New Location");
+            }
 
             Cursor cities = mCityDBHelper.getCities();
             try {
@@ -348,10 +407,74 @@ public class NpcInfo extends AppCompatActivity{
                 cities.close();
             }
 
-            ArrayAdapter<String> locationAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, locations);
+            locationAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, locations);
             locationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             locationSpinner.setAdapter(locationAdapter);
         }
+
+        locationSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                npcSpinnerLocation = locations.get(position);
+                if (npcSpinnerLocation.equals("Add New Location")){
+
+                    //Create a dialog box that asks the user to enter in a name for the new city. If they provide a new name, add it to the cityDB and update the spinner
+                    AlertDialog.Builder alert = new AlertDialog.Builder(context);
+                    final EditText edittext = new EditText(context);
+                    alert.setMessage("Enter the name of the new city");
+                    alert.setTitle("Create City");
+                    alert.setView(edittext);
+
+                    alert.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            String newCityName = edittext.getText().toString();
+                            if(!mCityDBHelper.checkNonExistence(newCityName)) {
+                                toast("A city with this name already exists!");
+                            } else{
+                                dialog.dismiss();
+
+                                mCityDBHelper.addCity(newCityName, "Environment", "Population", "Economy", "", "", false);
+
+                                try (Cursor cities = mCityDBHelper.getCities()) {
+                                    locations.clear();
+                                    if (cities.moveToNext()) {
+                                        do {
+                                            locations.add(cities.getString(1));
+                                        } while (cities.moveToNext());
+                                    }
+                                } finally {
+                                    if(!(locations.contains("No Location"))) {
+                                        locations.add("No Location");
+                                    }
+                                    if(!(locations.contains("Add New Location"))) {
+                                        locations.add("Add New Location");
+                                    }
+                                    locationAdapter.notifyDataSetChanged();
+                                    int spinnerPosition = locationAdapter.getPosition(newCityName);
+                                    locationSpinner.setSelection(spinnerPosition);
+
+                                }
+
+                            }
+                        }
+                    });
+
+                    alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            dialog.dismiss();
+                        }
+                    });
+
+                    alert.show();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+                Log.i("GTOUTOUT", "Nothing Selected");
+            }
+        });
     }
 
     @Override
@@ -439,11 +562,7 @@ public class NpcInfo extends AppCompatActivity{
                         }
                     }
                 });
-            }
-        }
-
-        else{
-            if(audioFileUri != null){
+            } else if(audioFileUri != null){
                 try{
                     mPlayer.setDataSource(this, audioFileUri);
                     mPlayer.prepare();
@@ -451,7 +570,46 @@ public class NpcInfo extends AppCompatActivity{
                     ie.printStackTrace();
                 }
             }
-        }
+        } else if (resultCode == Activity.RESULT_OK)
+            if (requestCode == 3) {
+                final ImageView npcImage = findViewById(R.id.npcImage);
+                final TextView addImageText = findViewById(R.id.addImageText);
+                final ImageView addImage = findViewById(R.id.addImage);
+                //data.getData returns the content URI for the selected Image
+                Uri selectedImage = data.getData();
+                image = selectedImage.toString();
+                npcImage.setVisibility(View.VISIBLE);
+                npcImage.setImageURI(selectedImage);
+                addImageText.setText(R.string.removeimage);
+                addImage.setImageResource(R.drawable.removeimage);
+
+                //change the behavior of the addImage button to become a remove button. Then if clicked, change it back.
+                addImage.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        npcImage.setImageURI(null);
+                        npcImage.setVisibility(View.GONE);
+                        addImageText.setText(R.string.addimage);
+                        addImage.setImageResource(R.drawable.addanimage);
+                        addImage.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+
+                                if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                                    npcImage.setVisibility(View.VISIBLE);
+                                    Intent intent = new Intent(Intent.ACTION_PICK);
+                                    intent.setType("image/*");
+                                    startActivityForResult(intent, 3);
+                                }
+                                else {
+                                    requestStoragePermission();
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+
 
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -470,16 +628,17 @@ public class NpcInfo extends AppCompatActivity{
         return ((name.length() != 0));
     }
 
-    private void AddNPC(final String name, final String location, final String description, final String notes, final String npcTitle, final String voice, final String plotHooks, final String race){
+    private void AddNPC(final String name, final String location, final String description, final String notes, final String npcTitle, final String voice, final String plotHooks, final String race, final String image){
         setNPCTitle(name);
         if(addNPCValue == 0 || !(mNpcDBHelper.checkNonExistence(name))) { //if an npc with the entered name already exists, ask the user if they wish to update the entry
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage(R.string.updateinfo);
             builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
-                    boolean insertNPC = mNpcDBHelper.addNPC(name, location, description, notes, npcTitle, voice, plotHooks, race, true);
+                    boolean insertNPC = mNpcDBHelper.addNPC(name, location, description, notes, npcTitle, voice, plotHooks, race, image, true);
                     if (insertNPC) {
                         toast("NPC Saved");
+                        onBackPressed();
                     } else {
                         toast("Error with entry");
                     }
@@ -494,9 +653,10 @@ public class NpcInfo extends AppCompatActivity{
             AlertDialog alert = builder.create();
             alert.show();
         }else { //if the npc with the entered name does not exist, proceed as normal
-            boolean insertNPC = mNpcDBHelper.addNPC(name, location, description, notes, npcTitle, voice, plotHooks, race, false);
+            boolean insertNPC = mNpcDBHelper.addNPC(name, location, description, notes, npcTitle, voice, plotHooks, race, image, false);
             if (insertNPC) {
                 toast("NPC Saved");
+                onBackPressed();
             } else {
                 toast("Error with entry");
             }
@@ -512,7 +672,45 @@ public class NpcInfo extends AppCompatActivity{
             startActivity(intent);
             finish();
         }
-        else super.onBackPressed();
+        else {
+            Intent intent = new Intent(this, NpcList.class);
+            startActivity(intent);
+        }
+    }
+
+    private void requestStoragePermission(){
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)){
+            new AlertDialog.Builder(context) // Show an explanation to the user why we need the permission
+                    .setTitle("Permission needed")
+                    .setMessage("This permission is needed for you to add reference images for your npc")
+                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            ActivityCompat.requestPermissions(NpcInfo.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+                        }
+                    })
+                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .create().show();
+        } else {
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE){
+            // If request is cancelled, the result arrays are empty.
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Intent intent = new Intent(Intent.ACTION_PICK);
+                intent.setType("image/*");
+                startActivityForResult(intent, 1);
+            }
+        }
     }
 
     private void toast(String message){

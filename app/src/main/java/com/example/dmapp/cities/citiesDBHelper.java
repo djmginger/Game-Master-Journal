@@ -44,7 +44,7 @@ public class citiesDBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    boolean addCity(String name, String environment, String population, String economy, String notes, String oldName, boolean updateCity){
+    public boolean addCity(String name, String environment, String population, String economy, String notes, String oldName, boolean updateCity){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 

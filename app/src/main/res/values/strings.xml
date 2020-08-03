@@ -73,4 +73,9 @@
     <string name="raceHeader">"Race:"</string>
     <string name="npclisttitle">"NPCs in "</string>
     <string name="updateinfo">Would you like to update the existing entry with this info?</string>
+    <string name="nonpctext">There are no NPC\'s yet</string>
+    <string name="noloottext">There is no loot yet</string>
+    <string name="nocitytext">There are no citites yet</string>
+    <string name="nolocationtext">There are no locations yet</string>
+    <string name="removeimage">Remove image</string>
 </resources>

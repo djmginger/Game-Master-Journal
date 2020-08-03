@@ -84,7 +84,9 @@ public class CityDisplay extends AppCompatActivity implements MyRecyclerViewAdap
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onBackPressed();
+                Intent intent = new Intent(context, CityList.class);
+                startActivity(intent);
+                finish();
             }
         });
 
@@ -101,7 +103,7 @@ public class CityDisplay extends AppCompatActivity implements MyRecyclerViewAdap
         line.setBackgroundColor(Color.parseColor("#F1FDF4"));
         cityLayout.addView(line);
 
-        if(!cityInfo.getString(3).equals("Population")) {
+        if(!cityInfo.getString(3).equals("Population") && (!cityInfo.getString(3).equals("None"))) {
             TextView citySize = new TextView(this);
             citySize.setText(cityInfo.getString(3));
             citySize.setTextSize(16);
@@ -111,7 +113,7 @@ public class CityDisplay extends AppCompatActivity implements MyRecyclerViewAdap
             underTitleLayout.addView(citySize);
         }
 
-        if((!cityInfo.getString(2).equals("Environment")) && (!cityInfo.getString(3).equals("Population"))){
+        if((!cityInfo.getString(2).equals("Environment")) && (!cityInfo.getString(3).equals("Population")) && (!cityInfo.getString(3).equals("None"))){
             ImageView separator = new ImageView(this);
             separator.setImageDrawable(getResources().getDrawable(R.drawable.dot));
             LinearLayoutCompat.LayoutParams lparams = new LinearLayoutCompat.LayoutParams(30, 30);
@@ -120,7 +122,7 @@ public class CityDisplay extends AppCompatActivity implements MyRecyclerViewAdap
             underTitleLayout.addView(separator);
         }
 
-        if(!cityInfo.getString(2).equals("Environment")) {
+        if(!cityInfo.getString(2).equals("Environment") && (!cityInfo.getString(2).equals("None"))) {
             TextView cityEnviron = new TextView(this);
             cityEnviron.setText(cityInfo.getString(2));
             cityEnviron.setTextSize(16);
@@ -130,7 +132,7 @@ public class CityDisplay extends AppCompatActivity implements MyRecyclerViewAdap
             underTitleLayout.addView(cityEnviron);
         }
 
-        if(!cityInfo.getString(4).equals("") && !cityInfo.getString(4).equals("Economy")) {
+        if(!cityInfo.getString(4).equals("") && !cityInfo.getString(4).equals("Economy") && (!cityInfo.getString(4).equals("None"))) {
             TextView econLabel = new TextView(this);
             econLabel.setText(R.string.economyHeader);
             econLabel.setTextSize(16);

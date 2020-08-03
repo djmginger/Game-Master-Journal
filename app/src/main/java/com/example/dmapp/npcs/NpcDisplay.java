@@ -25,6 +25,7 @@ import android.widget.Toast;
 import com.example.dmapp.MainActivity;
 import com.example.dmapp.R;
 import com.example.dmapp.cities.CityDisplay;
+import com.example.dmapp.cities.citiesDBHelper;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ import java.util.ArrayList;
 public class NpcDisplay extends AppCompatActivity{
 
     private npcDBHelper mNpcDBHelper;
+    private citiesDBHelper mCitiesDBHelper;
     private int addNPCValue = 0;
     private String npcTitle = null;
     private String voice = "";
@@ -48,10 +50,12 @@ public class NpcDisplay extends AppCompatActivity{
         context = this;
 
         mNpcDBHelper = new npcDBHelper(this);
+        mCitiesDBHelper = new citiesDBHelper(this);
         ImageView backButton = findViewById(R.id.backButton);
         ImageView editIcon = findViewById(R.id.editIcon);
         final TextView npcName = findViewById(R.id.npcTitle);
         LinearLayout npcLayout = findViewById(R.id.npcLayout);
+        LinearLayoutCompat imageLayout = findViewById(R.id.imageLayout);
         LinearLayoutCompat npcUnderTitleLayout = findViewById(R.id.npcUnderTitleLayout);
         LinearLayoutCompat npcUnderTitleLayout2 = findViewById(R.id.npcUnderTitleLayout2);
         ImageView stop = findViewById(R.id.stop);
@@ -63,7 +67,9 @@ public class NpcDisplay extends AppCompatActivity{
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onBackPressed();
+                Intent intent = new Intent(context, NpcList.class);
+                startActivity(intent);
+                finish();
             }
         });
 
@@ -83,6 +89,17 @@ public class NpcDisplay extends AppCompatActivity{
         line.setBackgroundColor(Color.parseColor("#F1FDF4"));
         npcLayout.addView(line);
 
+        if(!npcInfo.getString(8).equals("")){
+            ImageView npcImage = new ImageView(this);
+            Uri imageFileUri = Uri.parse(npcInfo.getString(8));
+            npcImage.setImageURI(imageFileUri);
+            LinearLayoutCompat.LayoutParams lparams = new LinearLayoutCompat.LayoutParams(LinearLayoutCompat.LayoutParams.MATCH_PARENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
+            lparams.setMargins(0, 20, 0, 0);
+            npcImage.setLayoutParams(lparams);
+            npcImage.setAdjustViewBounds(true);
+            imageLayout.addView(npcImage);
+        }
+
         if((!npcInfo.getString(2).equals("")) && (!npcInfo.getString(2).equals("No Location"))) {
             TextView npcLocation = new TextView(this);
             npcLocation.setText(String.format("%s %s", getString(R.string.locationHeader), npcInfo.getString(2)));
@@ -94,18 +111,20 @@ public class NpcDisplay extends AppCompatActivity{
             npcLocation.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(context, CityDisplay.class);
-                    intent.putExtra("cityName", npcInfo.getString(2));
-                    intent.putExtra("addCityValue", 0);
-                    intent.putExtra("npcNav", true); //This is for back button navigation
-                    startActivity(intent);
+                    if (!mCitiesDBHelper.checkNonExistence(npcInfo.getString(2))){
+                        Intent intent = new Intent(context, CityDisplay.class);
+                        intent.putExtra("cityName", npcInfo.getString(2));
+                        intent.putExtra("addCityValue", 0);
+                        intent.putExtra("npcNav", true); //This is for back button navigation
+                        startActivity(intent);
+                    } else toast("There is no saved city with that name!");
                 }
             });
 
             npcUnderTitleLayout.addView(npcLocation);
         }
 
-        if((!npcInfo.getString(7).equals("")) && (!npcInfo.getString(7).equals("Race"))) {
+        if((!npcInfo.getString(7).equals("")) && (!npcInfo.getString(7).equals("Race")) && (!npcInfo.getString(7).equals("None"))) {
             TextView npcRace = new TextView(this);
             npcRace.setText(String.format("%s %s", getString(R.string.raceHeader), npcInfo.getString(7)));
             npcRace.setTextSize(18);
@@ -294,5 +313,9 @@ public class NpcDisplay extends AppCompatActivity{
             startActivity(intent);
             finish();
         }
+    }
+
+    private void toast(String message){
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 }

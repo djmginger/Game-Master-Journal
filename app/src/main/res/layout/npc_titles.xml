@@ -43,6 +43,7 @@
         android:spinnerMode="dropdown" />
 
     <RelativeLayout
+        android:id="@+id/innerLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 

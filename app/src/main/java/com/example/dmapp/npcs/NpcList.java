@@ -3,6 +3,8 @@ package com.example.dmapp.npcs;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
@@ -11,13 +13,16 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.example.dmapp.MainActivity;
 import com.example.dmapp.cities.citiesDBHelper;
@@ -42,17 +47,17 @@ public class NpcList extends AppCompatActivity implements MyRecyclerViewAdapter.
 
         context = this;
         LinearLayoutCompat layout = findViewById(R.id.npc_layout);
-        //layout.setBackgroundColor(getResources().getColor(R.color.mainColor1));
+        RelativeLayout innerLayout = findViewById(R.id.innerLayout);
+        RecyclerView recyclerView = findViewById(R.id.info_content);
+        ImageView backButton = findViewById(R.id.backButton);
+        final Spinner filter = findViewById(R.id.filter);
+        ImageView addEntry = findViewById(R.id.addEntry);
 
         final npcDBHelper mNpcDBHelper = new npcDBHelper(this);
         final citiesDBHelper mcitiesDBHelper = new citiesDBHelper(this);
 
         DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
         int deviceHeight = (displayMetrics.heightPixels);
-
-        ImageView backButton = findViewById(R.id.backButton);
-        final Spinner filter = findViewById(R.id.filter);
-        ImageView addEntry = findViewById(R.id.addEntry);
 
         // set up the RecyclerView with data from the database
         Cursor npcs = mNpcDBHelper.getNPCS();
@@ -62,11 +67,25 @@ public class NpcList extends AppCompatActivity implements MyRecyclerViewAdapter.
                     npcList.add(npcs.getString(1));
                 } while (npcs.moveToNext());
             }
+            else{
+                TextView noNPC = new TextView(this);
+                //innerLayout.setGravity(Gravity.CENTER);
+
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                params.setMargins(0,100,0,0);
+                noNPC.setLayoutParams(params);
+                noNPC.setText(R.string.nonpctext);
+                noNPC.setGravity(Gravity.CENTER_HORIZONTAL);
+                noNPC.setTextSize(20);
+                noNPC.setTypeface(null, Typeface.ITALIC);
+                noNPC.setTextColor(Color.parseColor("#666666"));
+                innerLayout.addView(noNPC);
+            }
         } finally {
             npcs.close();
         }
 
-        RecyclerView recyclerView = findViewById(R.id.info_content);
+
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         DividerItemDecoration itemDecor = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
         recyclerView.addItemDecoration(itemDecor);
@@ -93,6 +112,7 @@ public class NpcList extends AppCompatActivity implements MyRecyclerViewAdapter.
             public void onClick(View view) {
                 Intent intent = new Intent(view.getContext(), NpcInfo.class);
                 startActivity(intent);
+                finish();
             }
         });
 

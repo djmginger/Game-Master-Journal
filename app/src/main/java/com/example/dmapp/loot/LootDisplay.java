@@ -81,8 +81,10 @@ public class LootDisplay extends AppCompatActivity{
             ImageView itemImage = new ImageView(this);
             Uri imageFileUri = Uri.parse(lootInfo.getString(6));
             itemImage.setImageURI(imageFileUri);
-            LinearLayoutCompat.LayoutParams lparams = new LinearLayoutCompat.LayoutParams(LinearLayoutCompat.LayoutParams.MATCH_PARENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
-            lparams.setMargins(0, 0, 10, 0);
+            LinearLayoutCompat.LayoutParams lparams = new LinearLayoutCompat.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            lparams.setMargins(0, 20, 0, 0);
+            itemImage.setLayoutParams(lparams);
+            itemImage.setAdjustViewBounds(true);
             imageLayout.addView(itemImage);
         }
 

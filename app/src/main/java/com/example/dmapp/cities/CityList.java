@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
@@ -12,10 +13,12 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.dmapp.MainActivity;
@@ -38,16 +41,15 @@ public class CityList extends AppCompatActivity implements MyRecyclerViewAdapter
 
         context = this;
         LinearLayoutCompat layout = findViewById(R.id.listLayout);
-        //layout.setBackgroundColor(getResources().getColor(R.color.mainColor2));
+        RelativeLayout innerLayout = findViewById(R.id.innerLayout);
+        ImageView addEntry = findViewById(R.id.addEntry);
 
         citiesDBHelper mCitiesDBHelper = new citiesDBHelper(this);
         DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
         int deviceHeight = (displayMetrics.heightPixels);
 
-        ImageView addEntry = findViewById(R.id.addEntry);
 
         // set up the RecyclerView with data from the database
-
         Cursor cities = mCitiesDBHelper.getCities();
         try {
             if (cities.moveToNext()) {
@@ -55,6 +57,17 @@ public class CityList extends AppCompatActivity implements MyRecyclerViewAdapter
                     Log.d(TAG, "onCreate: City is " + cities.getString(1));
                     cityList.add(cities.getString(1));
                 } while (cities.moveToNext());
+            } else{
+                TextView noCity = new TextView(this);
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                params.setMargins(0,100,0,0);
+                noCity.setLayoutParams(params);
+                noCity.setText(R.string.nocitytext);
+                noCity.setGravity(Gravity.CENTER_HORIZONTAL);
+                noCity.setTextSize(20);
+                noCity.setTypeface(null, Typeface.ITALIC);
+                noCity.setTextColor(Color.parseColor("#666666"));
+                innerLayout.addView(noCity);
             }
         } finally {
             cities.close();

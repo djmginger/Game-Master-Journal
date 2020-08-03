@@ -1,10 +1,12 @@
 package com.example.dmapp.presets;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,14 +41,6 @@ class PresetAdapter extends ArrayAdapter<Preset> {
     @NonNull
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-
-        if(variable.equals("Race")){
-
-            LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View contentView = inflater.inflate(R.layout.preset_item, null,false);
-            TextView presetTitle = contentView.findViewById(R.id.presetValue);
-            presetTitle.setBackground(mContext.getResources().getDrawable(R.drawable.info_bg5));
-        }
 
         View listItem = convertView;
         if(listItem == null) {
@@ -99,28 +93,41 @@ class PresetAdapter extends ArrayAdapter<Preset> {
         delete.setTag(position);
         delete.setOnClickListener(new View.OnClickListener(){
             @Override
-            public void onClick(View view) {
-                int position = (Integer) view.getTag();
-                // Access the row position here to get the correct data item
-                Preset preset = getItem(position);
-                // Do what you want here...
-                String presetValue = preset.getValue();
-                presetsDBHelper mPresetsDBHelper = new presetsDBHelper(mContext);
-                mPresetsDBHelper.removeSpecificPreset(presetValue);
+            public void onClick(final View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                builder.setMessage("Are you sure you want to delete this item?");
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.dismiss();
+                        int position = (Integer) view.getTag();
+                        // Access the row position here to get the correct data item
+                        Preset preset = getItem(position);
+                        // Do what you want here...
+                        String presetValue = preset.getValue();
+                        presetsDBHelper mPresetsDBHelper = new presetsDBHelper(mContext);
+                        mPresetsDBHelper.removeSpecificPreset(presetValue);
 
-                presetList.clear();
-                Cursor presets = mPresetsDBHelper.getSpecificPresets(variable); //Didn't work with getPassedPresetVariable, attempted hardcoded value to test. Still not functional
-                try {
-                    if (presets.moveToNext()) {
-                        do {
-                            presetList.add(new Preset(presets.getString(2)));
-                        } while (presets.moveToNext());
+                        presetList.clear();
+                        Cursor presets = mPresetsDBHelper.getSpecificPresets(variable); //Didn't work with getPassedPresetVariable, attempted hardcoded value to test. Still not functional
+                        try {
+                            if (presets.moveToNext()) {
+                                do {
+                                    presetList.add(new Preset(presets.getString(2)));
+                                } while (presets.moveToNext());
+                            }
+                        } finally {
+                            presets.close();
+                        }
+                        notifyDataSetChanged();
                     }
-                } finally {
-                    presets.close();
-                }
-                notifyDataSetChanged();
-
+                });
+                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.dismiss();
+                    }
+                });
+                AlertDialog alert = builder.create();
+                alert.show();
             }
         });
 

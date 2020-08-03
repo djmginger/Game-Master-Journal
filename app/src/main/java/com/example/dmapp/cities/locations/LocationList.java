@@ -2,6 +2,8 @@ package com.example.dmapp.cities.locations;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
@@ -10,10 +12,12 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.dmapp.MyRecyclerViewAdapter;
@@ -35,19 +39,15 @@ public class LocationList extends AppCompatActivity implements MyRecyclerViewAda
         String cityName = getIntent().getStringExtra("cityName");
 
         LinearLayoutCompat layout = findViewById(R.id.locationLayout);
-        //layout.setBackgroundColor(getResources().getColor(R.color.mainColor2));
-
-        // data to populate the RecyclerView with
+        RelativeLayout innerLayout = findViewById(R.id.innerLayout);
+        ImageView backButton = findViewById(R.id.backButton);
+        ImageView addEntry = findViewById(R.id.addEntry);
 
         locationsDBHelper mLocationsDBHelper = new locationsDBHelper(this);
         DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
         int deviceHeight = displayMetrics.heightPixels;
 
-        ImageView backButton = findViewById(R.id.backButton);
-        ImageView addEntry = findViewById(R.id.addEntry);
-
         // set up the RecyclerView with data from the database
-
         Cursor locations = mLocationsDBHelper.getLocations(cityName);
         try {
             if (locations.moveToNext()) {
@@ -55,6 +55,17 @@ public class LocationList extends AppCompatActivity implements MyRecyclerViewAda
                 do {
                     locationList.add(locations.getString(2));
                 } while (locations.moveToNext());
+            } else{
+                TextView noLocations = new TextView(this);
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                params.setMargins(0,100,0,0);
+                noLocations.setLayoutParams(params);
+                noLocations.setText(R.string.nolocationtext);
+                noLocations.setGravity(Gravity.CENTER_HORIZONTAL);
+                noLocations.setTextSize(20);
+                noLocations.setTypeface(null, Typeface.ITALIC);
+                noLocations.setTextColor(Color.parseColor("#666666"));
+                innerLayout.addView(noLocations);
             }
         } finally {
             locations.close();
@@ -89,6 +100,7 @@ public class LocationList extends AppCompatActivity implements MyRecyclerViewAda
                 String cityName = getIntent().getStringExtra("cityName");
                 intent.putExtra("cityName", cityName);
                 startActivity(intent);
+                finish();
             }
         });
     }
@@ -125,6 +137,7 @@ public class LocationList extends AppCompatActivity implements MyRecyclerViewAda
         intent.putExtra("locationName", locationName);
         intent.putExtra("addLocationValue", 0);
         startActivity(intent);
+        finish();
     }
 }
 

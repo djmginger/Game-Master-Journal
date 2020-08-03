@@ -26,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.example.dmapp.MainActivity;
 import com.example.dmapp.R;
 import com.example.dmapp.npcs.npcDBHelper;
 
@@ -295,6 +296,7 @@ public class LootInfo extends AppCompatActivity {
 
                     if (insertLoot) {
                         toast("Item saved");
+                        onBackPressed();
                     } else {
                         toast("Error with entry");
                     }
@@ -312,6 +314,7 @@ public class LootInfo extends AppCompatActivity {
             boolean insertLoot = mLootDBHelper.addLoot(name, rarity, price, description, details, image, requirements, lootTitle, false);
             if (insertLoot) {
                 toast("Item saved");
+                onBackPressed();
             } else {
                 toast("Error with entry");
             }
@@ -327,7 +330,10 @@ public class LootInfo extends AppCompatActivity {
             startActivity(intent);
             finish();
         }
-        else super.onBackPressed();
+        else {
+            Intent intent = new Intent(this, LootList.class);
+            startActivity(intent);
+        }
     }
 
     private void toast(String message){

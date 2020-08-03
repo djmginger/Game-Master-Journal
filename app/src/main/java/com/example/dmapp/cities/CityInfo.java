@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.dmapp.MainActivity;
 import com.example.dmapp.cities.distances.DistanceList;
 import com.example.dmapp.cities.distances.distanceDBHelper;
 import com.example.dmapp.cities.locations.LocationList;
@@ -191,6 +192,7 @@ public class CityInfo extends AppCompatActivity {
                         buttonLayout.addView(deleteCityButton);
                         deleteExists = true;
                     }
+                    //Once you've saved the city, return to the city selection screen
                 } else {
                     toast("Please provide a name for your city");
                 }
@@ -227,6 +229,8 @@ public class CityInfo extends AppCompatActivity {
                             public void onClick(DialogInterface dialog, int id) {
                                 dialog.dismiss();
                                 mCityDBHelper.removeCity(cityTitle);
+                                Intent intent = new Intent(context, CityList.class);
+                                startActivity(intent);
                                 finish();
                             }
                         });
@@ -266,7 +270,6 @@ public class CityInfo extends AppCompatActivity {
         }
     }
 
-    //Make sure the text fields are not left blank (may be edited later to omit the notes section)
     private boolean CheckData(EditText name) {
         return ((name.length() != 0));
     }
@@ -275,9 +278,7 @@ public class CityInfo extends AppCompatActivity {
         setCityTitle(name);
         if(addCityValue == 0  || !(mCityDBHelper.checkNonExistence(name))) { //if we're updating an existing entry, then edit current DB values
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            //builder.setTitle(R.string.app_name);
             builder.setMessage(R.string.updateinfo);
-            //builder.setIcon(R.drawable.ic_launcher);
             builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     boolean insertCity = mCityDBHelper.addCity(name, environment, population, economy, notes, theCityTitle, true);
@@ -292,6 +293,7 @@ public class CityInfo extends AppCompatActivity {
                         toast("Error with entry");
                     }
                     dialog.dismiss();
+                    onBackPressed();
                 }
             });
             builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -305,6 +307,7 @@ public class CityInfo extends AppCompatActivity {
             boolean insertCity = mCityDBHelper.addCity(name, environment, population, economy, notes, cityTitle, false);
             if (insertCity) {
                 toast("City saved");
+                onBackPressed();
             } else {
                 toast("Error with entry");
             }
@@ -321,7 +324,10 @@ public class CityInfo extends AppCompatActivity {
             startActivity(intent);
             finish();
         }
-        else super.onBackPressed();
+        else{
+            Intent intent = new Intent(this, CityList.class);
+            startActivity(intent);
+        }
     }
 
     private void toast(String message){

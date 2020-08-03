@@ -21,6 +21,7 @@ public class npcDBHelper extends SQLiteOpenHelper {
     private static final String COL6 = "voice";
     private static final String COL7 = "plothooks";
     private static final String COL8 = "race";
+    private static final String COL9 = "image";
 
     //* get the context of each instance of npcDBHelper
     public static synchronized npcDBHelper getInstance(Context context) {
@@ -37,7 +38,7 @@ public class npcDBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String createTable = "CREATE TABLE " + TABLE_NAME + " (ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                COL2 + " TEXT, " + COL3 + " TEXT, " + COL4 + " TEXT, " + COL5 + " TEXT, " + COL6 + " TEXT, " + COL7 + " TEXT, " + COL8 + " TEXT)";
+                COL2 + " TEXT, " + COL3 + " TEXT, " + COL4 + " TEXT, " + COL5 + " TEXT, " + COL6 + " TEXT, " + COL7 + " TEXT, " + COL8 + " TEXT, " + COL9 + " TEXT)";
         db.execSQL(createTable);
     }
 
@@ -47,7 +48,7 @@ public class npcDBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    boolean addNPC(String name, String location, String description, String notes, String oldName, String voice, String plothooks, String race, Boolean updateNpc){
+    boolean addNPC(String name, String location, String description, String notes, String oldName, String voice, String plothooks, String race, String image, Boolean updateNpc){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
@@ -59,6 +60,7 @@ public class npcDBHelper extends SQLiteOpenHelper {
             contentValues.put(COL6, voice);
             contentValues.put(COL7, plothooks);
             contentValues.put(COL8, race);
+            contentValues.put(COL9, image);
 
             Log.d(TAG, "addNPC: Adding " + name + ", " + race + ", " + location + ", " + description + ", " + notes + ", " + plothooks + " to " + TABLE_NAME);
             //long result =
@@ -66,8 +68,8 @@ public class npcDBHelper extends SQLiteOpenHelper {
             return (true);
             //result != -1
         }else{  //if the npc does exist, update the current entry
-            String query = "UPDATE " + TABLE_NAME + " SET " + COL2 + "=?" + "," + COL3 + "=?" + "," + COL4 + "=?" + "," + COL5 + "=?" + "," + COL6 + "=?" + "," + COL7 + "=?" + "," + COL8 + "=?" + "WHERE " + COL2 + "=?";
-            db.execSQL(query, new String [] {name, location, description, notes, voice, plothooks, race, oldName});
+            String query = "UPDATE " + TABLE_NAME + " SET " + COL2 + "=?" + "," + COL3 + "=?" + "," + COL4 + "=?" + "," + COL5 + "=?" + "," + COL6 + "=?" + "," + COL7 + "=?" + "," + COL8 + "=?" + "," + COL9 + "=?" + "WHERE " + COL2 + "=?";
+            db.execSQL(query, new String [] {name, location, description, notes, voice, plothooks, race, image, oldName});
 
             Log.d(TAG, "addNPC: Updating " + oldName + " to " + name + ", " + race + ", " + location + ", " + description + ", " + notes + ", " + plothooks + " to " + TABLE_NAME);
 

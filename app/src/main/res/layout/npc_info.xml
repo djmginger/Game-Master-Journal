@@ -77,6 +77,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp"
             android:background="@drawable/buttonbg3" >
 
             <TextView
@@ -96,6 +97,30 @@
                 android:layout_gravity="center_vertical"/>
 
         </android.support.v7.widget.LinearLayoutCompat>
+
+        <ImageView
+            android:id="@+id/npcImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:padding="10dp"
+            android:adjustViewBounds="true"
+            android:layout_gravity="center" />
+
+        <ImageView
+            android:id="@+id/addImage"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:padding="10dp"
+            android:background="@drawable/info_bg5" />
+
+        <TextView
+            android:id="@+id/addImageText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textSize="15sp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -190,7 +215,7 @@
             android:id="@+id/npcButtonLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="35dp"
+            android:layout_marginTop="25dp"
             android:gravity="center"
             android:orientation="horizontal">
 

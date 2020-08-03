@@ -2,6 +2,7 @@ package com.example.dmapp.cities.locations;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -17,6 +18,8 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.dmapp.R;
+import com.example.dmapp.npcs.NpcDisplay;
+import com.example.dmapp.npcs.NpcList;
 
 public class LocationInfo extends AppCompatActivity {
 
@@ -191,6 +194,7 @@ public class LocationInfo extends AppCompatActivity {
                     boolean insertLocation = mLocationsDBHelper.addLocation(cityName, name, description, plotHooks, notes, locationTitle, true);
                     if (insertLocation) {
                         toast("Location saved");
+                        onBackPressed();
                     } else {
                         toast("Error with entry");
                     }
@@ -208,10 +212,17 @@ public class LocationInfo extends AppCompatActivity {
             boolean insertLocation = mLocationsDBHelper.addLocation(cityName, name, description, plotHooks, notes, locationTitle, false);
             if (insertLocation) {
                 toast("Location saved");
+                onBackPressed();
             } else {
                 toast("Error with entry");
             }
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, LocationList.class);
+        startActivity(intent);
     }
 
     private void toast(String message){
