@@ -179,35 +179,40 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="10dp"
+                android:layout_gravity="center"
                 android:text="@string/addvoice"
                 android:background="@drawable/buttonbg"/>
 
-            <Button
+            <ImageView
                 android:id="@+id/stop"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:text="@string/stop"
-                android:layout_marginStart="5dp"
-                android:background="@drawable/buttonbg"/>
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:src="@drawable/stopicon" />
 
-            <Button
+            <ImageView
                 android:id="@+id/play"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:text="@string/play"
-                android:layout_marginStart="5dp"
-                android:background="@drawable/buttonbg"/>
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginRight="10dp"
+                android:src="@drawable/playicon" />
 
-            <Button
+            <ImageView
                 android:id="@+id/pause"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:text="@string/pause"
-                android:layout_marginStart="5dp"
-                android:background="@drawable/buttonbg"/>
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginRight="10dp"
+                android:src="@drawable/pauseicon" />
+
+            <ImageView
+                android:id="@+id/deleteVoice"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:adjustViewBounds="true"
+                android:layout_marginRight="10dp"
+                android:src="@drawable/deleteicon" />
 
         </android.support.v7.widget.LinearLayoutCompat>
 
@@ -216,6 +221,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="25dp"
+            android:layout_marginBottom="35dp"
             android:gravity="center"
             android:orientation="horizontal">
 

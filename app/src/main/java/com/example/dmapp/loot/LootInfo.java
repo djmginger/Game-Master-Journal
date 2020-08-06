@@ -16,14 +16,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.dmapp.MainActivity;
@@ -55,23 +59,28 @@ public class LootInfo extends AppCompatActivity {
         context = this;
         activity = this;
 
-        DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
+        final DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
         int deviceHeight = (displayMetrics.heightPixels);
 
         mLootDBHelper = new lootDBHelper(this);
         ImageView backButton = findViewById(R.id.backButton);
         final EditText lootName = findViewById(R.id.lootName);
-        //final EditText lootRarity = findViewById(R.id.lootRarity);
         final EditText lootPrice = findViewById(R.id.lootPrice);
         final CheckBox lootRequirements = findViewById(R.id.lootRequirements);
         final EditText lootDescription = findViewById(R.id.lootDescription);
         final EditText lootDetails = findViewById(R.id.lootDetails);
         final Spinner lootsRarity = findViewById(R.id.lootsRarity);
         final LinearLayoutCompat buttonLayout = findViewById(R.id.lootButtonLayout);
+        final LinearLayout lootLayout = findViewById(R.id.lootLayout);
+        final TextView addImageText = findViewById(R.id.addImageText);
 
         ImageView lootImage = findViewById(R.id.lootImage);
-        Button addImage = findViewById((R.id.addImage));
+        ImageView addImage = findViewById((R.id.addImage));
         Button saveLoot =  findViewById(R.id.saveLoot);
+
+        addImageText.setText(R.string.addimage);
+        lootImage.setVisibility(View.GONE);
+        addImage.setImageResource(R.drawable.addanimage);
 
         rarities.add("Loot Rarity:");
         rarities.add("None");
@@ -161,31 +170,32 @@ public class LootInfo extends AppCompatActivity {
 
                     String realAttunement = getAttunement();
                     AddLoot(name, rarity, price, description, details, image, realAttunement, lootTitle);
-                    Button deleteLootButton = new Button(context);
-                    deleteLootButton.setText("Delete Loot");
-                    deleteLootButton.setBackground(ContextCompat.getDrawable(context, R.drawable.buttonbg));
-                    LinearLayoutCompat.LayoutParams lparams = new LinearLayoutCompat.LayoutParams(LinearLayoutCompat.LayoutParams.WRAP_CONTENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
-                    lparams.setMargins(5,0, 5, 0);
-                    deleteLootButton.setLayoutParams(lparams);
-                    deleteLootButton.setPadding(30,10,30,10);
-                    deleteLootButton.setOnClickListener(new View.OnClickListener() {
+                    ImageView deleteLootButtonImage = new ImageView(context);
+                    deleteLootButtonImage.setImageResource(R.drawable.delete);
+                    int deviceWidth = (displayMetrics.widthPixels);
+                    LinearLayout.LayoutParams lparams = new LinearLayout.LayoutParams((int)(deviceWidth * .11), ViewGroup.LayoutParams.WRAP_CONTENT);
+                    lparams.setMargins(0,0,0,25);
+                    lparams.gravity = Gravity.CENTER_HORIZONTAL;
+                    deleteLootButtonImage.setLayoutParams(lparams);
+                    deleteLootButtonImage.setAdjustViewBounds(true);
+                    deleteLootButtonImage.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             String name = lootName.getText().toString();
 
                             if (!(mLootDBHelper.checkNonExistence(name))) {
                                 AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                                //builder.setTitle(R.string.app_name);
-                                builder.setMessage("Are you sure you want to delete this item?");
-                                //builder.setIcon(R.drawable.ic_launcher);
-                                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                builder.setMessage(R.string.areyou);
+                                builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
                                         dialog.dismiss();
                                         mLootDBHelper.removeLoot(lootTitle);
+                                        Intent intent = new Intent(context, LootList.class);
+                                        startActivity(intent);
                                         finish();
                                     }
                                 });
-                                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
                                         dialog.dismiss();
                                     }
@@ -197,7 +207,7 @@ public class LootInfo extends AppCompatActivity {
                         }
                     });
                     if (!deleteExists) {
-                        buttonLayout.addView(deleteLootButton);
+                        lootLayout.addView(deleteLootButtonImage);
                         deleteExists = true;
                     }
                 } else {
@@ -227,31 +237,32 @@ public class LootInfo extends AppCompatActivity {
             Uri imageUri = Uri.parse(image);
             lootImage.setImageURI(imageUri);
 
-            Button deleteLootButton = new Button(this);
-            deleteLootButton.setText("Delete Loot");
-            deleteLootButton.setBackground(ContextCompat.getDrawable(this, R.drawable.buttonbg));
-            LinearLayoutCompat.LayoutParams lparams = new LinearLayoutCompat.LayoutParams(LinearLayoutCompat.LayoutParams.WRAP_CONTENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
-            lparams.setMargins(5,0, 5, 0);
-            deleteLootButton.setLayoutParams(lparams);
-            deleteLootButton.setPadding(30,10,30,10);
-            deleteLootButton.setOnClickListener(new View.OnClickListener() {
+            ImageView deleteLootButtonImage = new ImageView(this);
+            deleteLootButtonImage.setImageResource(R.drawable.delete);
+            int deviceWidth = (displayMetrics.widthPixels);
+            LinearLayout.LayoutParams lparams = new LinearLayout.LayoutParams((int)(deviceWidth * .11), ViewGroup.LayoutParams.WRAP_CONTENT);
+            lparams.setMargins(0,0,0,25);
+            lparams.gravity = Gravity.CENTER_HORIZONTAL;
+            deleteLootButtonImage.setLayoutParams(lparams);
+            deleteLootButtonImage.setAdjustViewBounds(true);
+            deleteLootButtonImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     String name = lootName.getText().toString();
 
                     if (!(mLootDBHelper.checkNonExistence(name))) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                        //builder.setTitle(R.string.app_name);
-                        builder.setMessage("Are you sure you want to delete this item?");
-                        //builder.setIcon(R.drawable.ic_launcher);
-                        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        builder.setMessage(R.string.areyou);
+                        builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 dialog.dismiss();
                                 mLootDBHelper.removeLoot(lootTitle);
+                                Intent intent = new Intent(context, LootList.class);
+                                startActivity(intent);
                                 finish();
                             }
                         });
-                        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 dialog.dismiss();
                             }
@@ -262,19 +273,51 @@ public class LootInfo extends AppCompatActivity {
                     }else toast("There is no item to delete");
                 }
             });
-            buttonLayout.addView(deleteLootButton);
+            lootLayout.addView(deleteLootButtonImage);
         }
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Result code is RESULT_OK only if the user selects an Image
-        ImageView lootImage = (ImageView) findViewById(R.id.lootImage);
+        final ImageView lootImage = (ImageView) findViewById(R.id.lootImage);
+        final TextView addImageText = findViewById(R.id.addImageText);
+        final ImageView addImage = findViewById(R.id.addImage);
         if (resultCode == Activity.RESULT_OK)
             if (requestCode == 1) {
                 //data.getData returns the content URI for the selected Image
                 Uri selectedImage = data.getData();
                 image = selectedImage.toString();
+                lootImage.setVisibility(View.VISIBLE);
                 lootImage.setImageURI(selectedImage);
+                addImageText.setText(R.string.removeimage);
+                addImage.setImageResource(R.drawable.removeimage);
+
+                //change the behavior of the addImage button to become a remove button. Then if clicked, change it back.
+                addImage.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        lootImage.setImageURI(null);
+                        image = "";
+                        lootImage.setVisibility(View.GONE);
+                        addImageText.setText(R.string.addimage);
+                        addImage.setImageResource(R.drawable.addanimage);
+                        addImage.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+
+                                if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                                    lootImage.setVisibility(View.VISIBLE);
+                                    Intent intent = new Intent(Intent.ACTION_PICK);
+                                    intent.setType("image/*");
+                                    startActivityForResult(intent, 1);
+                                }
+                                else {
+                                    requestStoragePermission();
+                                }
+                            }
+                        });
+                    }
+                });
             }
     }
 

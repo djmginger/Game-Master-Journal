@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
         mainLayout.addView(cities);
         mainLayout.addView(loot);
         mainLayout.addView(databaseManagement);
-        mainLayout.addView(supportImage);
+        //mainLayout.addView(supportImage);
 
         npcs.setOnClickListener(new View.OnClickListener() {
             // The code in this method will be executed when the numbers View is clicked on.

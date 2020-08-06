@@ -5,6 +5,7 @@
     android:layout_height="match_parent">
 
     <LinearLayout
+        android:id="@+id/lootLayout"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -93,6 +94,30 @@
             android:background="@android:drawable/btn_dropdown"
             android:spinnerMode="dropdown" />
 
+        <ImageView
+            android:id="@+id/lootImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:padding="10dp"
+            android:adjustViewBounds="true"
+            android:layout_gravity="center" />
+
+        <ImageView
+            android:id="@+id/addImage"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:padding="10dp"
+            android:background="@drawable/info_bg5" />
+
+        <TextView
+            android:id="@+id/addImageText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textSize="15sp" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -104,7 +129,7 @@
             android:id="@+id/lootPrice"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/info_bg3"
+            android:background="@drawable/info_bg6"
             android:ems="10"
             android:inputType="textCapSentences"
             android:padding="10dp"
@@ -143,30 +168,12 @@
             android:inputType="textCapSentences|textMultiLine"
             android:padding="10dp" />
 
-        <ImageView
-            android:id="@+id/lootImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:padding="10dp"
-            android:adjustViewBounds="true"
-            android:layout_gravity="center" />
-
-        <Button
-            android:id="@+id/addImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:padding="10dp"
-            android:text="@string/addimage"
-            android:background="@drawable/buttonbg" />
-
         <android.support.v7.widget.LinearLayoutCompat
             android:id="@+id/lootButtonLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:layout_marginBottom="30dp"
+            android:layout_marginBottom="35dp"
             android:gravity="center"
             android:orientation="horizontal">
 

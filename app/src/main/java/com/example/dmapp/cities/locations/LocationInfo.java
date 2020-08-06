@@ -10,11 +10,15 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.text.method.KeyListener;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.dmapp.R;
@@ -48,6 +52,8 @@ public class LocationInfo extends AppCompatActivity {
         final EditText locationPlotHooks = findViewById(R.id.locationPlotHooks);
         final EditText locationNotes = findViewById(R.id.locationNotes);
         final LinearLayoutCompat buttonLayout = findViewById(R.id.locationButtonLayout);
+        final LinearLayout locationLayout = findViewById(R.id.locationLayout);
+        final DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
 
         Button saveLocation = findViewById(R.id.saveLocation);
 
@@ -82,31 +88,32 @@ public class LocationInfo extends AppCompatActivity {
 
                     AddLocation(name, description, plotHooks, notes, locationTitle);
 
-                    Button deleteLocationButton = new Button(context);
-                    deleteLocationButton.setText("Delete Location");
-                    deleteLocationButton.setBackground(ContextCompat.getDrawable(context, R.drawable.buttonbg));
-                    LinearLayoutCompat.LayoutParams lparams = new LinearLayoutCompat.LayoutParams(LinearLayoutCompat.LayoutParams.WRAP_CONTENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
-                    lparams.setMargins(5,0, 5, 0);
-                    deleteLocationButton.setLayoutParams(lparams);
-                    deleteLocationButton.setPadding(30,10,30,10);
-                    deleteLocationButton.setOnClickListener(new View.OnClickListener() {
+                    ImageView deleteLocationButtonImage = new ImageView(context);
+                    deleteLocationButtonImage.setImageResource(R.drawable.delete);
+                    int deviceWidth = (displayMetrics.widthPixels);
+                    LinearLayout.LayoutParams lparams = new LinearLayout.LayoutParams((int)(deviceWidth * .11), ViewGroup.LayoutParams.WRAP_CONTENT);
+                    lparams.setMargins(0,0,0,25);
+                    lparams.gravity = Gravity.CENTER_HORIZONTAL;
+                    deleteLocationButtonImage.setLayoutParams(lparams);
+                    deleteLocationButtonImage.setAdjustViewBounds(true);
+                    deleteLocationButtonImage.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             String name = locationName.getText().toString();
 
                             if (!(mLocationsDBHelper.checkNonExistence(name))) {
                                 AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                                //builder.setTitle(R.string.app_name);
-                                builder.setMessage("Are you sure you want to delete this item?");
-                                //builder.setIcon(R.drawable.ic_launcher);
-                                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                builder.setMessage(R.string.areyou);
+                                builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
                                         dialog.dismiss();
                                         mLocationsDBHelper.removeLocation(locationTitle);
+                                        Intent intent = new Intent(context, LocationList.class);
+                                        startActivity(intent);
                                         finish();
                                     }
                                 });
-                                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
                                         dialog.dismiss();
                                     }
@@ -117,8 +124,9 @@ public class LocationInfo extends AppCompatActivity {
                             }else toast("There is no item to delete");
                         }
                     });
+
                     if (!deleteExists) {
-                        buttonLayout.addView(deleteLocationButton);
+                        locationLayout.addView(deleteLocationButtonImage);
                         deleteExists = true;
                     }
                 } else {
@@ -138,31 +146,32 @@ public class LocationInfo extends AppCompatActivity {
             locationPlotHooks.setText(locationInfo.getString(4));
             locationNotes.setText(locationInfo.getString(5));
 
-            Button deleteLocationButton = new Button(context);
-            deleteLocationButton.setText("Delete Location");
-            deleteLocationButton.setBackground(ContextCompat.getDrawable(context, R.drawable.buttonbg));
-            LinearLayoutCompat.LayoutParams lparams = new LinearLayoutCompat.LayoutParams(LinearLayoutCompat.LayoutParams.WRAP_CONTENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
-            lparams.setMargins(5,0, 5, 0);
-            deleteLocationButton.setLayoutParams(lparams);
-            deleteLocationButton.setPadding(30,10,30,10);
-            deleteLocationButton.setOnClickListener(new View.OnClickListener() {
+            ImageView deleteLocationButtonImage = new ImageView(this);
+            deleteLocationButtonImage.setImageResource(R.drawable.delete);
+            int deviceWidth = (displayMetrics.widthPixels);
+            LinearLayout.LayoutParams lparams = new LinearLayout.LayoutParams((int)(deviceWidth * .11), ViewGroup.LayoutParams.WRAP_CONTENT);
+            lparams.setMargins(0,0,0,25);
+            lparams.gravity = Gravity.CENTER_HORIZONTAL;
+            deleteLocationButtonImage.setLayoutParams(lparams);
+            deleteLocationButtonImage.setAdjustViewBounds(true);
+            deleteLocationButtonImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     String name = locationName.getText().toString();
 
                     if (!(mLocationsDBHelper.checkNonExistence(name))) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                        //builder.setTitle(R.string.app_name);
-                        builder.setMessage("Are you sure you want to delete this item?");
-                        //builder.setIcon(R.drawable.ic_launcher);
-                        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        builder.setMessage(R.string.areyou);
+                        builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 dialog.dismiss();
                                 mLocationsDBHelper.removeLocation(locationTitle);
+                                Intent intent = new Intent(context, LocationList.class);
+                                startActivity(intent);
                                 finish();
                             }
                         });
-                        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 dialog.dismiss();
                             }
@@ -173,7 +182,7 @@ public class LocationInfo extends AppCompatActivity {
                     }else toast("There is no item to delete");
                 }
             });
-            buttonLayout.addView(deleteLocationButton);
+            locationLayout.addView(deleteLocationButtonImage);
         }
     }
 

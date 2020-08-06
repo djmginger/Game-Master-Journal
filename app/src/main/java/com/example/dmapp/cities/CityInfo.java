@@ -10,8 +10,11 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutCompat;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -58,10 +61,12 @@ public class CityInfo extends AppCompatActivity {
         final TextView cityPopulation = findViewById(R.id.populationPreset);
         final EditText cityNotes = findViewById(R.id.cityNotes);
         final LinearLayoutCompat buttonLayout = findViewById(R.id.cityButtonLayout);
+        final LinearLayout cityLayout = findViewById(R.id.cityLayout);
 
         final Button gotoLocations = findViewById(R.id.gotoLocations);
         final Button gotoDistance = findViewById(R.id.gotoDistance);
         Button saveCity = findViewById(R.id.saveCity);
+        final DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
 
         //if starting the activity from clicking an item, addCityValue will be 0, otherwise, it's -1
         //we use this value to adjust the behavior of the editText values set during onCreate, and whether we need to check the name for an identical value when creating a new City
@@ -155,29 +160,32 @@ public class CityInfo extends AppCompatActivity {
                     }
 
                     AddCity(name, environment, population, economy, notes, cityTitle);
-                    Button deleteCityButton = new Button(context);
-                    deleteCityButton.setText(R.string.deletecity);
-                    deleteCityButton.setBackground(ContextCompat.getDrawable(context, R.drawable.buttonbg));
-                    LinearLayoutCompat.LayoutParams lparams2 = new LinearLayoutCompat.LayoutParams(LinearLayoutCompat.LayoutParams.WRAP_CONTENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
-                    lparams2.setMargins(5,0, 5, 0);
-                    deleteCityButton.setLayoutParams(lparams2);
-                    deleteCityButton.setPadding(30,10,30,10);
-                    deleteCityButton.setOnClickListener(new View.OnClickListener() {
+                    ImageView deleteCityButtonImage = new ImageView(context);
+                    deleteCityButtonImage.setImageResource(R.drawable.delete);
+                    int deviceWidth = (displayMetrics.widthPixels);
+                    LinearLayout.LayoutParams lparams = new LinearLayout.LayoutParams((int)(deviceWidth * .11), ViewGroup.LayoutParams.WRAP_CONTENT);
+                    lparams.setMargins(0,0,0,25);
+                    lparams.gravity = Gravity.CENTER_HORIZONTAL;
+                    deleteCityButtonImage.setLayoutParams(lparams);
+                    deleteCityButtonImage.setAdjustViewBounds(true);
+                    deleteCityButtonImage.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             String name = cityName.getText().toString();
 
                             if (!(mCityDBHelper.checkNonExistence(name))) {
                                 AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                                builder.setMessage("Are you sure you want to delete this item?");
-                                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                builder.setMessage(R.string.areyou);
+                                builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
                                         dialog.dismiss();
                                         mCityDBHelper.removeCity(cityTitle);
+                                        Intent intent = new Intent(context, CityList.class);
+                                        startActivity(intent);
                                         finish();
                                     }
                                 });
-                                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
                                         dialog.dismiss();
                                     }
@@ -189,7 +197,7 @@ public class CityInfo extends AppCompatActivity {
                         }
                     });
                     if (!deleteExists) {
-                        buttonLayout.addView(deleteCityButton);
+                        cityLayout.addView(deleteCityButtonImage);
                         deleteExists = true;
                     }
                     //Once you've saved the city, return to the city selection screen
@@ -210,22 +218,23 @@ public class CityInfo extends AppCompatActivity {
             cityEconomy.setText(cityInfo.getString(4));
             cityNotes.setText((cityInfo.getString(5)));
 
-            Button deleteCityButton = new Button(this);
-            deleteCityButton.setText(R.string.deletecity);
-            deleteCityButton.setBackground(ContextCompat.getDrawable(this, R.drawable.buttonbg));
-            LinearLayoutCompat.LayoutParams lparams2 = new LinearLayoutCompat.LayoutParams(LinearLayoutCompat.LayoutParams.WRAP_CONTENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
-            lparams2.setMargins(5,0, 5, 0);
-            deleteCityButton.setLayoutParams(lparams2);
-            deleteCityButton.setPadding(30,10,30,10);
-            deleteCityButton.setOnClickListener(new View.OnClickListener() {
+            ImageView deleteCityButtonImage = new ImageView(this);
+            deleteCityButtonImage.setImageResource(R.drawable.delete);
+            int deviceWidth = (displayMetrics.widthPixels);
+            LinearLayout.LayoutParams lparams = new LinearLayout.LayoutParams((int)(deviceWidth * .11), ViewGroup.LayoutParams.WRAP_CONTENT);
+            lparams.setMargins(0,0,0,25);
+            lparams.gravity = Gravity.CENTER_HORIZONTAL;
+            deleteCityButtonImage.setLayoutParams(lparams);
+            deleteCityButtonImage.setAdjustViewBounds(true);
+            deleteCityButtonImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     String name = cityName.getText().toString();
 
                     if (!(mCityDBHelper.checkNonExistence(name))) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                        builder.setMessage("Are you sure you want to delete this item?");
-                        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        builder.setMessage(R.string.areyou);
+                        builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 dialog.dismiss();
                                 mCityDBHelper.removeCity(cityTitle);
@@ -234,7 +243,7 @@ public class CityInfo extends AppCompatActivity {
                                 finish();
                             }
                         });
-                        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 dialog.dismiss();
                             }
@@ -245,7 +254,7 @@ public class CityInfo extends AppCompatActivity {
                     }else toast("There is no item to delete");
                 }
             });
-            buttonLayout.addView(deleteCityButton);
+            cityLayout.addView(deleteCityButtonImage);
         }
     }
 

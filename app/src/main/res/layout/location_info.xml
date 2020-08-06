@@ -6,7 +6,7 @@
     android:background="@color/mainColor2">
 
     <LinearLayout
-        android:id="@+id/npcLayout"
+        android:id="@+id/locationLayout"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -107,6 +107,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="35dp"
+            android:layout_marginBottom="35dp"
             android:gravity="center"
             android:orientation="horizontal">
 

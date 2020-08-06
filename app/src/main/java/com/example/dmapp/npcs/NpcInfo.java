@@ -21,13 +21,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.text.Editable;
 import android.text.method.KeyListener;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -77,16 +81,18 @@ public class NpcInfo extends AppCompatActivity{
         final EditText npcPlotHooks = findViewById(R.id.npcPlotHooks);
         final EditText npcNotes = findViewById(R.id.npcNotes);
         final LinearLayoutCompat buttonLayout = findViewById(R.id.npcButtonLayout);
+        final LinearLayout npcLayout = findViewById(R.id.npcLayout);
 
         final TextView addImageText = findViewById(R.id.addImageText);
         final ImageView npcImage = findViewById(R.id.npcImage);
         final ImageView addImage = findViewById(R.id.addImage);
         final Spinner locationSpinner = findViewById(R.id.locationSpinner);
-        Button addVoice = findViewById(R.id.addVoice);
+        final Button addVoice = findViewById(R.id.addVoice);
         Button saveNpc = findViewById(R.id.saveNpc);
-        Button stop = findViewById(R.id.stop);
-        Button play = findViewById(R.id.play);
-        Button pause = findViewById(R.id.pause);
+        final ImageView stop = findViewById(R.id.stop);
+        final ImageView play = findViewById(R.id.play);
+        final ImageView pause = findViewById(R.id.pause);
+        final ImageView deleteVoice = findViewById(R.id.deleteVoice);
 
         mPlayer = new MediaPlayer();
 
@@ -173,14 +179,16 @@ public class NpcInfo extends AppCompatActivity{
                     }
                     AddNPC(name, npcSpinnerLocation, description, notes, npcTitle, voice, plotHooks, race, image);
                     if(addNPCValue == -1) {
-                        Button deleteNPCButton = new Button(context);
-                        deleteNPCButton.setText(R.string.deletenpc);
-                        deleteNPCButton.setBackground(ContextCompat.getDrawable(context, R.drawable.buttonbg));
-                        LinearLayoutCompat.LayoutParams lparams = new LinearLayoutCompat.LayoutParams(LinearLayoutCompat.LayoutParams.WRAP_CONTENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
-                        lparams.setMargins(5, 0, 5, 0);
-                        deleteNPCButton.setLayoutParams(lparams);
-                        deleteNPCButton.setPadding(30, 10, 30, 10);
-                        deleteNPCButton.setOnClickListener(new View.OnClickListener() {
+                        ImageView deleteNPCButtonImage = new ImageView(context);
+                        deleteNPCButtonImage.setImageResource(R.drawable.delete);
+                        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+                        int deviceWidth = (displayMetrics.widthPixels);
+                        LinearLayout.LayoutParams lparams = new LinearLayout.LayoutParams((int)(deviceWidth * .11), ViewGroup.LayoutParams.WRAP_CONTENT);
+                        lparams.setMargins(0,0,0,25);
+                        lparams.gravity = Gravity.CENTER_HORIZONTAL;
+                        deleteNPCButtonImage.setLayoutParams(lparams);
+                        deleteNPCButtonImage.setAdjustViewBounds(true);
+                        deleteNPCButtonImage.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
                                 String name = npcName.getText().toString();
@@ -192,6 +200,8 @@ public class NpcInfo extends AppCompatActivity{
                                         public void onClick(DialogInterface dialog, int id) {
                                             dialog.dismiss();
                                             mNpcDBHelper.removeNPC(npcTitle);
+                                            Intent intent = new Intent(context, NpcList.class);
+                                            startActivity(intent);
                                             finish();
                                         }
                                     });
@@ -203,11 +213,11 @@ public class NpcInfo extends AppCompatActivity{
                                     AlertDialog alert = builder.create();
                                     alert.show();
 
-                                } else toast("There is no item to delete");
+                                }else toast("There is no item to delete");
                             }
                         });
                         if (!deleteExists) {
-                            buttonLayout.addView(deleteNPCButton);
+                            npcLayout.addView(deleteNPCButtonImage);
                             deleteExists = true;
                         }
                     }
@@ -217,9 +227,11 @@ public class NpcInfo extends AppCompatActivity{
             }
         });
 
-        stop.setVisibility(View.INVISIBLE); //Set the mediaplayer controls to be invisible until there is an audio file available to play.
+        //Set the mediaplayer controls to be invisible until there is an audio file available to play.
+        stop.setVisibility(View.INVISIBLE);
         play.setVisibility(View.INVISIBLE);
         pause.setVisibility(View.INVISIBLE);
+        deleteVoice.setVisibility(View.INVISIBLE);
 
         //If coming to this activity from clicking on a name, get and fill out all fields with the data for the corresponding npc.
         if (addNPCValue != -1) {
@@ -233,14 +245,16 @@ public class NpcInfo extends AppCompatActivity{
             npcDescription.setText(npcInfo.getString(3));
             npcNotes.setText(npcInfo.getString(4));
             Log.d(TAG, "onCreate: the value of plothooks is " + npcInfo.getString(6));
-            Button deleteNPCButton = new Button(this);
-            deleteNPCButton.setText(R.string.deletenpc);
-            deleteNPCButton.setBackground(ContextCompat.getDrawable(this, R.drawable.buttonbg));
-            LinearLayoutCompat.LayoutParams lparams = new LinearLayoutCompat.LayoutParams(LinearLayoutCompat.LayoutParams.WRAP_CONTENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
-            lparams.setMargins(5,0, 5, 0);
-            deleteNPCButton.setLayoutParams(lparams);
-            deleteNPCButton.setPadding(30,10,30,10);
-            deleteNPCButton.setOnClickListener(new View.OnClickListener() {
+            ImageView deleteNPCButtonImage = new ImageView(this);
+            deleteNPCButtonImage.setImageResource(R.drawable.delete);
+            DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
+            int deviceWidth = (displayMetrics.widthPixels);
+            LinearLayout.LayoutParams lparams = new LinearLayout.LayoutParams((int)(deviceWidth * .11), ViewGroup.LayoutParams.WRAP_CONTENT);
+            lparams.setMargins(0,0,0,25);
+            lparams.gravity = Gravity.CENTER_HORIZONTAL;
+            deleteNPCButtonImage.setLayoutParams(lparams);
+            deleteNPCButtonImage.setAdjustViewBounds(true);
+            deleteNPCButtonImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     String name = npcName.getText().toString();
@@ -268,7 +282,7 @@ public class NpcInfo extends AppCompatActivity{
                     }else toast("There is no item to delete");
                 }
             });
-            buttonLayout.addView(deleteNPCButton);
+            npcLayout.addView(deleteNPCButtonImage);
             npcPlotHooks.setText(npcInfo.getString(6));
 
             image = npcInfo.getString(8);
@@ -332,6 +346,7 @@ public class NpcInfo extends AppCompatActivity{
                 stop.setVisibility(View.VISIBLE);
                 play.setVisibility(View.VISIBLE);
                 pause.setVisibility(View.VISIBLE);
+                deleteVoice.setVisibility(View.VISIBLE);
                 Uri audioFileUri = Uri.parse(voice);
                 mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 // Now you can use that Uri to get the file path, or upload it, ...
@@ -385,6 +400,26 @@ public class NpcInfo extends AppCompatActivity{
                         if(!isStopped) {
                             mPlayer.pause();
                         }
+                    }
+                });
+
+                deleteVoice.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mPlayer.stop();
+                        try{
+                            mPlayer.prepare();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        isStopped = true;
+                        mPlayer.release();
+                        addVoice.setText(R.string.addvoice);
+                        stop.setVisibility(View.INVISIBLE);
+                        play.setVisibility(View.INVISIBLE);
+                        pause.setVisibility(View.INVISIBLE);
+                        deleteVoice.setVisibility(View.INVISIBLE);
+                        voice = "";
                     }
                 });
             }
@@ -512,9 +547,9 @@ public class NpcInfo extends AppCompatActivity{
                 }
 
                 Button addVoice = findViewById(R.id.addVoice);
-                Button stop = findViewById(R.id.stop);
-                Button play = findViewById(R.id.play);
-                Button pause = findViewById(R.id.pause);
+                ImageView stop = findViewById(R.id.stop);
+                ImageView play = findViewById(R.id.play);
+                ImageView pause = findViewById(R.id.pause);
                 addVoice.setText(R.string.changevoice);
 
                 stop.setVisibility(View.VISIBLE);
@@ -588,6 +623,7 @@ public class NpcInfo extends AppCompatActivity{
                     @Override
                     public void onClick(View v) {
                         npcImage.setImageURI(null);
+                        image = "";
                         npcImage.setVisibility(View.GONE);
                         addImageText.setText(R.string.addimage);
                         addImage.setImageResource(R.drawable.addanimage);
