@@ -3,21 +3,20 @@
     android:id="@+id/distanceItem"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/mainColor2"
+    android:background="@color/mainBgColor"
     android:gravity="start"
     android:orientation="horizontal"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp">
+    android:paddingLeft="5dp"
+    android:paddingRight="5dp">
 
     <ImageButton
         android:id="@+id/distanceArrow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="11dp"
-        android:layout_marginEnd="10dp"
         android:layout_weight="0"
         android:adjustViewBounds="false"
-        android:background="@color/mainColor2"
+        android:background="@color/mainBgColor"
         android:src="@drawable/rightarrow" />
 
     <TextView
@@ -35,7 +34,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="11dp"
         android:layout_weight="0"
-        android:background="@color/mainColor2"
+        android:background="@color/mainBgColor"
         android:src="@drawable/colon" />
 
     <TextView
@@ -54,11 +53,11 @@
         android:id="@+id/deleteIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
+        android:layout_marginStart="5dp"
         android:layout_marginTop="11dp"
-        android:layout_marginEnd="10dp"
+        android:layout_marginEnd="5dp"
         android:layout_weight="0"
-        android:background="@color/mainColor2"
+        android:background="@color/mainBgColor"
         android:src="@drawable/deleteicon" />
 
 </LinearLayout>

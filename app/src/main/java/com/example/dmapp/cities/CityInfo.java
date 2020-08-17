@@ -3,10 +3,13 @@ package com.example.dmapp.cities;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.media.Image;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutCompat;
@@ -19,6 +22,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,13 +44,17 @@ public class CityInfo extends AppCompatActivity {
     private final String TAG = "CityInfo";
     private Context context;
     boolean deleteExists = false;
+    private boolean darkMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.city_info);
-        LinearLayout layout = findViewById(R.id.cityLayout);
         context = this;
+
+        final SharedPreferences sharedPreferences = getSharedPreferences("Settings", Context.MODE_PRIVATE);
+        String theme = sharedPreferences.getString("Theme", "none");
+        darkMode = theme.equals("dark");
 
         mLocationDBHelper = new locationsDBHelper(this);
         mDistanceDBHelper = new distanceDBHelper(this);
@@ -59,14 +67,40 @@ public class CityInfo extends AppCompatActivity {
         final LinearLayoutCompat economyLayout = findViewById(R.id.economyLayout);
         final TextView cityEconomy = findViewById(R.id.economyPreset);
         final TextView cityPopulation = findViewById(R.id.populationPreset);
+        final TextView cityOverviewTitle = findViewById(R.id.cityOverviewTitle);
+        final TextView cityNameTitle = findViewById(R.id.cityNameTitle);
+        final TextView cityNotesTitle = findViewById(R.id.cityNotesTitle);
         final EditText cityNotes = findViewById(R.id.cityNotes);
         final LinearLayoutCompat buttonLayout = findViewById(R.id.cityButtonLayout);
         final LinearLayout cityLayout = findViewById(R.id.cityLayout);
-
+        final ScrollView cityMainLayout = findViewById(R.id.cityMainLayout);
         final Button gotoLocations = findViewById(R.id.gotoLocations);
         final Button gotoDistance = findViewById(R.id.gotoDistance);
         Button saveCity = findViewById(R.id.saveCity);
         final DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
+
+        if (theme.equals("dark")){
+
+            DrawableCompat.setTint(DrawableCompat.wrap(backButton.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
+
+            cityName.setBackgroundResource(R.drawable.info_bg7);
+            cityName.setTextColor(Color.parseColor("#dadada"));
+            environmentLayout.setBackgroundResource(R.drawable.info_bg7);
+            cityEnvironment.setTextColor(Color.parseColor("#dadada"));
+            populationLayout.setBackgroundResource(R.drawable.info_bg7);
+            cityPopulation.setTextColor(Color.parseColor("#dadada"));
+            economyLayout.setBackgroundResource(R.drawable.info_bg7);
+            cityEconomy.setTextColor(Color.parseColor("#dadada"));
+            cityNotes.setBackgroundResource(R.drawable.info_bg7);
+            cityNotes.setTextColor(Color.parseColor("#dadada"));
+            cityOverviewTitle.setTextColor(Color.WHITE);
+            cityNameTitle.setTextColor(Color.WHITE);
+            cityNotesTitle.setTextColor(Color.WHITE);
+            cityMainLayout.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            backButton.setBackgroundColor(Color.parseColor("#2C2C2C"));
+        } else {
+            DrawableCompat.setTint(DrawableCompat.wrap(backButton.getDrawable()), ContextCompat.getColor(context, R.color.black));
+        }
 
         //if starting the activity from clicking an item, addCityValue will be 0, otherwise, it's -1
         //we use this value to adjust the behavior of the editText values set during onCreate, and whether we need to check the name for an identical value when creating a new City

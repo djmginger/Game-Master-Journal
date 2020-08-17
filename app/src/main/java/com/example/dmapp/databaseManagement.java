@@ -1,23 +1,36 @@
 package com.example.dmapp;
 
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
 public class databaseManagement extends AppCompatActivity {
     private static final String TAG = "MainActivity";
+    private boolean darkMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.database_management);
 
+        final SharedPreferences sharedPreferences = getSharedPreferences("Settings", Context.MODE_PRIVATE);
+        String theme = sharedPreferences.getString("Theme", "none");
+        Boolean darkMode = theme.equals("dark");
+
+        LinearLayoutCompat mainLayout = findViewById(R.id.mainLayout);
         ImageView backButton = findViewById(R.id.backButton);
         Button deleteNPC = findViewById(R.id.deleteNPC);
         Button deleteCity = findViewById(R.id.deleteCity);
@@ -25,6 +38,16 @@ public class databaseManagement extends AppCompatActivity {
         Button deleteLocations = findViewById(R.id.deleteLocations);
         Button deletePresets = findViewById(R.id.deletePresets);
         Button deleteDistances = findViewById(R.id.deleteDistances);
+        TextView title = findViewById(R.id.title);
+
+        if (theme.equals("dark")){
+
+            DrawableCompat.setTint(DrawableCompat.wrap(backButton.getDrawable()), ContextCompat.getColor(this, R.color.mainBgColor));
+            title.setTextColor(Color.WHITE);
+            mainLayout.setBackgroundColor(Color.parseColor("#2C2C2C"));
+        } else {
+            DrawableCompat.setTint(DrawableCompat.wrap(backButton.getDrawable()), ContextCompat.getColor(this, R.color.black));
+        }
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override

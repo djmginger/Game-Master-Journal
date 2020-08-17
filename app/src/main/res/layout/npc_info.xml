@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/npcMainLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -40,6 +41,7 @@
         </android.support.v7.widget.LinearLayoutCompat>
 
         <TextView
+            android:id="@+id/npcNameTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -58,6 +60,7 @@
             android:singleLine="true" />
 
         <TextView
+            android:id="@+id/locationTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -71,12 +74,19 @@
             android:background="@android:drawable/btn_dropdown"
             android:spinnerMode="dropdown"/>
 
+        <TextView
+            android:id="@+id/raceTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/race"
+            android:textSize="20sp" />
+
         <android.support.v7.widget.LinearLayoutCompat
             android:id="@+id/raceLayout"
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
             android:layout_marginBottom="15dp"
             android:background="@drawable/buttonbg3" >
 
@@ -84,7 +94,6 @@
                 android:id="@+id/racePreset"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/race"
                 android:layout_weight="1"
                 android:padding="10dp"
                 android:textSize="18sp" />
@@ -123,9 +132,10 @@
             android:textSize="15sp" />
 
         <TextView
+            android:id="@+id/npcDescTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             android:text="@string/descriptionHeader"
             android:textSize="20sp" />
 
@@ -138,6 +148,7 @@
             android:padding="10dp" />
 
         <TextView
+            android:id="@+id/npcPlotTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -153,6 +164,7 @@
             android:padding="10dp" />
 
         <TextView
+            android:id="@+id/npcNoteTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -188,21 +200,21 @@
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
+                android:layout_marginRight="5dp"
                 android:src="@drawable/stopicon" />
 
             <ImageView
                 android:id="@+id/play"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:layout_marginRight="10dp"
+                android:layout_marginRight="5dp"
                 android:src="@drawable/playicon" />
 
             <ImageView
                 android:id="@+id/pause"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:layout_marginRight="10dp"
+                android:layout_marginRight="5dp"
                 android:src="@drawable/pauseicon" />
 
             <ImageView
@@ -211,7 +223,6 @@
                 android:layout_height="40dp"
                 android:layout_gravity="center"
                 android:adjustViewBounds="true"
-                android:layout_marginRight="10dp"
                 android:src="@drawable/deleteicon" />
 
         </android.support.v7.widget.LinearLayoutCompat>

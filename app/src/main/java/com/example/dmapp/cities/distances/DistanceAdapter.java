@@ -23,14 +23,16 @@ public class DistanceAdapter extends ArrayAdapter<Distance> {
     private List<Distance> distanceList = new ArrayList<>();
     private final String fromCity;
     private boolean isDisplay;
+    private boolean mDarkMode;
     String TAG = "DistanceAdapter";
 
-    public DistanceAdapter(Context context, ArrayList<Distance> list, String passedFromCity, boolean displayed) {
+    public DistanceAdapter(Context context, ArrayList<Distance> list, String passedFromCity, boolean displayed, boolean darkMode) {
         super(context, 0 , list);
         mContext = context;
         distanceList = list;
         fromCity = passedFromCity;
         isDisplay = displayed;
+        mDarkMode = darkMode;
     }
 
     @NonNull
@@ -38,8 +40,14 @@ public class DistanceAdapter extends ArrayAdapter<Distance> {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         View listItem = convertView;
-        if(listItem == null) {
-            listItem = LayoutInflater.from(mContext).inflate(R.layout.distance_item, parent, false);
+        if (!mDarkMode) {
+            if (listItem == null) {
+                listItem = LayoutInflater.from(mContext).inflate(R.layout.distance_item, parent, false);
+            }
+        } else {
+            if (listItem == null) {
+                listItem = LayoutInflater.from(mContext).inflate(R.layout.distance_item2, parent, false);
+            }
         }
 
         final Distance currentDistance = distanceList.get(position);
@@ -48,13 +56,13 @@ public class DistanceAdapter extends ArrayAdapter<Distance> {
         final ImageButton delete = listItem.findViewById(R.id.deleteIcon);
 
         if (isDisplay){
-            LinearLayout distanceItem = listItem.findViewById(R.id.distanceItem);
+            /*LinearLayout distanceItem = listItem.findViewById(R.id.distanceItem);
             distanceItem.setBackgroundColor(Color.WHITE);
             ImageView distanceColon = listItem.findViewById(R.id.distanceColon);
             distanceColon.setBackgroundColor(Color.WHITE);
             ImageButton distanceArrow = listItem.findViewById(R.id.distanceArrow);
             distanceArrow.setBackgroundColor(Color.WHITE);
-            delete.setBackgroundColor(Color.WHITE);
+            delete.setBackgroundColor(Color.WHITE);*/
             delete.setVisibility(View.GONE);
         }
 

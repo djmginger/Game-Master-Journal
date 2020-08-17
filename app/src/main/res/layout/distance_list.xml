@@ -1,11 +1,13 @@
 <android.support.v7.widget.LinearLayoutCompat
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/distanceLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/mainColor2"
+    android:background="@color/mainBgColor"
     android:orientation="vertical">
 
     <android.support.v7.widget.LinearLayoutCompat
+        android:id="@+id/distanceHeaderLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
@@ -49,20 +51,21 @@
         android:id="@+id/distanceItem"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/mainColor2"
+        android:background="@color/mainBgColor"
         android:gravity="start"
         android:orientation="horizontal"
         android:layout_weight="1"
         android:paddingLeft="16dp"
         android:paddingRight="16dp">
 
-        <ImageButton
+        <ImageView
+            android:id="@+id/toArrow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:layout_marginEnd="5dp"
             android:layout_weight="1"
-            android:background="@color/mainColor2"
+            android:background="@color/mainBgColor"
             android:src="@drawable/rightarrow" />
 
         <Spinner
@@ -77,12 +80,13 @@
             android:spinnerMode="dropdown"/>
 
         <ImageView
+            android:id="@+id/distanceColon"
             android:layout_width="wrap_content"
             android:maxWidth="10dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:layout_weight="0"
-            android:background="@color/mainColor2"
+            android:background="@color/mainBgColor"
             android:src="@drawable/colon" />
 
         <EditText
@@ -106,6 +110,7 @@
         android:layout_gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
         android:text="@string/addentry"/>
 
 </android.support.v7.widget.LinearLayoutCompat>

@@ -78,4 +78,16 @@
     <string name="nocitytext">There are no citites yet</string>
     <string name="nolocationtext">There are no locations yet</string>
     <string name="removeimage">Remove image</string>
+    <string name="list">List</string>
+    <string name="overview">Overview</string>
+    <string name="notes">Notes</string>
+    <string name="reset_all_presets">Reset all presets</string>
+    <string name="npcs">NPCs</string>
+    <string name="cities">Cities</string>
+    <string name="loot">Loot</string>
+    <string name="managedb">Manage Databases</string>
+    <string name="darkmode">Dark Mode</string>
+    <string name="lightmode">Light Mode</string>
+    <string name="traveltimefrom">Travel time from</string>
+    <string name="attunement">Requires Attunement</string>
 </resources>

@@ -2,10 +2,13 @@ package com.example.dmapp.cities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
@@ -52,6 +55,7 @@ public class CityDisplay extends AppCompatActivity implements MyRecyclerViewAdap
     private Context context;
     private ExpandableListView expandableListView;
     private final ArrayList<String> npcList = new ArrayList<>();
+    private Boolean darkMode;
 
     locationsDBHelper mLocationsDBHelper = new locationsDBHelper(this);
     ArrayList<String> locationNames = new ArrayList<>(); // parent of the exapandable list
@@ -68,18 +72,41 @@ public class CityDisplay extends AppCompatActivity implements MyRecyclerViewAdap
         setContentView(R.layout.city_display);
         context = this;
 
+        final SharedPreferences sharedPreferences = getSharedPreferences("Settings", Context.MODE_PRIVATE);
+        String theme = sharedPreferences.getString("Theme", "none");
+        darkMode = theme.equals("dark");
+
         mCitiesDBHelper = new citiesDBHelper(this);
         mNpcDBHelper = new npcDBHelper(this);
         mDistanceDBHelper = new distanceDBHelper(this);
         ImageView backButton = findViewById(R.id.backButton);
         ImageView editIcon = findViewById(R.id.editIcon);
         final TextView cityName = findViewById(R.id.cityTitle);
+        NestedScrollView cityMainLayout = findViewById(R.id.cityMainLayout);
         LinearLayout cityLayout = findViewById(R.id.cityLayout);
         LinearLayoutCompat underTitleLayout = findViewById(R.id.underTitleLayout);
         LinearLayoutCompat underTitleLayout2 = findViewById(R.id.underTitleLayout2);
         LinearLayout distanceListTitle = findViewById(R.id.distanceListTitle);
         RelativeLayout distanceListLayout = findViewById(R.id.distanceListLayout);
         ListView distanceListViewDisplay = findViewById(R.id.distanceListViewDisplay);
+
+        if (theme.equals("dark")){
+
+            DrawableCompat.setTint(DrawableCompat.wrap(backButton.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
+            DrawableCompat.setTint(DrawableCompat.wrap(editIcon.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
+
+            cityLayout.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            cityMainLayout.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            underTitleLayout.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            underTitleLayout2.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            distanceListTitle.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            distanceListLayout.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            distanceListViewDisplay.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            backButton.setBackgroundColor(Color.parseColor("#2C2C2C"));
+        } else {
+            DrawableCompat.setTint(DrawableCompat.wrap(backButton.getDrawable()), ContextCompat.getColor(context, R.color.black));
+            DrawableCompat.setTint(DrawableCompat.wrap(editIcon.getDrawable()), ContextCompat.getColor(context, R.color.black));
+        }
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,7 +117,6 @@ public class CityDisplay extends AppCompatActivity implements MyRecyclerViewAdap
             }
         });
 
-
         //If coming to this activity from clicking on a name, get and fill out all fields with the data for the corresponding npc.
         Log.d(TAG, "onCreate: City name is " +getIntent().getStringExtra("cityName"));
         Cursor cityInfo = mCitiesDBHelper.getSpecificCity(getIntent().getStringExtra("cityName"));
@@ -98,24 +124,27 @@ public class CityDisplay extends AppCompatActivity implements MyRecyclerViewAdap
         cityTitle = cityInfo.getString(1);
         cityName.setText(cityInfo.getString(1));
         cityName.setTextColor(Color.parseColor("#6FD8F8"));
-        View line = new View(this);
-        line.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 2));
-        line.setBackgroundColor(Color.parseColor("#F1FDF4"));
-        cityLayout.addView(line);
 
         if(!cityInfo.getString(3).equals("Population") && (!cityInfo.getString(3).equals("None"))) {
             TextView citySize = new TextView(this);
             citySize.setText(cityInfo.getString(3));
             citySize.setTextSize(16);
             citySize.setTypeface(null, Typeface.ITALIC);
-            citySize.setTextColor(Color.parseColor("#666666"));
-            citySize.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            if (!darkMode) {
+                citySize.setTextColor(Color.parseColor("#666666"));
+                citySize.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            } else {
+                citySize.setTextColor(Color.parseColor("#FFFFFF"));
+                citySize.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            }
             underTitleLayout.addView(citySize);
         }
 
         if((!cityInfo.getString(2).equals("Environment")) && (!cityInfo.getString(3).equals("Population")) && (!cityInfo.getString(3).equals("None"))){
             ImageView separator = new ImageView(this);
             separator.setImageDrawable(getResources().getDrawable(R.drawable.dot));
+            if (!darkMode) DrawableCompat.setTint(DrawableCompat.wrap(separator.getDrawable()), ContextCompat.getColor(context, R.color.black));
+                else DrawableCompat.setTint(DrawableCompat.wrap(separator.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
             LinearLayoutCompat.LayoutParams lparams = new LinearLayoutCompat.LayoutParams(30, 30);
             lparams.setMargins(30, 0, 30, 0);
             separator.setLayoutParams(lparams);
@@ -127,8 +156,13 @@ public class CityDisplay extends AppCompatActivity implements MyRecyclerViewAdap
             cityEnviron.setText(cityInfo.getString(2));
             cityEnviron.setTextSize(16);
             cityEnviron.setTypeface(null, Typeface.ITALIC);
-            cityEnviron.setTextColor(Color.parseColor("#666666"));
-            cityEnviron.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            if (!darkMode) {
+                cityEnviron.setTextColor(Color.parseColor("#666666"));
+                cityEnviron.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            } else {
+                cityEnviron.setTextColor(Color.parseColor("#FFFFFF"));
+                cityEnviron.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            }
             underTitleLayout.addView(cityEnviron);
         }
 
@@ -137,16 +171,26 @@ public class CityDisplay extends AppCompatActivity implements MyRecyclerViewAdap
             econLabel.setText(R.string.economyHeader);
             econLabel.setTextSize(16);
             econLabel.setTypeface(null, Typeface.ITALIC);
-            econLabel.setTextColor(Color.parseColor("#666666"));
-            econLabel.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            if (!darkMode) {
+                econLabel.setTextColor(Color.parseColor("#666666"));
+                econLabel.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            } else {
+                econLabel.setTextColor(Color.parseColor("#FFFFFF"));
+                econLabel.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            }
             underTitleLayout2.addView(econLabel);
 
             TextView cityEcon = new TextView(this);
             cityEcon.setText(cityInfo.getString(4));
             cityEcon.setTextSize(16);
             cityEcon.setTypeface(null, Typeface.ITALIC);
-            cityEcon.setTextColor(Color.parseColor("#666666"));
-            cityEcon.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            if (!darkMode) {
+                cityEcon.setTextColor(Color.parseColor("#666666"));
+                cityEcon.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            } else {
+                cityEcon.setTextColor(Color.parseColor("#FFFFFF"));
+                cityEcon.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            }
             LinearLayoutCompat.LayoutParams lparams = new LinearLayoutCompat.LayoutParams(LinearLayoutCompat.LayoutParams.WRAP_CONTENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
             lparams.setMargins(25, 0, 0, 0);
             cityEcon.setLayoutParams(lparams);
@@ -158,21 +202,29 @@ public class CityDisplay extends AppCompatActivity implements MyRecyclerViewAdap
             detailsTitle.setText(R.string.detailHeader);
             detailsTitle.setTextSize(20);
             detailsTitle.setTextColor(Color.parseColor("#FE5F55"));
-            detailsTitle.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            if (!darkMode) detailsTitle.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                else detailsTitle.setBackgroundColor(Color.parseColor("#2C2C2C"));
             detailsTitle.setTypeface(null, Typeface.BOLD);
             cityLayout.addView(detailsTitle);
 
             View line2 = new View(this);
             line2.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 3));
-            line2.setBackgroundColor(Color.parseColor("#000000"));
+            if (!darkMode) line2.setBackgroundColor(Color.parseColor("#8C8C8C"));
+                else line2.setBackgroundColor(Color.parseColor("#FFFFFF"));
             cityLayout.addView(line2);
 
             TextView cityDetails = new TextView(this);
             cityDetails.setText(cityInfo.getString(5));
             cityDetails.setTextSize(18);
-            cityDetails.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            if (!darkMode) {
+                cityDetails.setTextColor(Color.parseColor("#666666"));
+                cityDetails.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            } else {
+                cityDetails.setTextColor(Color.parseColor("#FFFFFF"));
+                cityDetails.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            }
             LinearLayoutCompat.LayoutParams lparams3 = new LinearLayoutCompat.LayoutParams(LinearLayoutCompat.LayoutParams.MATCH_PARENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
-            lparams3.setMargins(65, 0, 0, 45);
+            lparams3.setMargins(30, 0, 0, 45);
             cityDetails.setLayoutParams(lparams3);
             cityLayout.addView(cityDetails);
         }
@@ -187,12 +239,14 @@ public class CityDisplay extends AppCompatActivity implements MyRecyclerViewAdap
                 locationsTitle.setText(R.string.noteableLocations);
                 locationsTitle.setTextSize(20);
                 locationsTitle.setTextColor(Color.parseColor("#FE5F55"));
-                locationsTitle.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                if (!darkMode) locationsTitle.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                    else locationsTitle.setBackgroundColor(Color.parseColor("#2C2C2C"));
                 locationsTitle.setTypeface(null, Typeface.BOLD);
                 cityLayout.addView(locationsTitle);
                 View line2 = new View(this);
                 line2.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 3));
-                line2.setBackgroundColor(Color.parseColor("#000000"));
+                if (!darkMode) line2.setBackgroundColor(Color.parseColor("#8C8C8C"));
+                    else line2.setBackgroundColor(Color.parseColor("#FFFFFF"));
                 cityLayout.addView(line2);
 
                 do {
@@ -204,9 +258,12 @@ public class CityDisplay extends AppCompatActivity implements MyRecyclerViewAdap
 
                 setUpAdapter();
                 LinearLayout expandableListViewContainer = findViewById(R.id.expandable_listview_container);
+                if (!darkMode) expandableListViewContainer.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                    else expandableListViewContainer.setBackgroundColor(Color.parseColor("#2C2C2C"));
                 View line3 = new View(this);
                 line3.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 3));
-                line3.setBackgroundColor(Color.parseColor("#000000"));
+                if (!darkMode) line3.setBackgroundColor(Color.parseColor("#8C8C8C"));
+                    else line3.setBackgroundColor(Color.parseColor("#FFFFFF"));
                 expandableListViewContainer.addView(line3);
             }
         } finally {
@@ -215,17 +272,6 @@ public class CityDisplay extends AppCompatActivity implements MyRecyclerViewAdap
 
         Cursor distanceCursor = mDistanceDBHelper.getDistances(getIntent().getStringExtra("cityName"));
 
-        LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View mv = inflater.inflate(R.layout.distance_item, null);
-        LinearLayout distanceItem = mv.findViewById(R.id.distanceItem);
-        distanceItem.setBackgroundColor(Color.WHITE);
-        ImageView distanceColon = mv.findViewById(R.id.distanceColon);
-        distanceColon.setBackgroundColor(Color.WHITE);
-        ImageButton distanceArrow = mv.findViewById(R.id.distanceArrow);
-        distanceArrow.setBackgroundColor(Color.WHITE);
-        ImageButton deleteIcon = mv.findViewById(R.id.deleteIcon);
-        deleteIcon.setBackgroundColor(Color.WHITE);
-
         try {
             if (distanceCursor.moveToNext()) {
 
@@ -233,19 +279,21 @@ public class CityDisplay extends AppCompatActivity implements MyRecyclerViewAdap
                 detailsTitle.setText(R.string.travelTimeHeader);
                 detailsTitle.setTextSize(20);
                 detailsTitle.setTextColor(Color.parseColor("#FE5F55"));
-                detailsTitle.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                if (!darkMode) detailsTitle.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                    else detailsTitle.setBackgroundColor(Color.parseColor("#2C2C2C"));
                 detailsTitle.setTypeface(null, Typeface.BOLD);
                 distanceListTitle.addView(detailsTitle);
                 View line2 = new View(this);
                 line2.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 3));
-                line2.setBackgroundColor(Color.parseColor("#000000"));
+                if (!darkMode) line2.setBackgroundColor(Color.parseColor("#8C8C8C"));
+                    else line2.setBackgroundColor(Color.parseColor("#FFFFFF"));
                 distanceListTitle.addView(line2);
 
                 do {
                     distanceListDisplay.add(new Distance(distanceCursor.getString(2), distanceCursor.getString(3)));
                 } while (distanceCursor.moveToNext());
 
-                distanceAdapter = new DistanceAdapter(this, distanceListDisplay, cityTitle, true);
+                distanceAdapter = new DistanceAdapter(this, distanceListDisplay, cityTitle, true, darkMode);
                 distanceListViewDisplay.setAdapter(distanceAdapter);
             }
         } finally {
@@ -267,12 +315,14 @@ public class CityDisplay extends AppCompatActivity implements MyRecyclerViewAdap
                 npcTitle.setText(String.format("%s%s", getString(R.string.npclisttitle), cityTitle));
                 npcTitle.setTextSize(20);
                 npcTitle.setTextColor(Color.parseColor("#FE5F55"));
-                npcTitle.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                if (!darkMode) npcTitle.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                    else npcTitle.setBackgroundColor(Color.parseColor("#2C2C2C"));
                 npcTitle.setTypeface(null, Typeface.BOLD);
                 npcListTitleLayout.addView(npcTitle);
                 View line2 = new View(this);
                 line2.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 3));
-                line2.setBackgroundColor(Color.parseColor("#000000"));
+                if (!darkMode) line2.setBackgroundColor(Color.parseColor("#8C8C8C"));
+                    else line2.setBackgroundColor(Color.parseColor("#FFFFFF"));
                 npcListTitleLayout.addView(line2);
 
                 do {
@@ -287,7 +337,7 @@ public class CityDisplay extends AppCompatActivity implements MyRecyclerViewAdap
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         DividerItemDecoration itemDecor = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
         recyclerView.addItemDecoration(itemDecor);
-        MyRecyclerViewAdapter adapter = new MyRecyclerViewAdapter(this, npcList, this, true);
+        MyRecyclerViewAdapter adapter = new MyRecyclerViewAdapter(this, npcList, this, darkMode); // change this later
         recyclerView.setAdapter(adapter);
         recyclerView.addItemDecoration(itemDecor);
 
@@ -378,7 +428,7 @@ public class CityDisplay extends AppCompatActivity implements MyRecyclerViewAdap
         expandableListView.setLayoutParams(params);
 
         //passing three levels of information to constructor
-        ThreeLevelListAdapter threeLevelListAdapterAdapter = new ThreeLevelListAdapter(this, locationNames, secondLevel, data);
+        ThreeLevelListAdapter threeLevelListAdapterAdapter = new ThreeLevelListAdapter(this, locationNames, secondLevel, data, darkMode);
         expandableListView.setAdapter(threeLevelListAdapterAdapter);
         expandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
             int previousGroup = -1;

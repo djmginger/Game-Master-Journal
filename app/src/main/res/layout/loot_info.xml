@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/lootMainLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -40,6 +41,7 @@
         </android.support.v7.widget.LinearLayoutCompat>
 
         <TextView
+            android:id="@+id/nameTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
@@ -70,6 +72,7 @@
                 android:background="@drawable/info_bg3" />
 
             <TextView
+                android:id="@+id/lootReqTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingStart="5dp"
@@ -80,6 +83,7 @@
         </android.support.v7.widget.LinearLayoutCompat>
 
         <TextView
+            android:id="@+id/rarityTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
@@ -91,6 +95,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
+            android:layout_marginBottom="15dp"
             android:background="@android:drawable/btn_dropdown"
             android:spinnerMode="dropdown" />
 
@@ -98,7 +103,6 @@
             android:id="@+id/lootImage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
             android:padding="10dp"
             android:adjustViewBounds="true"
             android:layout_gravity="center" />
@@ -109,7 +113,7 @@
             android:layout_height="50dp"
             android:layout_gravity="center"
             android:padding="10dp"
-            android:background="@drawable/info_bg5" />
+            android:background="@drawable/info_bg6" />
 
         <TextView
             android:id="@+id/addImageText"
@@ -119,9 +123,10 @@
             android:textSize="15sp" />
 
         <TextView
+            android:id="@+id/priceTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             android:text="@string/lootprice"
             android:textSize="20sp" />
 
@@ -129,7 +134,7 @@
             android:id="@+id/lootPrice"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/info_bg6"
+            android:background="@drawable/info_bg3"
             android:ems="10"
             android:inputType="textCapSentences"
             android:padding="10dp"
@@ -137,6 +142,7 @@
             android:singleLine="true" />
 
         <TextView
+            android:id="@+id/descTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -153,6 +159,7 @@
             android:padding="10dp" />
 
         <TextView
+            android:id="@+id/detailsTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"

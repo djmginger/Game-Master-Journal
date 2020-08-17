@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.dmapp.R;
@@ -37,6 +38,7 @@ public class ThreeLevelListAdapter extends BaseExpandableListAdapter {
     List<String[]> secondLevel;
     private Context context;
     List<LinkedHashMap<String, String>> data;
+    private Boolean mDarkMode;
 
     /**
      * Constructor
@@ -44,8 +46,9 @@ public class ThreeLevelListAdapter extends BaseExpandableListAdapter {
      * @param parentHeader
      * @param secondLevel
      * @param data
+     * @param darkMode
      */
-    public ThreeLevelListAdapter(Context context, ArrayList<String> parentHeader, List<String[]> secondLevel, List<LinkedHashMap<String, String>> data) {
+    public ThreeLevelListAdapter(Context context, ArrayList<String> parentHeader, List<String[]> secondLevel, List<LinkedHashMap<String, String>> data, Boolean darkMode) {
         this.context = context;
 
         this.parentHeaders = parentHeader;
@@ -53,6 +56,8 @@ public class ThreeLevelListAdapter extends BaseExpandableListAdapter {
         this.secondLevel = secondLevel;
 
         this.data = data;
+
+        this.mDarkMode = darkMode;
     }
 
     @Override
@@ -104,9 +109,23 @@ public class ThreeLevelListAdapter extends BaseExpandableListAdapter {
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
 
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        convertView = inflater.inflate(R.layout.row_first, null);
+        if (!mDarkMode) convertView = inflater.inflate(R.layout.row_first, null);
+            else convertView = inflater.inflate(R.layout.row_first2, null);
         TextView text = (TextView) convertView.findViewById(R.id.rowParentText);
         text.setText(this.parentHeaders.get(groupPosition));
+
+        //if there's ONLY a location title, and no information within, remove the dropdown arrow from the row
+        boolean hasSecondLevel = true;
+        try {
+            secondLevel.get(groupPosition);
+        } catch (IndexOutOfBoundsException e){
+            hasSecondLevel = false;
+            System.out.println("No children");
+        };
+        if (!hasSecondLevel){
+            ImageView dropDown = (ImageView) convertView.findViewById(R.id.ivGroupIndicator);
+            dropDown.setVisibility(View.GONE);
+        }
 
         return convertView;
     }
@@ -144,7 +163,7 @@ public class ThreeLevelListAdapter extends BaseExpandableListAdapter {
 
         if (hasSecondLevel) {
             headers = secondLevel.get(groupPosition);
-            secondLevelELV.setAdapter(new SecondLevelAdapter(context, headers, childData));
+            secondLevelELV.setAdapter(new SecondLevelAdapter(context, headers, childData, mDarkMode));
 
             secondLevelELV.setGroupIndicator(null);
 

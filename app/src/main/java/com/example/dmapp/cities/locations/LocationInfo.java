@@ -3,9 +3,12 @@ package com.example.dmapp.cities.locations;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutCompat;
@@ -19,6 +22,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.dmapp.R;
@@ -34,6 +39,7 @@ public class LocationInfo extends AppCompatActivity {
     private final String TAG = "LocationInfo";
     private Context context;
     boolean deleteExists = false;
+    private Boolean darkMode;
     //String cityName = getIntent().getStringExtra("cityName");
 
     @Override
@@ -41,6 +47,10 @@ public class LocationInfo extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.location_info);
         context = this;
+
+        final SharedPreferences sharedPreferences = getSharedPreferences("Settings", Context.MODE_PRIVATE);
+        String theme = sharedPreferences.getString("Theme", "none");
+        darkMode = theme.equals("dark");
 
         String cityName = getIntent().getStringExtra("cityName");
         Log.d(TAG, "onCreate: cityName is" + cityName);
@@ -51,11 +61,37 @@ public class LocationInfo extends AppCompatActivity {
         final EditText locationDescription = findViewById(R.id.locationDescription);
         final EditText locationPlotHooks = findViewById(R.id.locationPlotHooks);
         final EditText locationNotes = findViewById(R.id.locationNotes);
+        final ScrollView locationMainLayout = findViewById(R.id.locationMainLayout);
         final LinearLayoutCompat buttonLayout = findViewById(R.id.locationButtonLayout);
         final LinearLayout locationLayout = findViewById(R.id.locationLayout);
+        final TextView nameTitle = findViewById(R.id.nameTitle);
+        final TextView descTitle = findViewById(R.id.descTitle);
+        final TextView plotTitle = findViewById(R.id.plotTitle);
+        final TextView noteTitle = findViewById(R.id.noteTitle);
+        Button saveLocation = findViewById(R.id.saveLocation);
         final DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
 
-        Button saveLocation = findViewById(R.id.saveLocation);
+        if (theme.equals("dark")){
+
+            DrawableCompat.setTint(DrawableCompat.wrap(backButton.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
+
+            locationName.setBackgroundResource(R.drawable.info_bg7);
+            locationName.setTextColor(Color.parseColor("#dadada"));
+            locationDescription.setBackgroundResource(R.drawable.info_bg7);
+            locationDescription.setTextColor(Color.parseColor("#dadada"));
+            locationPlotHooks.setBackgroundResource(R.drawable.info_bg7);
+            locationPlotHooks.setTextColor(Color.parseColor("#dadada"));
+            locationNotes.setBackgroundResource(R.drawable.info_bg7);
+            locationNotes.setTextColor(Color.parseColor("#dadada"));
+            nameTitle.setTextColor(Color.WHITE);
+            descTitle.setTextColor(Color.WHITE);
+            plotTitle.setTextColor(Color.WHITE);
+            noteTitle.setTextColor(Color.WHITE);
+            locationMainLayout.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            backButton.setBackgroundColor(Color.parseColor("#2C2C2C"));
+        } else {
+            DrawableCompat.setTint(DrawableCompat.wrap(backButton.getDrawable()), ContextCompat.getColor(context, R.color.black));
+        }
 
         //if starting the activity from clicking an item, addLocationValue will be 0, otherwise, it's -1
         //we use this value to adjust the behavior of the editText values set during onCreate, and whether we need to check the name for an identical value when creating a new npc
@@ -109,6 +145,8 @@ public class LocationInfo extends AppCompatActivity {
                                         dialog.dismiss();
                                         mLocationsDBHelper.removeLocation(locationTitle);
                                         Intent intent = new Intent(context, LocationList.class);
+                                        String cityName = getIntent().getStringExtra("cityName");
+                                        intent.putExtra("cityName", cityName);
                                         startActivity(intent);
                                         finish();
                                     }
@@ -231,6 +269,8 @@ public class LocationInfo extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Intent intent = new Intent(this, LocationList.class);
+        String cityName = getIntent().getStringExtra("cityName");
+        intent.putExtra("cityName", cityName);
         startActivity(intent);
     }
 

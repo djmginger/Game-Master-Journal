@@ -1,10 +1,14 @@
 package com.example.dmapp.cities.locations;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutCompat;
@@ -22,6 +26,8 @@ import android.widget.TextView;
 
 import com.example.dmapp.MyRecyclerViewAdapter;
 import com.example.dmapp.R;
+import com.example.dmapp.cities.CityDisplay;
+import com.example.dmapp.cities.CityInfo;
 
 import java.util.ArrayList;
 
@@ -30,6 +36,7 @@ public class LocationList extends AppCompatActivity implements MyRecyclerViewAda
     private MyRecyclerViewAdapter adapter;
     private final ArrayList<String> locationList = new ArrayList<>();
     private final String TAG = "LocationInfo";
+    private Context context;
 
 
     @Override
@@ -37,15 +44,37 @@ public class LocationList extends AppCompatActivity implements MyRecyclerViewAda
         super.onCreate(savedInstanceState);
         setContentView(R.layout.location_titles);
         String cityName = getIntent().getStringExtra("cityName");
+        context = this;
 
         LinearLayoutCompat layout = findViewById(R.id.locationLayout);
+        LinearLayoutCompat headerLayout = findViewById(R.id.headerLayout);
         RelativeLayout innerLayout = findViewById(R.id.innerLayout);
         ImageView backButton = findViewById(R.id.backButton);
         ImageView addEntry = findViewById(R.id.addEntry);
+        TextView cityTitle = findViewById(R.id.city);
 
         locationsDBHelper mLocationsDBHelper = new locationsDBHelper(this);
         DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
         int deviceHeight = displayMetrics.heightPixels;
+
+        final SharedPreferences sharedPreferences = getSharedPreferences("Settings", Context.MODE_PRIVATE);
+        String theme = sharedPreferences.getString("Theme", "none");
+        Boolean darkMode = theme.equals("dark");
+
+        if (theme.equals("dark")){
+            DrawableCompat.setTint(DrawableCompat.wrap(backButton.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
+            DrawableCompat.setTint(DrawableCompat.wrap(addEntry.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
+
+            layout.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            innerLayout.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            cityTitle.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            headerLayout.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            addEntry.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            backButton.setBackgroundColor(Color.parseColor("#2C2C2C"));
+        } else {
+            DrawableCompat.setTint(DrawableCompat.wrap(backButton.getDrawable()), ContextCompat.getColor(context, R.color.black));
+            DrawableCompat.setTint(DrawableCompat.wrap(addEntry.getDrawable()), ContextCompat.getColor(context, R.color.black));
+        }
 
         // set up the RecyclerView with data from the database
         Cursor locations = mLocationsDBHelper.getLocations(cityName);
@@ -71,12 +100,11 @@ public class LocationList extends AppCompatActivity implements MyRecyclerViewAda
             locations.close();
         }
 
-        TextView city = findViewById(R.id.city);
-        city.setText(String.format("%s %s", getString(R.string.locationTitle), cityName));
+        cityTitle.setText(String.format("%s %s", getString(R.string.locationTitle), cityName));
 
         RecyclerView recyclerView = findViewById(R.id.info_content);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new MyRecyclerViewAdapter(this, locationList, this);
+        adapter = new MyRecyclerViewAdapter(this, locationList, this, darkMode);
         recyclerView.setAdapter(adapter);
         DividerItemDecoration itemDecor = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
         recyclerView.addItemDecoration(itemDecor);
@@ -138,6 +166,16 @@ public class LocationList extends AppCompatActivity implements MyRecyclerViewAda
         intent.putExtra("addLocationValue", 0);
         startActivity(intent);
         finish();
+    }
+
+    @Override
+    public void onBackPressed(){
+        String cityName = getIntent().getStringExtra("cityName");
+        Log.d(TAG, "onCreate: The value of cityTitle is " + cityName);
+        Intent intent = new Intent(this, CityInfo.class);
+        intent.putExtra("cityName", cityName);
+        intent.putExtra("addCityValue", 0);
+        startActivity(intent);
     }
 }
 

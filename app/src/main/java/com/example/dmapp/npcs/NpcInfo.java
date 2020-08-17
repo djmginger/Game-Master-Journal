@@ -5,8 +5,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -16,6 +18,7 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutCompat;
@@ -32,6 +35,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -64,12 +68,17 @@ public class NpcInfo extends AppCompatActivity{
     private String image = "";
     private ArrayAdapter<String> locationAdapter;
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 672;
+    private Boolean darkMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.npc_info);
         context = this;
+
+        final SharedPreferences sharedPreferences = getSharedPreferences("Settings", Context.MODE_PRIVATE);
+        String theme = sharedPreferences.getString("Theme", "none");
+        darkMode = theme.equals("dark");
 
         mNpcDBHelper = new npcDBHelper(this);
         final citiesDBHelper mCityDBHelper = new citiesDBHelper(this);
@@ -80,10 +89,15 @@ public class NpcInfo extends AppCompatActivity{
         final EditText npcDescription = findViewById(R.id.npcDescription);
         final EditText npcPlotHooks = findViewById(R.id.npcPlotHooks);
         final EditText npcNotes = findViewById(R.id.npcNotes);
-        final LinearLayoutCompat buttonLayout = findViewById(R.id.npcButtonLayout);
+        final ScrollView npcMainLayout = findViewById(R.id.npcMainLayout);
         final LinearLayout npcLayout = findViewById(R.id.npcLayout);
-
         final TextView addImageText = findViewById(R.id.addImageText);
+        final TextView npcDescTitle = findViewById(R.id.npcDescTitle);
+        final TextView npcNameTitle = findViewById(R.id.npcNameTitle);
+        final TextView npcPlotTitle = findViewById(R.id.npcPlotTitle);
+        final TextView npcNoteTitle = findViewById(R.id.npcNoteTitle);
+        final TextView locationTitle = findViewById(R.id.locationTitle);
+        final TextView racePreset = findViewById(R.id.racePreset);
         final ImageView npcImage = findViewById(R.id.npcImage);
         final ImageView addImage = findViewById(R.id.addImage);
         final Spinner locationSpinner = findViewById(R.id.locationSpinner);
@@ -94,22 +108,55 @@ public class NpcInfo extends AppCompatActivity{
         final ImageView pause = findViewById(R.id.pause);
         final ImageView deleteVoice = findViewById(R.id.deleteVoice);
 
-        mPlayer = new MediaPlayer();
-
         addImageText.setText(R.string.addimage);
         npcImage.setVisibility(View.GONE);
         addImage.setImageResource(R.drawable.addanimage);
 
-        //Fill out the locationSpinner with available locations
+        if (theme.equals("dark")){
 
-        //mMyListView.getAdapter()).notifyDataSetChanged();
+            DrawableCompat.setTint(DrawableCompat.wrap(backButton.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
+            DrawableCompat.setTint(DrawableCompat.wrap(deleteVoice.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
+            DrawableCompat.setTint(DrawableCompat.wrap(stop.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
+            DrawableCompat.setTint(DrawableCompat.wrap(play.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
+            DrawableCompat.setTint(DrawableCompat.wrap(pause.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
+            DrawableCompat.setTint(DrawableCompat.wrap(addImage.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
+
+            npcLayout.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            addImageText.setTextColor(Color.WHITE);
+            npcDescTitle.setTextColor(Color.WHITE);
+            npcNameTitle.setTextColor(Color.WHITE);
+            npcPlotTitle.setTextColor(Color.WHITE);
+            npcNoteTitle.setTextColor(Color.WHITE);
+            npcRace.setTextColor(Color.WHITE);
+            locationTitle.setTextColor(Color.WHITE);
+            addImage.setBackgroundResource(R.drawable.info_bg8);
+            npcName.setBackgroundResource(R.drawable.info_bg7);
+            npcName.setTextColor(Color.parseColor("#dadada"));
+            raceLayout.setBackgroundResource(R.drawable.info_bg7);
+            racePreset.setTextColor(Color.parseColor("#dadada"));
+            npcDescription.setBackgroundResource(R.drawable.info_bg7);
+            npcDescription.setTextColor(Color.parseColor("#dadada"));
+            npcPlotHooks.setBackgroundResource(R.drawable.info_bg7);
+            npcPlotHooks.setTextColor(Color.parseColor("#dadada"));
+            npcNotes.setBackgroundResource(R.drawable.info_bg7);
+            npcNotes.setTextColor(Color.parseColor("#dadada"));
+            npcMainLayout.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            backButton.setBackgroundColor(Color.parseColor("#2C2C2C"));
+        } else {
+            DrawableCompat.setTint(DrawableCompat.wrap(backButton.getDrawable()), ContextCompat.getColor(context, R.color.black));
+            DrawableCompat.setTint(DrawableCompat.wrap(deleteVoice.getDrawable()), ContextCompat.getColor(context, R.color.black));
+            DrawableCompat.setTint(DrawableCompat.wrap(stop.getDrawable()), ContextCompat.getColor(context, R.color.black));
+            DrawableCompat.setTint(DrawableCompat.wrap(play.getDrawable()), ContextCompat.getColor(context, R.color.black));
+            DrawableCompat.setTint(DrawableCompat.wrap(pause.getDrawable()), ContextCompat.getColor(context, R.color.black));
+            DrawableCompat.setTint(DrawableCompat.wrap(addImage.getDrawable()), ContextCompat.getColor(context, R.color.black));
+        }
+
+        mPlayer = new MediaPlayer();
 
         //if starting the activity from clicking an item, addNPCValue will be 0, otherwise, it's -1
         //we use this value to adjust the behavior of the editText values set during onCreate, and whether we need to check the name for an identical value when creating a new npc
         setAddNPCValue(getIntent().getIntExtra("addNPCValue", -1));
-
         setNPCTitle(getIntent().getStringExtra("npcName")); //set the npc Title to what was passed in the intent. We use this to check to see if we need to UPDATE instead of INSERT when adding an npc
-        //Log.d(TAG, "onCreate: The value of npcTitle is " + npcTitle);
 
         raceLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -153,7 +200,15 @@ public class NpcInfo extends AppCompatActivity{
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void onClick(View v) {
-                mPlayer.stop();
+                if (!isStopped) {
+                    mPlayer.stop();
+                    try{
+                        mPlayer.prepare();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    isStopped = true;
+                }
                 Intent intent;
                 intent = new Intent();
                 intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
@@ -187,6 +242,8 @@ public class NpcInfo extends AppCompatActivity{
                         lparams.setMargins(0,0,0,25);
                         lparams.gravity = Gravity.CENTER_HORIZONTAL;
                         deleteNPCButtonImage.setLayoutParams(lparams);
+                        if (darkMode) DrawableCompat.setTint(DrawableCompat.wrap(deleteNPCButtonImage.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
+                            else DrawableCompat.setTint(DrawableCompat.wrap(deleteNPCButtonImage.getDrawable()), ContextCompat.getColor(context, R.color.delete));
                         deleteNPCButtonImage.setAdjustViewBounds(true);
                         deleteNPCButtonImage.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -247,6 +304,8 @@ public class NpcInfo extends AppCompatActivity{
             Log.d(TAG, "onCreate: the value of plothooks is " + npcInfo.getString(6));
             ImageView deleteNPCButtonImage = new ImageView(this);
             deleteNPCButtonImage.setImageResource(R.drawable.delete);
+            if (darkMode) DrawableCompat.setTint(DrawableCompat.wrap(deleteNPCButtonImage.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
+                else DrawableCompat.setTint(DrawableCompat.wrap(deleteNPCButtonImage.getDrawable()), ContextCompat.getColor(context, R.color.delete));
             DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
             int deviceWidth = (displayMetrics.widthPixels);
             LinearLayout.LayoutParams lparams = new LinearLayout.LayoutParams((int)(deviceWidth * .11), ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -286,37 +345,43 @@ public class NpcInfo extends AppCompatActivity{
             npcPlotHooks.setText(npcInfo.getString(6));
 
             image = npcInfo.getString(8);
-            Uri imageUri = Uri.parse(image);
-            npcImage.setImageURI(imageUri);
-            npcImage.setVisibility(View.VISIBLE);
-            addImageText.setText(R.string.removeimage);
-            addImage.setImageResource(R.drawable.removeimage);
+            if (!image.equals("")) {
+                Uri imageUri = Uri.parse(image);
+                npcImage.setImageURI(imageUri);
+                npcImage.setVisibility(View.VISIBLE);
+                addImageText.setText(R.string.removeimage);
+                addImage.setImageResource(R.drawable.removeimage);
+                if (!darkMode) DrawableCompat.setTint(DrawableCompat.wrap(addImage.getDrawable()), ContextCompat.getColor(context, R.color.black));
+                    else DrawableCompat.setTint(DrawableCompat.wrap(addImage.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
 
-            //change the behavior of the addImage button to become a remove button. Then if clicked, change it back.
-            addImage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    npcImage.setImageURI(null);
-                    npcImage.setVisibility(View.GONE);
-                    addImageText.setText(R.string.addimage);
-                    addImage.setImageResource(R.drawable.addanimage);
-                    addImage.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
+                //change the behavior of the addImage button to become a remove button. Then if clicked, change it back.
+                addImage.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        image = "";
+                        npcImage.setImageURI(null);
+                        npcImage.setVisibility(View.GONE);
+                        addImageText.setText(R.string.addimage);
+                        addImage.setImageResource(R.drawable.addanimage);
+                        if (!darkMode) DrawableCompat.setTint(DrawableCompat.wrap(addImage.getDrawable()), ContextCompat.getColor(context, R.color.black));
+                            else DrawableCompat.setTint(DrawableCompat.wrap(addImage.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
+                        addImage.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
 
-                            if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                                npcImage.setVisibility(View.VISIBLE);
-                                Intent intent = new Intent(Intent.ACTION_PICK);
-                                intent.setType("image/*");
-                                startActivityForResult(intent, 3);
+                                if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                                    npcImage.setVisibility(View.VISIBLE);
+                                    Intent intent = new Intent(Intent.ACTION_PICK);
+                                    intent.setType("image/*");
+                                    startActivityForResult(intent, 3);
+                                } else {
+                                    requestStoragePermission();
+                                }
                             }
-                            else {
-                                requestStoragePermission();
-                            }
-                        }
-                    });
-                }
-            });
+                        });
+                    }
+                });
+            }
 
             try (Cursor cities = mCityDBHelper.getCities()) {
                 if (cities.moveToNext()) {
@@ -335,7 +400,7 @@ public class NpcInfo extends AppCompatActivity{
                 }
             }
 
-            locationAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, locations);
+            locationAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, locations);
             locationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             locationSpinner.setAdapter(locationAdapter);
 
@@ -413,13 +478,28 @@ public class NpcInfo extends AppCompatActivity{
                             e.printStackTrace();
                         }
                         isStopped = true;
-                        mPlayer.release();
-                        addVoice.setText(R.string.addvoice);
-                        stop.setVisibility(View.INVISIBLE);
-                        play.setVisibility(View.INVISIBLE);
-                        pause.setVisibility(View.INVISIBLE);
-                        deleteVoice.setVisibility(View.INVISIBLE);
-                        voice = "";
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                        builder.setMessage(R.string.areyou);
+                        builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.dismiss();
+                                mPlayer.release();
+                                addVoice.setText(R.string.addvoice);
+                                stop.setVisibility(View.INVISIBLE);
+                                play.setVisibility(View.INVISIBLE);
+                                pause.setVisibility(View.INVISIBLE);
+                                deleteVoice.setVisibility(View.INVISIBLE);
+                                voice = "";
+                            }
+                        });
+                        builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.dismiss();
+                            }
+                        });
+                        AlertDialog alert = builder.create();
+                        alert.show();
                     }
                 });
             }
@@ -442,7 +522,7 @@ public class NpcInfo extends AppCompatActivity{
                 cities.close();
             }
 
-            locationAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, locations);
+            locationAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, locations);
             locationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             locationSpinner.setAdapter(locationAdapter);
         }
@@ -528,12 +608,9 @@ public class NpcInfo extends AppCompatActivity{
 
                 mPlayer = new MediaPlayer();
                 mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-
                 audioFileUri = data.getData();
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    this.getContentResolver().takePersistableUriPermission(audioFileUri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                }
+                this.getContentResolver().takePersistableUriPermission(audioFileUri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 
                 voice = audioFileUri.toString();
                 Log.d(TAG, "onActivityResult: The initial value of voice is: " + voice);
@@ -550,11 +627,13 @@ public class NpcInfo extends AppCompatActivity{
                 ImageView stop = findViewById(R.id.stop);
                 ImageView play = findViewById(R.id.play);
                 ImageView pause = findViewById(R.id.pause);
+                ImageView deleteVoice = findViewById(R.id.deleteVoice);
                 addVoice.setText(R.string.changevoice);
 
                 stop.setVisibility(View.VISIBLE);
                 play.setVisibility(View.VISIBLE);
                 pause.setVisibility(View.VISIBLE);
+                deleteVoice.setVisibility(View.VISIBLE);
 
                 mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     public void onCompletion(MediaPlayer mp) {
@@ -563,6 +642,8 @@ public class NpcInfo extends AppCompatActivity{
                             mPlayer.prepare();
                         } catch (IOException e) {
                             e.printStackTrace();
+                        } catch (IllegalStateException x) {
+                            toast("No audio file found, please try again");
                         }
                         isStopped = true;
                     }
@@ -617,6 +698,8 @@ public class NpcInfo extends AppCompatActivity{
                 npcImage.setImageURI(selectedImage);
                 addImageText.setText(R.string.removeimage);
                 addImage.setImageResource(R.drawable.removeimage);
+                if (!darkMode) DrawableCompat.setTint(DrawableCompat.wrap(addImage.getDrawable()), ContextCompat.getColor(context, R.color.black));
+                    else DrawableCompat.setTint(DrawableCompat.wrap(addImage.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
 
                 //change the behavior of the addImage button to become a remove button. Then if clicked, change it back.
                 addImage.setOnClickListener(new View.OnClickListener() {
@@ -627,6 +710,8 @@ public class NpcInfo extends AppCompatActivity{
                         npcImage.setVisibility(View.GONE);
                         addImageText.setText(R.string.addimage);
                         addImage.setImageResource(R.drawable.addanimage);
+                        if (!darkMode) DrawableCompat.setTint(DrawableCompat.wrap(addImage.getDrawable()), ContextCompat.getColor(context, R.color.black));
+                            else DrawableCompat.setTint(DrawableCompat.wrap(addImage.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
                         addImage.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -656,6 +741,7 @@ public class NpcInfo extends AppCompatActivity{
         Log.d(TAG, "onDestroy: voice = " + voice);
         if(!voice.equals("") && mPlayer.isPlaying()) {
             mPlayer.stop();
+            mPlayer.release();
         }
     }
 

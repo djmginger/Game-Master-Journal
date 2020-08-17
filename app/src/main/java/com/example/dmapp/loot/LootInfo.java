@@ -5,12 +5,16 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutCompat;
@@ -26,6 +30,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -49,6 +54,7 @@ public class LootInfo extends AppCompatActivity {
     private Activity activity;
     private String rarityChoice;
     boolean deleteExists = false;
+    private boolean darkMode;
 
 
     @Override
@@ -58,6 +64,10 @@ public class LootInfo extends AppCompatActivity {
         String TAG = "LootInfo";
         context = this;
         activity = this;
+
+        final SharedPreferences sharedPreferences = getSharedPreferences("Settings", Context.MODE_PRIVATE);
+        String theme = sharedPreferences.getString("Theme", "none");
+        darkMode = theme.equals("dark");
 
         final DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
         int deviceHeight = (displayMetrics.heightPixels);
@@ -70,17 +80,53 @@ public class LootInfo extends AppCompatActivity {
         final EditText lootDescription = findViewById(R.id.lootDescription);
         final EditText lootDetails = findViewById(R.id.lootDetails);
         final Spinner lootsRarity = findViewById(R.id.lootsRarity);
+        final ScrollView lootMainLayout = findViewById(R.id.lootMainLayout);
         final LinearLayoutCompat buttonLayout = findViewById(R.id.lootButtonLayout);
         final LinearLayout lootLayout = findViewById(R.id.lootLayout);
         final TextView addImageText = findViewById(R.id.addImageText);
-
-        ImageView lootImage = findViewById(R.id.lootImage);
-        ImageView addImage = findViewById((R.id.addImage));
+        final TextView nameTitle = findViewById(R.id.nameTitle);
+        final TextView lootReqTitle = findViewById(R.id.lootReqTitle);
+        final TextView rarityTitle = findViewById(R.id.rarityTitle);
+        final TextView priceTitle = findViewById(R.id.priceTitle);
+        final TextView descTitle = findViewById(R.id.descTitle);
+        final TextView detailsTitle = findViewById(R.id.detailsTitle);
+        final ImageView lootImage = findViewById(R.id.lootImage);
+        final ImageView addImage = findViewById((R.id.addImage));
         Button saveLoot =  findViewById(R.id.saveLoot);
 
         addImageText.setText(R.string.addimage);
         lootImage.setVisibility(View.GONE);
         addImage.setImageResource(R.drawable.addanimage);
+
+        if (theme.equals("dark")){
+
+            DrawableCompat.setTint(DrawableCompat.wrap(backButton.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
+            DrawableCompat.setTint(DrawableCompat.wrap(addImage.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
+
+            addImageText.setTextColor(Color.WHITE);
+            nameTitle.setTextColor(Color.WHITE);
+            lootReqTitle.setTextColor(Color.WHITE);
+            rarityTitle.setTextColor(Color.WHITE);
+            priceTitle.setTextColor(Color.WHITE);
+            descTitle.setTextColor(Color.WHITE);
+            detailsTitle.setTextColor(Color.WHITE);
+            addImage.setBackgroundResource(R.drawable.info_bg8);
+            lootName.setBackgroundResource(R.drawable.info_bg7);
+            lootName.setTextColor(Color.parseColor("#dadada"));
+            lootPrice.setBackgroundResource(R.drawable.info_bg7);
+            lootPrice.setTextColor(Color.parseColor("#dadada"));
+            lootRequirements.setBackgroundResource(R.drawable.info_bg7);
+            lootRequirements.setButtonTintList(ColorStateList.valueOf(Color.parseColor("#ffffff")));
+            lootDescription.setBackgroundResource(R.drawable.info_bg7);
+            lootDescription.setTextColor(Color.parseColor("#dadada"));
+            lootDetails.setBackgroundResource(R.drawable.info_bg7);
+            lootDetails.setTextColor(Color.parseColor("#dadada"));
+            lootMainLayout.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            backButton.setBackgroundColor(Color.parseColor("#2C2C2C"));
+        } else {
+            DrawableCompat.setTint(DrawableCompat.wrap(backButton.getDrawable()), ContextCompat.getColor(context, R.color.black));
+            DrawableCompat.setTint(DrawableCompat.wrap(addImage.getDrawable()), ContextCompat.getColor(context, R.color.black));
+        }
 
         rarities.add("Loot Rarity:");
         rarities.add("None");
@@ -90,7 +136,7 @@ public class LootInfo extends AppCompatActivity {
         rarities.add("Very Rare");
         rarities.add("Legendary");
         rarities.add("Artifact");
-        final ArrayAdapter<String> rarityAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, rarities);
+        final ArrayAdapter<String> rarityAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, rarities);
         rarityAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         lootsRarity.setAdapter(rarityAdapter);
 
@@ -233,10 +279,6 @@ public class LootInfo extends AppCompatActivity {
             }
             lootDescription.setText(lootInfo.getString(4));
             lootDetails.setText(lootInfo.getString(5));
-            image = lootInfo.getString(6);
-            Uri imageUri = Uri.parse(image);
-            lootImage.setImageURI(imageUri);
-
             ImageView deleteLootButtonImage = new ImageView(this);
             deleteLootButtonImage.setImageResource(R.drawable.delete);
             int deviceWidth = (displayMetrics.widthPixels);
@@ -274,12 +316,50 @@ public class LootInfo extends AppCompatActivity {
                 }
             });
             lootLayout.addView(deleteLootButtonImage);
+
+            image = lootInfo.getString(6);
+            if (!image.equals("")) {
+                Uri imageUri = Uri.parse(image);
+                lootImage.setImageURI(imageUri);
+                lootImage.setVisibility(View.VISIBLE);
+                addImageText.setText(R.string.removeimage);
+                addImage.setImageResource(R.drawable.removeimage);
+                if (!darkMode) DrawableCompat.setTint(DrawableCompat.wrap(addImage.getDrawable()), ContextCompat.getColor(context, R.color.black));
+                    else DrawableCompat.setTint(DrawableCompat.wrap(addImage.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
+
+                addImage.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        image = "";
+                        lootImage.setImageURI(null);
+                        lootImage.setVisibility(View.GONE);
+                        addImageText.setText(R.string.addimage);
+                        addImage.setImageResource(R.drawable.addanimage);
+                        if (!darkMode) DrawableCompat.setTint(DrawableCompat.wrap(addImage.getDrawable()), ContextCompat.getColor(context, R.color.black));
+                            else DrawableCompat.setTint(DrawableCompat.wrap(addImage.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
+                        addImage.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+
+                                if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                                    lootImage.setVisibility(View.VISIBLE);
+                                    Intent intent = new Intent(Intent.ACTION_PICK);
+                                    intent.setType("image/*");
+                                    startActivityForResult(intent, 1);
+                                } else {
+                                    requestStoragePermission();
+                                }
+                            }
+                        });
+                    }
+                });
+            }
         }
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Result code is RESULT_OK only if the user selects an Image
-        final ImageView lootImage = (ImageView) findViewById(R.id.lootImage);
+        final ImageView lootImage = findViewById(R.id.lootImage);
         final TextView addImageText = findViewById(R.id.addImageText);
         final ImageView addImage = findViewById(R.id.addImage);
         if (resultCode == Activity.RESULT_OK)
@@ -291,7 +371,8 @@ public class LootInfo extends AppCompatActivity {
                 lootImage.setImageURI(selectedImage);
                 addImageText.setText(R.string.removeimage);
                 addImage.setImageResource(R.drawable.removeimage);
-
+                if (!darkMode) DrawableCompat.setTint(DrawableCompat.wrap(addImage.getDrawable()), ContextCompat.getColor(context, R.color.black));
+                    else DrawableCompat.setTint(DrawableCompat.wrap(addImage.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
                 //change the behavior of the addImage button to become a remove button. Then if clicked, change it back.
                 addImage.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -301,6 +382,8 @@ public class LootInfo extends AppCompatActivity {
                         lootImage.setVisibility(View.GONE);
                         addImageText.setText(R.string.addimage);
                         addImage.setImageResource(R.drawable.addanimage);
+                        if (!darkMode) DrawableCompat.setTint(DrawableCompat.wrap(addImage.getDrawable()), ContextCompat.getColor(context, R.color.black));
+                            else DrawableCompat.setTint(DrawableCompat.wrap(addImage.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
                         addImage.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {

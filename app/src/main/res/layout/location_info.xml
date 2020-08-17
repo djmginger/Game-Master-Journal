@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/locationMainLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/mainColor2">
+    android:background="@color/mainBgColor">
 
     <LinearLayout
         android:id="@+id/locationLayout"
@@ -12,8 +13,7 @@
         android:layout_height="match_parent"
         android:gravity="start"
         android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:background="@color/mainColor2">
+        android:paddingRight="16dp">
 
         <android.support.v7.widget.LinearLayoutCompat
             android:layout_width="match_parent"
@@ -35,12 +35,14 @@
                 android:text="@string/locationdetails"
                 android:paddingEnd="25dp"
                 android:layout_weight="1"
+                android:textColor="@color/mainColor2"
                 android:gravity="center"
                 android:textSize="25sp" />
 
         </android.support.v7.widget.LinearLayoutCompat>
 
         <TextView
+            android:id="@+id/nameTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
@@ -58,6 +60,7 @@
             android:padding="10dp" />
 
         <TextView
+            android:id="@+id/descTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
@@ -73,6 +76,7 @@
             android:padding="10dp" />
 
         <TextView
+            android:id="@+id/plotTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
@@ -88,6 +92,7 @@
             android:padding="10dp" />
 
         <TextView
+            android:id="@+id/noteTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"

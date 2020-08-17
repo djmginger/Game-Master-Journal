@@ -2,11 +2,17 @@ package com.example.dmapp.npcs;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.content.res.AppCompatResources;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -29,6 +35,8 @@ import com.example.dmapp.cities.citiesDBHelper;
 import com.example.dmapp.MyRecyclerViewAdapter;
 import com.example.dmapp.R;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 
 public class NpcList extends AppCompatActivity implements MyRecyclerViewAdapter.OnNoteListener {
@@ -45,19 +53,41 @@ public class NpcList extends AppCompatActivity implements MyRecyclerViewAdapter.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.npc_titles);
 
+        final SharedPreferences sharedPreferences = getSharedPreferences("Settings", Context.MODE_PRIVATE);
+        String theme = sharedPreferences.getString("Theme", "none");
+        Boolean darkMode = theme.equals("dark");
+
         context = this;
         LinearLayoutCompat layout = findViewById(R.id.npc_layout);
+        LinearLayoutCompat headerLayout = findViewById(R.id.headerLayout);
         RelativeLayout innerLayout = findViewById(R.id.innerLayout);
         RecyclerView recyclerView = findViewById(R.id.info_content);
         ImageView backButton = findViewById(R.id.backButton);
         final Spinner filter = findViewById(R.id.filter);
         ImageView addEntry = findViewById(R.id.addEntry);
+        TextView npcHeader = findViewById(R.id.npcHeader);
 
         final npcDBHelper mNpcDBHelper = new npcDBHelper(this);
         final citiesDBHelper mcitiesDBHelper = new citiesDBHelper(this);
 
         DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
         int deviceHeight = (displayMetrics.heightPixels);
+
+        if (theme.equals("dark")){
+
+            DrawableCompat.setTint(DrawableCompat.wrap(backButton.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
+            DrawableCompat.setTint(DrawableCompat.wrap(addEntry.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
+
+            layout.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            innerLayout.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            npcHeader.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            headerLayout.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            addEntry.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            backButton.setBackgroundColor(Color.parseColor("#2C2C2C"));
+        } else {
+            DrawableCompat.setTint(DrawableCompat.wrap(backButton.getDrawable()), ContextCompat.getColor(context, R.color.black));
+            DrawableCompat.setTint(DrawableCompat.wrap(addEntry.getDrawable()), ContextCompat.getColor(context, R.color.black));
+        }
 
         // set up the RecyclerView with data from the database
         Cursor npcs = mNpcDBHelper.getNPCS();
@@ -88,13 +118,14 @@ public class NpcList extends AppCompatActivity implements MyRecyclerViewAdapter.
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         DividerItemDecoration itemDecor = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+        //if (theme.equals("dark")) itemDecor.setDrawable(new ColorDrawable(getResources().getColor(R.color.mainBgColor)));
         recyclerView.addItemDecoration(itemDecor);
-        adapter = new MyRecyclerViewAdapter(this, npcList, this);
+        adapter = new MyRecyclerViewAdapter(this, npcList, this, darkMode);
         recyclerView.setAdapter(adapter);
         recyclerView.addItemDecoration(itemDecor);
 
         ViewGroup.LayoutParams params = recyclerView.getLayoutParams();
-        params.height = (int)(deviceHeight * .67);
+        params.height = (int)(deviceHeight * .75);
         recyclerView.setLayoutParams(params);
 
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -130,7 +161,7 @@ public class NpcList extends AppCompatActivity implements MyRecyclerViewAdapter.
             cities.close();
         }
 
-        final ArrayAdapter<String> locationAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, locations);
+        final ArrayAdapter<String> locationAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, locations);
         locationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         filter.setAdapter(locationAdapter);
 
@@ -140,7 +171,7 @@ public class NpcList extends AppCompatActivity implements MyRecyclerViewAdapter.
                 filterChoice = locations.get(position);
                 Log.d(TAG, "onItemSelected: Value of filterChoice is: " + filterChoice);
 
-                if ((!locations.get(position).equals("Filter by location:")) && (locations.get(position) != ("Clear Filter"))) {
+                if ((!locations.get(position).equals("Filter by location:")) && (!locations.get(position).equals("Clear Filter"))) {
                     npcList.clear();
                     locationAdapter.getDropDownView(position, view, parent);
                     if (!(locations.contains("Clear Filter"))) {

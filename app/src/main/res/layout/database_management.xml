@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity"
-    android:background="#80cee1"
+    android:background="@color/mainBgColor"
     android:orientation="vertical">
 
     <android.support.v7.widget.LinearLayoutCompat
@@ -26,6 +26,7 @@
             android:src="@drawable/backarrow" />
 
         <TextView
+            android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/databases"
@@ -88,6 +89,6 @@
         android:layout_marginTop="15dp"
         android:layout_gravity="center"
         android:textSize="12sp"
-        android:text="@string/deletepresetdata" />
+        android:text="@string/reset_all_presets" />
 
 </android.support.v7.widget.LinearLayoutCompat>

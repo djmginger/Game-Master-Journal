@@ -36,12 +36,14 @@ public class SecondLevelAdapter extends BaseExpandableListAdapter {
 
     ImageView ivGroupIndicator;
 
+    boolean mDarkMode;
 
-    public SecondLevelAdapter(Context context, String[] headers, List<String> data) {
+
+    public SecondLevelAdapter(Context context, String[] headers, List<String> data, boolean darkMode) {
         this.context = context;
         this.data = data;
         this.headers = headers;
-
+        this.mDarkMode = darkMode;
     }
 
     @Override
@@ -64,7 +66,8 @@ public class SecondLevelAdapter extends BaseExpandableListAdapter {
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        convertView = inflater.inflate(R.layout.row_second, null);
+        if (!mDarkMode) convertView = inflater.inflate(R.layout.row_second, null);
+            else convertView = inflater.inflate(R.layout.row_second2, null);
         TextView text = (TextView) convertView.findViewById(R.id.rowSecondText);
         String groupText = getGroup(groupPosition).toString();
         text.setText(groupText);
@@ -94,9 +97,10 @@ public class SecondLevelAdapter extends BaseExpandableListAdapter {
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
 
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        convertView = inflater.inflate(R.layout.row_third, null);
+        if (!mDarkMode) convertView = inflater.inflate(R.layout.row_third, null);
+            else convertView = inflater.inflate(R.layout.row_third2, null);
 
-        TextView textView = (TextView) convertView.findViewById(R.id.rowThirdText);
+        TextView textView = convertView.findViewById(R.id.rowThirdText);
 
         String childArray = data.get(groupPosition);
 

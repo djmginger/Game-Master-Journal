@@ -2,6 +2,7 @@ package com.example.dmapp.loot;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -10,6 +11,8 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.text.method.KeyListener;
@@ -18,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,6 +42,7 @@ public class LootDisplay extends AppCompatActivity{
     private final String TAG = "LootInfo";
     private Context context;
     private Uri imageUri;
+    private Boolean darkMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,14 +50,35 @@ public class LootDisplay extends AppCompatActivity{
         setContentView(R.layout.loot_display);
         context = this;
 
+        final SharedPreferences sharedPreferences = getSharedPreferences("Settings", Context.MODE_PRIVATE);
+        String theme = sharedPreferences.getString("Theme", "none");
+        darkMode = theme.equals("dark");
+
         mLootDBHelper = new lootDBHelper(this);
         ImageView backButton = findViewById(R.id.backButton);
         ImageView editIcon = findViewById(R.id.editIcon);
         final TextView lootName = findViewById(R.id.lootTitle);
+        ScrollView lootMainLayout = findViewById(R.id.lootMainLayout);
         LinearLayout lootLayout = findViewById(R.id.lootLayout);
         LinearLayoutCompat imageLayout = findViewById(R.id.imageLayout);
         LinearLayoutCompat underTitleLayout = findViewById(R.id.underTitleLayout);
         LinearLayoutCompat underTitleLayout2 = findViewById(R.id.underTitleLayout2);
+
+        if (theme.equals("dark")){
+
+            DrawableCompat.setTint(DrawableCompat.wrap(backButton.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
+            DrawableCompat.setTint(DrawableCompat.wrap(editIcon.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
+
+            lootMainLayout.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            lootLayout.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            imageLayout.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            underTitleLayout.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            underTitleLayout2.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            backButton.setBackgroundColor(Color.parseColor("#2C2C2C"));
+        } else {
+            DrawableCompat.setTint(DrawableCompat.wrap(backButton.getDrawable()), ContextCompat.getColor(context, R.color.black));
+            DrawableCompat.setTint(DrawableCompat.wrap(editIcon.getDrawable()), ContextCompat.getColor(context, R.color.black));
+        }
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -63,17 +89,12 @@ public class LootDisplay extends AppCompatActivity{
             }
         });
 
-
         //If coming to this activity from clicking on a name, get and fill out all fields with the data for the corresponding npc.
         Cursor lootInfo = mLootDBHelper.getSpecificLoot(getIntent().getStringExtra("lootName"));
         lootInfo.moveToFirst();
         lootTitle = lootInfo.getString(1);
         lootName.setText(lootInfo.getString(1));
         lootName.setTextColor(Color.parseColor("#6F94F8"));
-        View line = new View(this);
-        line.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 2));
-        line.setBackgroundColor(Color.parseColor("#F1FDF4"));
-        lootLayout.addView(line);
 
         Log.d(TAG, "onCreate: The value of attunement is " + lootInfo.getString(7));
 
@@ -93,14 +114,21 @@ public class LootDisplay extends AppCompatActivity{
             lootRarity.setText(lootInfo.getString(2));
             lootRarity.setTextSize(16);
             lootRarity.setTypeface(null, Typeface.ITALIC);
-            lootRarity.setTextColor(Color.parseColor("#666666"));
-            lootRarity.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            if (!darkMode) {
+                lootRarity.setTextColor(Color.parseColor("#666666"));
+                lootRarity.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            } else {
+                lootRarity.setTextColor(Color.parseColor("#FFFFFF"));
+                lootRarity.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            }
             underTitleLayout.addView(lootRarity);
         }
 
         if((!lootInfo.getString(2).equals("")) && (!lootInfo.getString(3).equals(""))){
             ImageView separator = new ImageView(this);
             separator.setImageDrawable(getResources().getDrawable(R.drawable.dot));
+            if (!darkMode) DrawableCompat.setTint(DrawableCompat.wrap(separator.getDrawable()), ContextCompat.getColor(context, R.color.black));
+                else DrawableCompat.setTint(DrawableCompat.wrap(separator.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
             LinearLayoutCompat.LayoutParams lparams = new LinearLayoutCompat.LayoutParams(30, 30);
             lparams.setMargins(30, 0, 30, 0);
             separator.setLayoutParams(lparams);
@@ -112,65 +140,91 @@ public class LootDisplay extends AppCompatActivity{
             lootPrice.setText(lootInfo.getString(3));
             lootPrice.setTextSize(16);
             lootPrice.setTypeface(null, Typeface.ITALIC);
-            lootPrice.setTextColor(Color.parseColor("#666666"));
-            lootPrice.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            if (!darkMode) {
+                lootPrice.setTextColor(Color.parseColor("#666666"));
+                lootPrice.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            } else {
+                lootPrice.setTextColor(Color.parseColor("#FFFFFF"));
+                lootPrice.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            }
             underTitleLayout.addView(lootPrice);
         }
 
         if((lootInfo.getString(7)).equals("yes")) {
             TextView lootReq = new TextView(this);
-            lootReq.setText("Requires Attunement");
+            lootReq.setText(R.string.attunement);
             lootReq.setTextSize(16);
             lootReq.setTypeface(null, Typeface.ITALIC);
-            lootReq.setTextColor(Color.parseColor("#666666"));
-            lootReq.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            if (!darkMode) {
+                lootReq.setTextColor(Color.parseColor("#666666"));
+                lootReq.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            } else {
+                lootReq.setTextColor(Color.parseColor("#FFFFFF"));
+                lootReq.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            }
             underTitleLayout2.addView(lootReq);
         }
 
         if(!lootInfo.getString(4).equals("")) {
             TextView lootDescTitle = new TextView(this);
-            lootDescTitle.setText("Description");
+            lootDescTitle.setText(R.string.desc);
             lootDescTitle.setTextSize(20);
             lootDescTitle.setTextColor(Color.parseColor("#FE5F55"));
-            lootDescTitle.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            if (!darkMode) lootDescTitle.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                else lootDescTitle.setBackgroundColor(Color.parseColor("#2C2C2C"));
             lootDescTitle.setTypeface(null, Typeface.BOLD);
             lootLayout.addView(lootDescTitle);
 
             View line2 = new View(this);
             line2.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 3));
-            line2.setBackgroundColor(Color.parseColor("#000000"));
+            if (!darkMode) line2.setBackgroundColor(Color.parseColor("#8C8C8C"));
+                else line2.setBackgroundColor(Color.parseColor("#FFFFFF"));
             lootLayout.addView(line2);
 
             TextView lootDesc = new TextView(this);
             lootDesc.setText(lootInfo.getString(4));
             lootDesc.setTextSize(18);
-            lootDesc.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            if (!darkMode) {
+                lootDesc.setTextColor(Color.parseColor("#666666"));
+                lootDesc.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            } else {
+                lootDesc.setTextColor(Color.parseColor("#FFFFFF"));
+                lootDesc.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            }
             LinearLayoutCompat.LayoutParams lparams4 = new LinearLayoutCompat.LayoutParams(LinearLayoutCompat.LayoutParams.MATCH_PARENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
-            lparams4.setMargins(65, 0, 0, 45);
+            lparams4.setMargins(30, 0, 0, 45);
             lootDesc.setLayoutParams(lparams4);
             lootLayout.addView(lootDesc);
         }
 
         if(!lootInfo.getString(5).equals("")) {
             TextView detailsTitle = new TextView(this);
-            detailsTitle.setText("Details");
+            detailsTitle.setText(R.string.detailHeader);
             detailsTitle.setTextSize(20);
             detailsTitle.setTextColor(Color.parseColor("#FE5F55"));
-            detailsTitle.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            if (!darkMode) detailsTitle.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                else detailsTitle.setBackgroundColor(Color.parseColor("#2C2C2C"));
             detailsTitle.setTypeface(null, Typeface.BOLD);
             lootLayout.addView(detailsTitle);
 
             View line2 = new View(this);
             line2.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 3));
-            line2.setBackgroundColor(Color.parseColor("#000000"));
+            if (!darkMode) line2.setBackgroundColor(Color.parseColor("#8C8C8C"));
+                else line2.setBackgroundColor(Color.parseColor("#FFFFFF"));
             lootLayout.addView(line2);
 
             TextView lootDetails = new TextView(this);
             lootDetails.setText(lootInfo.getString(5));
             lootDetails.setTextSize(18);
-            lootDetails.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            if (!darkMode) {
+                lootDetails.setTextColor(Color.parseColor("#666666"));
+                lootDetails.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            } else {
+                lootDetails.setTextColor(Color.parseColor("#FFFFFF"));
+                lootDetails.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            }
             LinearLayoutCompat.LayoutParams lparams3 = new LinearLayoutCompat.LayoutParams(LinearLayoutCompat.LayoutParams.MATCH_PARENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
-            lparams3.setMargins(65, 0, 0, 45);
+            lparams3.setMargins(30, 0, 0, 45);
             lootDetails.setLayoutParams(lparams3);
             lootLayout.addView(lootDetails);
         }

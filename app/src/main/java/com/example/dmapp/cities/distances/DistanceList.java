@@ -1,8 +1,14 @@
 package com.example.dmapp.cities.distances;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -12,6 +18,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -30,6 +37,7 @@ public class DistanceList extends AppCompatActivity {
     private final String TAG = "PresetList";
     private String passedCityFrom;
     private String cityTo;
+    private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,9 +45,11 @@ public class DistanceList extends AppCompatActivity {
         setContentView(R.layout.distance_list);
         setPassedCityFrom(this.getIntent().getStringExtra("cityFrom"));
         Log.d(TAG, "onCreate: Passed Preset variable is " + getPassedCityFrom());
+        context = this;
 
-
-        // data to populate the RecyclerView with
+        final SharedPreferences sharedPreferences = getSharedPreferences("Settings", Context.MODE_PRIVATE);
+        String theme = sharedPreferences.getString("Theme", "none");
+        Boolean darkMode = theme.equals("dark");
 
         distanceDBHelper mDistanceDBHelper = new distanceDBHelper(this);
         DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
@@ -48,7 +58,12 @@ public class DistanceList extends AppCompatActivity {
         Cursor x = mDistanceDBHelper.getAllDistances();
         Log.d(TAG, "onCreate: the amount of rows in the distance table is " + x.getCount());
 
+        LinearLayoutCompat layout = findViewById(R.id.distanceLayout);
+        LinearLayoutCompat headerLayout = findViewById(R.id.distanceHeaderLayout);
+        LinearLayout addLayout = findViewById(R.id.distanceItem);
         ImageView backButton = findViewById(R.id.backButton);
+        ImageView toArrow = findViewById(R.id.toArrow);
+        ImageView distanceColon = findViewById(R.id.distanceColon);
         TextView distanceTitle = findViewById(R.id.city);
         final Button addEntry = findViewById(R.id.addEntry);
         final EditText customDistance = findViewById(R.id.customDistanceValue);
@@ -56,10 +71,27 @@ public class DistanceList extends AppCompatActivity {
         final Spinner customToCity = findViewById(R.id.customToCity);
 
         ViewGroup.LayoutParams params = distanceListView.getLayoutParams();
-        params.height = (int)(deviceHeight * .65);
+        params.height = (int)(deviceHeight * .73);
         distanceListView.setLayoutParams(params);
 
-        distanceTitle.setText("Travel time from " + getPassedCityFrom());
+        distanceTitle.setText(String.format("%s %s", getString(R.string.traveltimefrom), getPassedCityFrom()));
+
+        if (theme.equals("dark")){
+            DrawableCompat.setTint(DrawableCompat.wrap(backButton.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
+            DrawableCompat.setTint(DrawableCompat.wrap(toArrow.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
+            DrawableCompat.setTint(DrawableCompat.wrap(distanceColon.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
+            distanceTitle.setTextColor(Color.WHITE);
+            layout.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            headerLayout.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            addLayout.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            toArrow.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            distanceColon.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            backButton.setBackgroundColor(Color.parseColor("#2C2C2C"));
+        } else {
+            DrawableCompat.setTint(DrawableCompat.wrap(backButton.getDrawable()), ContextCompat.getColor(context, R.color.black));
+            DrawableCompat.setTint(DrawableCompat.wrap(toArrow.getDrawable()), ContextCompat.getColor(context, R.color.black));
+            DrawableCompat.setTint(DrawableCompat.wrap(distanceColon.getDrawable()), ContextCompat.getColor(context, R.color.black));
+        }
 
         // set up the RecyclerView with data from the database
         //Log.d(TAG, "onCreate: Preset variable is " + getIntent().getStringExtra("cityFrom"));
@@ -74,7 +106,7 @@ public class DistanceList extends AppCompatActivity {
             distances.close();
         }
 
-        distanceAdapter = new DistanceAdapter(this, distanceList, getPassedCityFrom(), false);
+        distanceAdapter = new DistanceAdapter(this, distanceList, getPassedCityFrom(), false, darkMode);
         distanceListView.setAdapter(distanceAdapter);
 
         //setup the spinner for the cities:
@@ -95,7 +127,7 @@ public class DistanceList extends AppCompatActivity {
             cities.close();
         }
 
-        final ArrayAdapter<String> locationAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, cityList);
+        final ArrayAdapter<String> locationAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, cityList);
         locationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         customToCity.setAdapter(locationAdapter);
 

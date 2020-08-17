@@ -2,6 +2,7 @@ package com.example.dmapp.npcs;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -10,6 +11,9 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.renderscript.ScriptC;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.text.method.KeyListener;
@@ -19,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,6 +59,7 @@ public class NpcDisplay extends AppCompatActivity{
         ImageView backButton = findViewById(R.id.backButton);
         ImageView editIcon = findViewById(R.id.editIcon);
         final TextView npcName = findViewById(R.id.npcTitle);
+        ScrollView npcMainLayout = findViewById(R.id.npcMainLayout);
         LinearLayout npcLayout = findViewById(R.id.npcLayout);
         LinearLayoutCompat imageLayout = findViewById(R.id.imageLayout);
         LinearLayoutCompat npcUnderTitleLayout = findViewById(R.id.npcUnderTitleLayout);
@@ -63,6 +69,34 @@ public class NpcDisplay extends AppCompatActivity{
         ImageView pause = findViewById(R.id.pause);
 
         mPlayer = new MediaPlayer();
+
+        final SharedPreferences sharedPreferences = getSharedPreferences("Settings", Context.MODE_PRIVATE);
+        String theme = sharedPreferences.getString("Theme", "none");
+        Boolean darkMode = theme.equals("dark");
+
+        if (theme.equals("dark")){
+
+            DrawableCompat.setTint(DrawableCompat.wrap(backButton.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
+            DrawableCompat.setTint(DrawableCompat.wrap(editIcon.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
+            DrawableCompat.setTint(DrawableCompat.wrap(stop.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
+            DrawableCompat.setTint(DrawableCompat.wrap(play.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
+            DrawableCompat.setTint(DrawableCompat.wrap(pause.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
+
+            npcLayout.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            npcMainLayout.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            imageLayout.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            npcUnderTitleLayout.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            imageLayout.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            npcUnderTitleLayout2.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            backButton.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            npcName.setTextColor(Color.WHITE);
+        } else {
+            DrawableCompat.setTint(DrawableCompat.wrap(backButton.getDrawable()), ContextCompat.getColor(context, R.color.black));
+            DrawableCompat.setTint(DrawableCompat.wrap(editIcon.getDrawable()), ContextCompat.getColor(context, R.color.black));
+            DrawableCompat.setTint(DrawableCompat.wrap(stop.getDrawable()), ContextCompat.getColor(context, R.color.black));
+            DrawableCompat.setTint(DrawableCompat.wrap(play.getDrawable()), ContextCompat.getColor(context, R.color.black));
+            DrawableCompat.setTint(DrawableCompat.wrap(pause.getDrawable()), ContextCompat.getColor(context, R.color.black));
+        }
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,10 +118,6 @@ public class NpcDisplay extends AppCompatActivity{
         npcTitle = npcInfo.getString(1);
         npcName.setText(npcInfo.getString(1));
         npcName.setTextColor(Color.parseColor("#5BCBAE"));
-        View line = new View(this);
-        line.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 2));
-        line.setBackgroundColor(Color.parseColor("#F1FDF4"));
-        npcLayout.addView(line);
 
         if(!npcInfo.getString(8).equals("")){
             ImageView npcImage = new ImageView(this);
@@ -107,11 +137,21 @@ public class NpcDisplay extends AppCompatActivity{
             npcLocation.setTextSize(18);
             npcLocation.setTypeface(null, Typeface.ITALIC);
             npcLocation.setTextColor(Color.parseColor("#6fd8f9"));
-            npcLocation.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            if (!darkMode) npcLocation.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                else npcLocation.setBackgroundColor(Color.parseColor("#2C2C2C"));
             npcLocation.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (!mCitiesDBHelper.checkNonExistence(npcInfo.getString(2))){
+                        if (!isStopped){
+                            mPlayer.stop();
+                            try{
+                                mPlayer.prepare();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            isStopped = true;
+                        }
                         Intent intent = new Intent(context, CityDisplay.class);
                         intent.putExtra("cityName", npcInfo.getString(2));
                         intent.putExtra("addCityValue", 0);
@@ -129,8 +169,13 @@ public class NpcDisplay extends AppCompatActivity{
             npcRace.setText(String.format("%s %s", getString(R.string.raceHeader), npcInfo.getString(7)));
             npcRace.setTextSize(18);
             npcRace.setTypeface(null, Typeface.ITALIC);
-            npcRace.setTextColor(Color.parseColor("#666666"));
-            npcRace.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            if (!darkMode) {
+                npcRace.setTextColor(Color.parseColor("#666666"));
+                npcRace.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            } else {
+                npcRace.setTextColor(Color.parseColor("#FFFFFF"));
+                npcRace.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            }
             npcUnderTitleLayout2.addView(npcRace);
         }
 
@@ -139,21 +184,29 @@ public class NpcDisplay extends AppCompatActivity{
             descTitle.setText(R.string.descriptionHeader);
             descTitle.setTextSize(20);
             descTitle.setTextColor(Color.parseColor("#FE5F55"));
-            descTitle.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            if (!darkMode) descTitle.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                else descTitle.setBackgroundColor(Color.parseColor("#2C2C2C"));
             descTitle.setTypeface(null, Typeface.BOLD);
             npcLayout.addView(descTitle);
 
             View line2 = new View(this);
             line2.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 3));
-            line2.setBackgroundColor(Color.parseColor("#000000"));
+            if (!darkMode) line2.setBackgroundColor(Color.parseColor("#8C8C8C"));
+                else line2.setBackgroundColor(Color.parseColor("#FFFFFF"));
             npcLayout.addView(line2);
 
             TextView npcDescription = new TextView(this);
             npcDescription.setText(npcInfo.getString(3));
             npcDescription.setTextSize(18);
-            npcDescription.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            if (!darkMode) {
+                npcDescription.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                npcDescription.setTextColor(Color.parseColor("#000000"));
+            } else {
+                npcDescription.setBackgroundColor(Color.parseColor("#2C2C2C"));
+                npcDescription.setTextColor(Color.parseColor("#FFFFFF"));
+            }
             LinearLayoutCompat.LayoutParams lparams2 = new LinearLayoutCompat.LayoutParams(LinearLayoutCompat.LayoutParams.MATCH_PARENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
-            lparams2.setMargins(65, 0, 0, 45);
+            lparams2.setMargins(30, 0, 0, 45);
             npcDescription.setLayoutParams(lparams2);
             npcLayout.addView(npcDescription);
         }
@@ -163,21 +216,29 @@ public class NpcDisplay extends AppCompatActivity{
             hookTitle.setText(R.string.plotHooksHeader);
             hookTitle.setTextSize(20);
             hookTitle.setTextColor(Color.parseColor("#FE5F55"));
-            hookTitle.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            if (!darkMode) hookTitle.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                else hookTitle.setBackgroundColor(Color.parseColor("#2C2C2C"));
             hookTitle.setTypeface(null, Typeface.BOLD);
             npcLayout.addView(hookTitle);
 
             View line2 = new View(this);
             line2.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 3));
-            line2.setBackgroundColor(Color.parseColor("#000000"));
+            if (!darkMode) line2.setBackgroundColor(Color.parseColor("#8C8C8C"));
+                else line2.setBackgroundColor(Color.parseColor("#FFFFFF"));
             npcLayout.addView(line2);
 
             TextView npcHooks = new TextView(this);
             npcHooks.setText(npcInfo.getString(6));
             npcHooks.setTextSize(18);
-            npcHooks.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            if (!darkMode) {
+                npcHooks.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                npcHooks.setTextColor(Color.parseColor("#000000"));
+            } else {
+                npcHooks.setBackgroundColor(Color.parseColor("#2C2C2C"));
+                npcHooks.setTextColor(Color.parseColor("#FFFFFF"));
+            }
             LinearLayoutCompat.LayoutParams lparams4 = new LinearLayoutCompat.LayoutParams(LinearLayoutCompat.LayoutParams.MATCH_PARENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
-            lparams4.setMargins(65, 0, 0, 45);
+            lparams4.setMargins(30, 0, 0, 45);
             npcHooks.setLayoutParams(lparams4);
             npcLayout.addView(npcHooks);
         }
@@ -187,21 +248,29 @@ public class NpcDisplay extends AppCompatActivity{
             notesTitle.setText(R.string.notesHeader);
             notesTitle.setTextSize(20);
             notesTitle.setTextColor(Color.parseColor("#FE5F55"));
-            notesTitle.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            if (!darkMode) notesTitle.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                else notesTitle.setBackgroundColor(Color.parseColor("#2C2C2C"));
             notesTitle.setTypeface(null, Typeface.BOLD);
             npcLayout.addView(notesTitle);
 
             View line2 = new View(this);
             line2.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 3));
-            line2.setBackgroundColor(Color.parseColor("#000000"));
+            if (!darkMode) line2.setBackgroundColor(Color.parseColor("#8C8C8C"));
+                else line2.setBackgroundColor(Color.parseColor("#FFFFFF"));
             npcLayout.addView(line2);
 
             TextView npcNotes = new TextView(this);
             npcNotes.setText(npcInfo.getString(4));
             npcNotes.setTextSize(18);
-            npcNotes.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            if (!darkMode) {
+                npcNotes.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                npcNotes.setTextColor(Color.parseColor("#000000"));
+            } else {
+                npcNotes.setBackgroundColor(Color.parseColor("#2C2C2C"));
+                npcNotes.setTextColor(Color.parseColor("#FFFFFF"));
+            }
             LinearLayoutCompat.LayoutParams lparams3 = new LinearLayoutCompat.LayoutParams(LinearLayoutCompat.LayoutParams.MATCH_PARENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
-            lparams3.setMargins(65, 0, 0, 45);
+            lparams3.setMargins(30, 0, 0, 45);
             npcNotes.setLayoutParams(lparams3);
             npcLayout.addView(npcNotes);
         }
@@ -214,13 +283,15 @@ public class NpcDisplay extends AppCompatActivity{
             voiceTitle.setText(R.string.voiceHeader);
             voiceTitle.setTextSize(20);
             voiceTitle.setTextColor(Color.parseColor("#FE5F55"));
-            voiceTitle.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            if (!darkMode) voiceTitle.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                else voiceTitle.setBackgroundColor(Color.parseColor("#2C2C2C"));
             voiceTitle.setTypeface(null, Typeface.BOLD);
             npcLayout.addView(voiceTitle);
 
             View line2 = new View(this);
             line2.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 3));
-            line2.setBackgroundColor(Color.parseColor("#000000"));
+            if (!darkMode) line2.setBackgroundColor(Color.parseColor("#8C8C8C"));
+                else line2.setBackgroundColor(Color.parseColor("#FFFFFF"));
             npcLayout.addView(line2);
 
             //Create a media player and set it to the audio file provided by the user
@@ -285,6 +356,7 @@ public class NpcDisplay extends AppCompatActivity{
         editIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mPlayer.release();
                 Intent intent = new Intent(context, NpcInfo.class);
                 Log.d(TAG, "onClick: The value being passed to NPCInfo is " + npcTitle);
                 intent.putExtra("npcName", npcTitle);
@@ -300,6 +372,7 @@ public class NpcDisplay extends AppCompatActivity{
         Log.d(TAG, "onDestroy: voice = " + voice);
         if(!voice.equals("") && mPlayer.isPlaying()) {
             mPlayer.stop();
+            mPlayer.release();
         }
     }
 
@@ -307,6 +380,15 @@ public class NpcDisplay extends AppCompatActivity{
     public void onBackPressed() {
         Boolean npcNav = getIntent().getBooleanExtra("cityNav", false);
         if(npcNav){
+            if (!isStopped){
+                mPlayer.stop();
+                try{
+                    mPlayer.prepare();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                isStopped = true;
+            }
             super.onBackPressed();
         } else {
             Intent intent = new Intent(context, NpcList.class);

@@ -27,24 +27,31 @@ class PresetAdapter extends ArrayAdapter<Preset> {
     private PresetList presetListClass;
     private final String variable;
     private final Activity presetActivity;
+    private final Boolean mDarkMode;
     String TAG = "PresetAdapter";
 
-    public PresetAdapter(Context context, ArrayList<Preset> list, String presetVariable, Activity activity) {
+    public PresetAdapter(Context context, ArrayList<Preset> list, String presetVariable, Activity activity, Boolean darkMode) {
         super(context, 0 , list);
         mContext = context;
         presetList = list;
         variable = presetVariable;
         Log.d(TAG, "PresetAdapter: the variable is " + variable);
         presetActivity = activity;
+        mDarkMode = darkMode;
     }
 
     @NonNull
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-
         View listItem = convertView;
-        if(listItem == null) {
-            listItem = LayoutInflater.from(mContext).inflate(R.layout.preset_item, parent, false);
+        if(!mDarkMode) {
+            if (listItem == null) {
+                listItem = LayoutInflater.from(mContext).inflate(R.layout.preset_item, parent, false);
+            }
+        } else {
+            if (listItem == null) {
+                listItem = LayoutInflater.from(mContext).inflate(R.layout.preset_item2, parent, false);
+            }
         }
 
         Preset currentPreset = presetList.get(position);

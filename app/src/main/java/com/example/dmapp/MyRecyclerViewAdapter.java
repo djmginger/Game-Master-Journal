@@ -15,7 +15,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     private final LayoutInflater mInflater;
     //For clickable rows
     private final OnNoteListener mOnNoteListener;
-    private final Boolean mCityList;
+    private final Boolean mDarkMode;
 
 
     // data is passed into the constructor
@@ -23,25 +23,24 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
         this.mInflater = LayoutInflater.from(context);
         this.mData = data;
         this.mOnNoteListener = onNoteListener;
-        this.mCityList = false;
+        this.mDarkMode = false;
     }
 
-    public MyRecyclerViewAdapter(Context context, List<String> data, OnNoteListener onNoteListener, Boolean cityList) {
+    public MyRecyclerViewAdapter(Context context, List<String> data, OnNoteListener onNoteListener,Boolean darkMode) {
         this.mInflater = LayoutInflater.from(context);
         this.mData = data;
         this.mOnNoteListener = onNoteListener;
-        this.mCityList = cityList;
+        this.mDarkMode = darkMode;
     }
 
     // inflates the row layout from xml when needed
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if(!mCityList) {
+        if(!mDarkMode) {
             View view = mInflater.inflate(R.layout.recyclerview_row, parent, false);
             return new ViewHolder(view, mOnNoteListener);
-        }
-        else{
-            View view = mInflater.inflate(R.layout.recyclerview_row2, parent, false);
+        } else{
+            View view = mInflater.inflate(R.layout.recyclerview_row3, parent, false);
             return new ViewHolder(view, mOnNoteListener);
         }
     }
