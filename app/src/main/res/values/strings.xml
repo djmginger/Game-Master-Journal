@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Game Master Journal</string>
+    <string name="app_name" translatable="false">Game Master Journal</string>
     <string name="deletenpc">Delete NPC</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
@@ -67,7 +67,7 @@
     <string name="detailHeader">Details</string>
     <string name="economyHeader">Economy:</string>
     <string name="travelTimeHeader">Travel Times to… </string>
-    <string name="locationTitle">"Locations within "</string>
+    <string name="locationTitle">"Locations within"</string>
     <string name="location">Location</string>
     <string name="race">Race</string>
     <string name="raceHeader">"Race:"</string>
@@ -82,7 +82,6 @@
     <string name="overview">Overview</string>
     <string name="notes">Notes</string>
     <string name="reset_all_presets">Reset all presets</string>
-    <string name="npcs">NPCs</string>
     <string name="cities">Cities</string>
     <string name="loot">Loot</string>
     <string name="managedb">Manage Databases</string>
@@ -90,4 +89,44 @@
     <string name="lightmode">Light Mode</string>
     <string name="traveltimefrom">Travel time from</string>
     <string name="attunement">Requires Attunement</string>
+    <string name="add">Add</string>
+    <string name="clearentry">Clear Entry</string>
+    <string name="newpreset">Enter the name of the new</string>
+    <string name="create">Create</string>
+    <string name="namenewcity">Enter the name of the new city</string>
+    <string name="createcity">Create City</string>
+    <string name="cityalreadyexists">A city with this name already exists!</string>
+    <string name="confirm">Confirm</string>
+    <string name="newlocation">Add New Location</string>
+    <string name="noitemtodelete">There is no item to delete</string>
+    <string name="namefornpc">Please provide a name for your NPC</string>
+    <string name="noaudiofile">No audio file found, please try again</string>
+    <string name="permissionneeded">Permission needed</string>
+    <string name="permissionreason">This permission is needed for you to add reference images for your NPC</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Cancel</string>
+    <string name="citynotsaved">This city has not yet been saved. Please save all changes, and try again.</string>
+    <string name="nameforcity">Please provide a name for your city</string>
+    <string name="presetexists">This preset already exists!</string>
+    <string name="enteravalue">Please enter a value!</string>
+    <string name="areyousureitem">Are you sure you want to delete this item?</string>
+    <string name="filterlocation">Filter by location:</string>
+    <string name="clearfilter">Clear Filter</string>
+    <string name="nosavedcity">There is no saved city with that name!</string>
+    <string name="presstoexit">Press back again to exit.</string>
+    <string name="itemsaved">Item saved</string>
+    <string name="permissionreasonloot">This permission is needed for you to add reference images for your loot</string>
+    <string name="citysaved">City saved</string>
+    <string name="destination">Destination:</string>
+    <string name="selectdestination">Please select your destination</string>
+    <string name="providedistance">Please provide a distance</string>
+    <string name="alreadyexists">This set already exists!</string>
+    <string name="yousure">Are you sure you want to delete this item?</string>
+    <string name="deletedistance">Successfully deleted all Distances</string>
+    <string name="resetpreset">Successfully reset all Presets</string>
+    <string name="deletelocation">Successfully deleted all Locations</string>
+    <string name="deleteloot">Successfully deleted all Loot</string>
+    <string name="yousurecity">Are you sure you want to delete this data? Deleting cities will also delete Locations and Distances for that city</string>
+    <string name="deletecities">Successfully deleted all Cities</string>
+    <string name="deletenpcs">Successfully deleted all NPCs</string>
 </resources>

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.dmapp">
+    package="com.redheaddev.gmjournal">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="com.android.vending.BILLING" />
 
     <application
         android:allowBackup="true"
@@ -11,7 +12,7 @@
         android:roundIcon="@mipmap/appicon_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme" >
-        <activity android:name=".MainActivity"
+        <activity android:name="com.redheaddev.gmjournal.MainActivity"
             android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -20,42 +21,42 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".npcs.NpcList"
+        <activity android:name="com.redheaddev.gmjournal.npcs.NpcList"
             android:label="NPCs"
             android:screenOrientation="portrait" />
-        <activity android:name=".loot.LootList"
+        <activity android:name="com.redheaddev.gmjournal.loot.LootList"
             android:label="Loot"
             android:screenOrientation="portrait" />
-        <activity android:name=".npcs.NpcInfo"
+        <activity android:name="com.redheaddev.gmjournal.npcs.NpcInfo"
             android:label="NPCs"
             android:screenOrientation="portrait" />
-        <activity android:name=".loot.LootInfo"
+        <activity android:name="com.redheaddev.gmjournal.loot.LootInfo"
             android:label="Loot"
             android:screenOrientation="portrait" />
-        <activity android:name=".cities.CityList"
+        <activity android:name="com.redheaddev.gmjournal.cities.CityList"
             android:label="Cities"
             android:screenOrientation="portrait" />
-        <activity android:name=".cities.CityInfo"
+        <activity android:name="com.redheaddev.gmjournal.cities.CityInfo"
             android:label="Cities"
             android:screenOrientation="portrait" />
-        <activity android:name=".cities.locations.LocationList"
+        <activity android:name="com.redheaddev.gmjournal.cities.locations.LocationList"
             android:label="Locations"
             android:screenOrientation="portrait" />
-        <activity android:name=".cities.locations.LocationInfo"
+        <activity android:name="com.redheaddev.gmjournal.cities.locations.LocationInfo"
             android:label="Locations"
             android:screenOrientation="portrait" />
-        <activity android:name=".presets.PresetList"
+        <activity android:name="com.redheaddev.gmjournal.presets.PresetList"
             android:label="Presets"
             android:windowSoftInputMode="adjustPan"
             android:screenOrientation="portrait" />
-        <activity android:name=".cities.distances.DistanceList"
+        <activity android:name="com.redheaddev.gmjournal.cities.distances.DistanceList"
             android:label="Travel Times"
             android:windowSoftInputMode="adjustPan"
             android:screenOrientation="portrait" />
-        <activity android:name=".databaseManagement" />
-        <activity android:name=".npcs.NpcDisplay" />
-        <activity android:name=".loot.LootDisplay" />
-        <activity android:name=".cities.CityDisplay" />
+        <activity android:name="com.redheaddev.gmjournal.databaseManagement" />
+        <activity android:name="com.redheaddev.gmjournal.npcs.NpcDisplay" />
+        <activity android:name="com.redheaddev.gmjournal.loot.LootDisplay" />
+        <activity android:name="com.redheaddev.gmjournal.cities.CityDisplay" />
 
     </application>
 

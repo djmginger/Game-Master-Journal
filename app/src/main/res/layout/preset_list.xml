@@ -45,22 +45,42 @@
             android:layout_height="0dp"/>
     </RelativeLayout>
 
-    <EditText
-        android:id="@+id/customPreset"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:inputType="textCapSentences"
-        android:singleLine="true"
-        android:imeOptions="actionDone"
-        android:hint="@string/custpreset"
-        />
+        android:gravity="center"
+        android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/addEntry"
-        android:layout_gravity="center"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/addentry"/>
+        <Button
+            android:id="@+id/removeEntry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/_5sdp"
+            android:text="@string/clearentry"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+        <Button
+            android:id="@+id/addEntry"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/remove"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/_5sdp"
+            android:text="@string/clearentry"
+            android:visibility="invisible"/>
+
+    </LinearLayout>
 
 </android.support.v7.widget.LinearLayoutCompat>

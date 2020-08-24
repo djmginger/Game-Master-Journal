@@ -83,7 +83,8 @@
                 android:padding="10dp"
                 android:textSize="18sp" />
 
-            <android.support.v7.widget.AppCompatImageView
+            <ImageView
+                android:id="@+id/downArrow"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/downarrow"
@@ -109,7 +110,8 @@
                 android:padding="10dp"
                 android:textSize="18sp" />
 
-            <android.support.v7.widget.AppCompatImageView
+            <ImageView
+                android:id="@+id/downArrow2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/downarrow"
@@ -135,8 +137,8 @@
                 android:padding="10dp"
                 android:textSize="18sp" />
 
-            <android.support.v7.widget.AppCompatImageView
-                android:id="@+id/downarrow1"
+            <ImageView
+                android:id="@+id/downArrow3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/downarrow"

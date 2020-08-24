@@ -9,12 +9,75 @@
     android:background="@color/mainBgColor"
     android:orientation="vertical">
 
-    <ImageView
+    <TextView
+        android:id="@+id/title1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_gravity="center_horizontal"
-        android:src="@drawable/apptitle" />
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:text="Game Master"
+        android:textSize="@dimen/_35sdp"
+        android:textColor="#000000"
+        android:fontFamily="@font/blackchance"/>
 
+    <TextView
+        android:id="@+id/title2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Journal"
+        android:textSize="@dimen/_35sdp"
+        android:textColor="#000000"
+        android:fontFamily="@font/blackchance"/>
+
+    <Button
+        android:id="@+id/npcs"
+        android:layout_width="@dimen/_185sdp"
+        android:layout_height="@dimen/_50sdp"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/_30sdp"
+        android:textSize="@dimen/_22sdp"
+        android:background="@drawable/rounded_titles1"
+        android:text="@string/npcs"/>
+
+    <Button
+        android:id="@+id/cities"
+        android:layout_width="@dimen/_185sdp"
+        android:layout_height="@dimen/_50sdp"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/_25sdp"
+        android:textSize="@dimen/_22sdp"
+        android:background="@drawable/rounded_titles2"
+        android:text="@string/cities"/>
+
+    <Button
+        android:id="@+id/loot"
+        android:layout_width="@dimen/_185sdp"
+        android:layout_height="@dimen/_50sdp"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/_25sdp"
+        android:textSize="@dimen/_22sdp"
+        android:background="@drawable/rounded_titles3"
+        android:text="@string/loot"/>
+
+    <Button
+        android:id="@+id/databaseManagement"
+        android:layout_width="@dimen/_150sdp"
+        android:layout_height="@dimen/_40sdp"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/_40sdp"
+        android:background="@drawable/rounded_titles4"
+        android:text="@string/managedb"
+        android:textSize="@dimen/_11sdp"/>
+
+    <Button
+        android:id="@+id/themeSwitch"
+        android:layout_width="@dimen/_100sdp"
+        android:layout_height="@dimen/_40sdp"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/_38sdp"
+        android:background="@drawable/rounded_titles4"
+        android:text="@string/darkmode"
+        android:textSize="@dimen/_11sdp"/>
 
 </android.support.v7.widget.LinearLayoutCompat>
