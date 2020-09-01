@@ -1,10 +1,14 @@
 package com.redheaddev.gmjournal;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutCompat;
@@ -14,6 +18,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,19 +29,29 @@ import com.redheaddev.gmjournal.loot.LootList;
 import com.redheaddev.gmjournal.npcs.NpcList;
 import com.redheaddev.gmjournal.npcs.npcDBHelper;
 
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity implements BillingProcessor.IBillingHandler {
     private static final String TAG = "MainActivity";
     private int backButtonCount;
+    BillingProcessor bp;
+    Context context;
+    Activity activity;
+    Boolean darkModePurchased;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        context = this;
+        activity = MainActivity.this;
+
+        bp = new BillingProcessor(this, "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqsg06Z8AmS00KH/fv+ucKHPQoxiIhjE5iNbMa92BQuip+928+vLib1jKiG+QjMUq2mHm2Igl1JpqawuFT0Fjp//vSH1j13W89ASBMZ62Plj9OxbWwKrQhxnQxDGirx7NZT6UcyxKTcgv4dGM4aW+UN5c6Pesfh9PLLLEPRXn+JEQp6rKdvttc/aB7dbv6ZTCMs51lVl5jKZ9lua/Ro9sGuwy9fY03baA2jnyIVYawNdG0YxMed7XRA8jEiPTWCc/kWQfmhPEc3s9VGu7kc6C8NcfV0m8RCY3mSkPEIHs4c7tmkXBcfPG7BOMorye28IVMxV7G831JUou0rmpqIUk7wIDAQAB", this);
+        bp.initialize();
 
         npcDBHelper myNPC = npcDBHelper.getInstance(getApplicationContext());
         final LinearLayoutCompat mainLayout = findViewById(R.id.mainLayout);
         final TextView title1 = findViewById(R.id.title1);
-        final TextView title2 = findViewById(R.id.title2);
         final Button npcs = findViewById(R.id.npcs);
         final Button cities = findViewById(R.id.cities);
         final Button loot = findViewById(R.id.loot);
@@ -57,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         final SharedPreferences sharedPreferences = getSharedPreferences("Settings", Context.MODE_PRIVATE);
         final SharedPreferences.Editor editor = sharedPreferences.edit();
 
+        darkModePurchased = sharedPreferences.getBoolean("Dark Mode Purchased", false);
         String theme = sharedPreferences.getString("Theme", "none");
         if (theme.equals("none")) {
             editor.putString("Theme", "light");
@@ -68,7 +84,6 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         if (theme.equals("dark")) {
             mainLayout.setBackgroundColor(Color.parseColor("#2C2C2C"));
             title1.setTextColor(Color.WHITE);
-            title2.setTextColor(Color.WHITE);
         }
 
         LinearLayoutCompat.LayoutParams lparams = new LinearLayoutCompat.LayoutParams(buttonWidth, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
@@ -108,6 +123,22 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             }
         });
 
+        //Attempt to load purchases and check if the user has already bought dark mode. I can't tell but I'm not sure the first one works.
+        bp.loadOwnedPurchasesFromGoogle();
+        List<String> products = bp.listOwnedProducts();
+        if (products.contains("gmjournal.darkmode")){
+            editor.putBoolean("Dark Mode Purchased", true);
+            editor.apply();
+            darkModePurchased = sharedPreferences.getBoolean("Dark Mode Purchased", false);
+        }
+
+        TransactionDetails transactionDetails = bp.getPurchaseTransactionDetails("gmjournal.darkmode");
+        if (transactionDetails != null) {
+            editor.putBoolean("Dark Mode Purchased", true);
+            editor.apply();
+            darkModePurchased = sharedPreferences.getBoolean("Dark Mode Purchased", false);
+        }
+
         //final Button themeSwitch = new Button(this);
         if (theme.equals("light")) {
             themeSwitch.setText(R.string.darkmode);
@@ -118,24 +149,40 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         themeSwitch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String theme = sharedPreferences.getString("Theme", "none");
-                if (theme.equals("light")){
-                    themeSwitch.setText(R.string.lightmode);
-                    editor.putString("Theme", "dark");
-                    editor.apply();
+                if(darkModePurchased) {
+                    String theme = sharedPreferences.getString("Theme", "none");
+                    if (theme.equals("light")) {
+                        themeSwitch.setText(R.string.lightmode);
+                        editor.putString("Theme", "dark");
+                        editor.apply();
 
-                    mainLayout.setBackgroundColor(Color.parseColor("#2C2C2C"));
-                    title1.setTextColor(Color.WHITE);
-                    title2.setTextColor(Color.WHITE);
+                        mainLayout.setBackgroundColor(Color.parseColor("#2C2C2C"));
+                        title1.setTextColor(Color.WHITE);
 
-                } else if (theme.equals("dark")) {
-                    themeSwitch.setText(R.string.darkmode);
-                    editor.putString("Theme", "light");
-                    editor.apply();
+                    } else if (theme.equals("dark")) {
+                        themeSwitch.setText(R.string.darkmode);
+                        editor.putString("Theme", "light");
+                        editor.apply();
 
-                    mainLayout.setBackgroundColor(getResources().getColor(R.color.mainBgColor));
-                    title1.setTextColor(Color.BLACK);
-                    title2.setTextColor(Color.BLACK);
+                        mainLayout.setBackgroundColor(getResources().getColor(R.color.mainBgColor));
+                        title1.setTextColor(Color.BLACK);
+                    }
+                } else {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    builder.setMessage(R.string.purchasedark);
+                    builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.dismiss();
+                            bp.purchase(activity, "gmjournal.darkmode");
+                        }
+                    });
+                    builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.dismiss();
+                        }
+                    });
+                    AlertDialog alert = builder.create();
+                    alert.show();
                 }
             }
         });
@@ -170,10 +217,16 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         /*
          * Called when requested PRODUCT ID was successfully purchased
          */
+        final SharedPreferences sharedPreferences = getSharedPreferences("Settings", Context.MODE_PRIVATE);
+        final SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean("Dark Mode Purchased", true);
+        editor.apply();
+        darkModePurchased = sharedPreferences.getBoolean("Dark Mode Purchased", false);
     }
 
     @Override
     public void onBillingError(int errorCode, Throwable error) {
+        toast("Something went wrong!");
         /*
          * Called when some error occurred. See Constants class for more details
          *
@@ -188,6 +241,14 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
          * Called when purchase history was restored and the list of all owned PRODUCT ID's
          * was loaded from Google Play
          */
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (!bp.handleActivityResult(requestCode, resultCode, data)) {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     private void toast(String message){

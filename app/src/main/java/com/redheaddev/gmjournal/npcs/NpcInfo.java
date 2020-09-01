@@ -107,6 +107,7 @@ public class NpcInfo extends AppCompatActivity{
         addImageText.setText(R.string.addimage);
         npcImage.setVisibility(View.GONE);
         addImage.setImageResource(R.drawable.addanimage);
+        npcMainLayout.setBackgroundColor(Color.WHITE);
 
         if (theme.equals("dark")){
 
