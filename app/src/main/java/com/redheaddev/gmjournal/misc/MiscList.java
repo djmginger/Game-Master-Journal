@@ -1,4 +1,4 @@
-package com.redheaddev.gmjournal.loot;
+package com.redheaddev.gmjournal.misc;
 
 import android.content.Context;
 import android.content.Intent;
@@ -29,30 +29,32 @@ import android.widget.TextView;
 import com.redheaddev.gmjournal.MainActivity;
 import com.redheaddev.gmjournal.MyRecyclerViewAdapter;
 import com.redheaddev.gmjournal.R;
-import com.redheaddev.gmjournal.npcs.npcDBHelper;
+import com.redheaddev.gmjournal.loot.LootDisplay;
+import com.redheaddev.gmjournal.loot.LootInfo;
+import com.redheaddev.gmjournal.loot.lootDBHelper;
 
 import java.util.ArrayList;
 
-public class LootList extends AppCompatActivity implements MyRecyclerViewAdapter.OnNoteListener {
+public class MiscList extends AppCompatActivity implements MyRecyclerViewAdapter.OnNoteListener {
 
     private MyRecyclerViewAdapter adapter;
-    private final ArrayList<String> lootList = new ArrayList<>();
+    private final ArrayList<String> miscList = new ArrayList<>();
     private final ArrayList<String> groups = new ArrayList<>();
-    private final String TAG = "LootInfo";
+    private final String TAG = "MiscInfo";
     private String filterChoice;
     private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.loot_titles);
+        setContentView(R.layout.misc_titles);
 
         final SharedPreferences sharedPreferences = getSharedPreferences("Settings", Context.MODE_PRIVATE);
         String theme = sharedPreferences.getString("Theme", "none");
         Boolean darkMode = theme.equals("dark");
 
         context = this;
-        LinearLayoutCompat layout = findViewById(R.id.loot_layout);
+        LinearLayoutCompat layout = findViewById(R.id.misc_layout);
         LinearLayoutCompat headerLayout = findViewById(R.id.headerLayout);
         RelativeLayout innerLayout = findViewById(R.id.innerLayout);
         final Spinner groupFilter = findViewById(R.id.groupFilter);
@@ -61,7 +63,7 @@ public class LootList extends AppCompatActivity implements MyRecyclerViewAdapter
         ImageView addEntry = findViewById(R.id.addEntry);
         RecyclerView recyclerView = findViewById(R.id.info_content);
 
-        lootDBHelper mLootDBHelper = new lootDBHelper(this);
+        miscDBHelper mMiscDBHelper = new miscDBHelper(this);
         DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
         int deviceHeight = (displayMetrics.heightPixels);
 
@@ -82,38 +84,37 @@ public class LootList extends AppCompatActivity implements MyRecyclerViewAdapter
         }
 
         // set up the RecyclerView with data from the database
-        Cursor loot = mLootDBHelper.getLoot();
-
-        groups.add(getString(R.string.filtergroup));
+        Cursor misc = mMiscDBHelper.getMisc();
+        groups.add(getString(R.string.filtergroup2));
 
         try {
-            if (loot.moveToNext()) {
+            if (misc.moveToNext()) {
                 do {
-                    lootList.add(loot.getString(1));
-                    if (loot.getString(8) != null && !groups.contains(loot.getString(8)) && !loot.getString(8).equals("")){
-                        groups.add(loot.getString(8));
+                    Log.d(TAG, "onCreate: " + misc.getString(1) + " in is the Misc DB");
+                    miscList.add(misc.getString(1));
+                    if (misc.getString(11) != null && !groups.contains(misc.getString(11)) && !misc.getString(11).equals("")){
+                        groups.add(misc.getString(11));
                     }
-                } while (loot.moveToNext());
+                } while (misc.moveToNext());
             } else{
-                TextView noLoot = new TextView(this);
+                TextView noMisc = new TextView(this);
                 RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
                 params.setMargins(0,100,0,0);
-                noLoot.setLayoutParams(params);
-                noLoot.setText(R.string.noloottext);
-                noLoot.setGravity(Gravity.CENTER_HORIZONTAL);
-                noLoot.setTextSize(20);
-                noLoot.setTypeface(null, Typeface.ITALIC);
-                noLoot.setTextColor(Color.parseColor("#666666"));
-                innerLayout.addView(noLoot);
+                noMisc.setLayoutParams(params);
+                noMisc.setText(R.string.noentrytext);
+                noMisc.setGravity(Gravity.CENTER_HORIZONTAL);
+                noMisc.setTextSize(20);
+                noMisc.setTypeface(null, Typeface.ITALIC);
+                noMisc.setTextColor(Color.parseColor("#666666"));
+                innerLayout.addView(noMisc);
             }
         } finally {
             if (!groups.contains("No Group")) groups.add(getString(R.string.nogroup));
-            loot.close();
+            misc.close();
         }
 
-
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new MyRecyclerViewAdapter(this, lootList, this, darkMode);
+        adapter = new MyRecyclerViewAdapter(this, miscList, this, darkMode);
         recyclerView.setAdapter(adapter);
         DividerItemDecoration itemDecor = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
         recyclerView.addItemDecoration(itemDecor);
@@ -121,8 +122,10 @@ public class LootList extends AppCompatActivity implements MyRecyclerViewAdapter
         params.height = (int)(deviceHeight * .70);
         recyclerView.setLayoutParams(params);
 
-        listTitle.setText(R.string.loot);
-        listTitle.setTextColor(Color.parseColor("#6F94F8"));
+        String miscName = sharedPreferences.getString("miscName", "none");
+        if (!miscName.equals("none")) listTitle.setText(miscName);
+        else listTitle.setText(R.string.misc);
+        listTitle.setTextColor(Color.parseColor("#8f6ff8"));
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -137,7 +140,7 @@ public class LootList extends AppCompatActivity implements MyRecyclerViewAdapter
             // The code in this method will be executed when the numbers View is clicked on.
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(view.getContext(), LootInfo.class);
+                Intent intent = new Intent(view.getContext(), MiscInfo.class);
                 startActivity(intent);
                 finish();
             }
@@ -153,39 +156,39 @@ public class LootList extends AppCompatActivity implements MyRecyclerViewAdapter
                 filterChoice = groups.get(position);
                 Log.d(TAG, "onItemSelected: Value of filterChoice is: " + filterChoice);
 
-                if ((!groups.get(position).equals(getString(R.string.filtergroup))) && (!groups.get(position).equals(getString(R.string.clearfilter)))) {
-                    lootList.clear();
+                if ((!groups.get(position).equals(getString(R.string.filtergroup2))) && (!groups.get(position).equals(getString(R.string.clearfilter)))) {
+                    miscList.clear();
                     groupAdapter.getDropDownView(position, view, parent);
                     if (!(groups.contains(getString(R.string.clearfilter)))) {
                         groups.add(getString(R.string.clearfilter));
                     }
-                    lootDBHelper mLootDBHelper = new lootDBHelper(context);
-                    Cursor loot = mLootDBHelper.getLootGroup(filterChoice);
+                    miscDBHelper mMiscDBHelper = new miscDBHelper(context);
+                    Cursor miscGroup = mMiscDBHelper.getMiscGroup(filterChoice);
                     try {
-                        if (loot.moveToNext()) {
+                        if (miscGroup.moveToNext()) {
                             do {
-                                lootList.add(loot.getString(1));
-                            } while (loot.moveToNext());
+                                miscList.add(miscGroup.getString(1));
+                            } while (miscGroup.moveToNext());
                         }
                     } finally {
-                        loot.close();
+                        miscGroup.close();
                     }
 
                     adapter.notifyDataSetChanged();
 
                 } else if (groups.get(position).equals(getString(R.string.clearfilter))) {
-                    lootList.clear();
-                    lootDBHelper mLootDBHelper = new lootDBHelper(context);
-                    Cursor loot = mLootDBHelper.getLoot();
+                    miscList.clear();
+                    miscDBHelper mMiscDBHelper = new miscDBHelper(context);
+                    Cursor miscGroup = mMiscDBHelper.getMisc();
                     try {
-                        if (loot.moveToNext()) {
+                        if (miscGroup.moveToNext()) {
                             do {
-                                lootList.add(loot.getString(1));
-                            } while (loot.moveToNext());
+                                miscList.add(miscGroup.getString(1));
+                            } while (miscGroup.moveToNext());
                         }
                         adapter.notifyDataSetChanged();
                     } finally {
-                        loot.close();
+                        miscGroup.close();
                     }
                 }
             }
@@ -208,17 +211,17 @@ public class LootList extends AppCompatActivity implements MyRecyclerViewAdapter
     @Override
     protected void onResume() {
         super.onResume();
-        lootList.clear();
-        lootDBHelper mLootDBHelper = new lootDBHelper(this);
-        Cursor loot = mLootDBHelper.getLoot();
+        miscList.clear();
+        miscDBHelper mMiscDBHelper = new miscDBHelper(this);
+        Cursor misc = mMiscDBHelper.getMisc();
         try {
-            if (loot.moveToNext()) {
+            if (misc.moveToNext()) {
                 do {
-                    lootList.add(loot.getString(1));
-                } while (loot.moveToNext());
+                    miscList.add(misc.getString(1));
+                } while (misc.moveToNext());
             }
         } finally {
-            loot.close();
+            misc.close();
         }
 
         adapter.notifyDataSetChanged();
@@ -226,8 +229,7 @@ public class LootList extends AppCompatActivity implements MyRecyclerViewAdapter
 
     @Override
     public void onBackPressed() {
-        Boolean groupClick = getIntent().getBooleanExtra("groupClick", false);
-
+        boolean groupClick = getIntent().getBooleanExtra("groupClick", false);
         if (groupClick) super.onBackPressed();
         else {
             Intent intent = new Intent(context, MainActivity.class);
@@ -240,11 +242,11 @@ public class LootList extends AppCompatActivity implements MyRecyclerViewAdapter
     public void onNoteClick(int position) {
         //If I want a reference of the list item I clicked on
         //Pass in the position as an extra to the new activity you'll create
-        String lootName = lootList.get(position);
-        Log.d(TAG, "onCreate: The value of lootTitle is " + lootName);
-        Intent intent = new Intent(this, LootDisplay.class);
-        intent.putExtra("lootName", lootName);
-        intent.putExtra("addLootValue", 0);
+        String miscName = miscList.get(position);
+        Log.d(TAG, "onCreate: The value of miscTitle is " + miscName);
+        Intent intent = new Intent(this, MiscDisplay.class);
+        intent.putExtra("miscName", miscName);
+        intent.putExtra("addMiscValue", 0);
         startActivity(intent);
     }
 }

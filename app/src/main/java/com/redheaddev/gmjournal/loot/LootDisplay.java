@@ -4,7 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -23,6 +26,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.redheaddev.gmjournal.R;
+import com.redheaddev.gmjournal.cities.CityDisplay;
+import com.redheaddev.gmjournal.cities.CityList;
+
+import java.io.IOException;
 
 public class LootDisplay extends AppCompatActivity{
 
@@ -54,6 +61,7 @@ public class LootDisplay extends AppCompatActivity{
         LinearLayoutCompat imageLayout = findViewById(R.id.imageLayout);
         LinearLayoutCompat underTitleLayout = findViewById(R.id.underTitleLayout);
         LinearLayoutCompat underTitleLayout2 = findViewById(R.id.underTitleLayout2);
+        LinearLayoutCompat underTitleLayout3 = findViewById(R.id.underTitleLayout3);
 
         if (theme.equals("dark")){
 
@@ -81,7 +89,7 @@ public class LootDisplay extends AppCompatActivity{
         });
 
         //If coming to this activity from clicking on a name, get and fill out all fields with the data for the corresponding npc.
-        Cursor lootInfo = mLootDBHelper.getSpecificLoot(getIntent().getStringExtra("lootName"));
+        final Cursor lootInfo = mLootDBHelper.getSpecificLoot(getIntent().getStringExtra("lootName"));
         lootInfo.moveToFirst();
         lootTitle = lootInfo.getString(1);
         lootName.setText(lootInfo.getString(1));
@@ -91,8 +99,9 @@ public class LootDisplay extends AppCompatActivity{
 
         if(!lootInfo.getString(6).equals("")){
             ImageView itemImage = new ImageView(this);
-            Uri imageFileUri = Uri.parse(lootInfo.getString(6));
-            itemImage.setImageURI(imageFileUri);
+            String image = lootInfo.getString(6);
+            Bitmap bmImg = BitmapFactory.decodeFile(image);
+            itemImage.setImageBitmap(bmImg);
             LinearLayoutCompat.LayoutParams lparams = new LinearLayoutCompat.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             lparams.setMargins(0, 20, 0, 0);
             itemImage.setLayoutParams(lparams);
@@ -154,6 +163,31 @@ public class LootDisplay extends AppCompatActivity{
                 lootReq.setBackgroundColor(Color.parseColor("#2C2C2C"));
             }
             underTitleLayout2.addView(lootReq);
+        }
+
+        if(lootInfo.getString(8) != null) {
+            if (!lootInfo.getString(8).equals("") && !lootInfo.getString(8).equals("No Group")) {
+                TextView itemGroup = new TextView(this);
+                itemGroup.setText(String.format("%s %s", getString(R.string.itemgrouplabel), lootInfo.getString(8)));
+                itemGroup.setPaintFlags(itemGroup.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+                itemGroup.setTextSize(16);
+                itemGroup.setTypeface(null, Typeface.ITALIC);
+                itemGroup.setTextColor(Color.parseColor("#6fd8f9"));
+                if (!darkMode) itemGroup.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                else itemGroup.setBackgroundColor(Color.parseColor("#2C2C2C"));
+                itemGroup.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (!mLootDBHelper.checkGroupNonExistence(lootInfo.getString(8))) {
+                            Intent intent = new Intent(context, LootList.class);
+                            intent.putExtra("groupClick", true);
+                            intent.putExtra("groupName", lootInfo.getString(8));
+                            startActivity(intent);
+                        } else toast(getString(R.string.nosaveditemgroup));
+                    }
+                });
+                underTitleLayout3.addView(itemGroup);
+            }
         }
 
         if(!lootInfo.getString(4).equals("")) {
@@ -234,9 +268,14 @@ public class LootDisplay extends AppCompatActivity{
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(context, LootList.class);
-        startActivity(intent);
-        finish();
+        Boolean miscNav = getIntent().getBooleanExtra("miscNav", false);
+        if(miscNav){
+            super.onBackPressed();
+        } else {
+            Intent intent = new Intent(context, LootList.class);
+            startActivity(intent);
+            finish();
+        }
     }
 
     private void toast(String message){

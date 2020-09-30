@@ -152,13 +152,14 @@ public class DistanceList extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String customDistanceValue = customDistance.getText().toString();
-                distanceDBHelper mDistanceDBHelper = new distanceDBHelper(addEntry.getContext());
+                distanceDBHelper mDistanceDBHelper = new distanceDBHelper(context);
                 if(getCityTo().equals(getString(R.string.destination))) {
                     toast(getString(R.string.selectdestination));
                 } else if(customDistanceValue.equals("")) {
                     toast(getString(R.string.providedistance));
                 } else if(mDistanceDBHelper.checkNonExistence(getPassedCityFrom(), getCityTo())) { //add the selected spinner value here
                     mDistanceDBHelper.addDistance(getPassedCityFrom(), getCityTo(), customDistanceValue);
+                    mDistanceDBHelper.addDistance(getCityTo(), getPassedCityFrom(), customDistanceValue);
                     distanceList.clear();
                     try (Cursor distances = mDistanceDBHelper.getDistances(getPassedCityFrom())) {
                         if (distances.moveToNext()) {

@@ -79,10 +79,11 @@ public class CityDisplay extends AppCompatActivity implements MyRecyclerViewAdap
         ImageView backButton = findViewById(R.id.backButton);
         ImageView editIcon = findViewById(R.id.editIcon);
         final TextView cityName = findViewById(R.id.cityTitle);
-        NestedScrollView cityMainLayout = findViewById(R.id.cityMainLayout);
+        NestedScrollView cityMainLayout = findViewById(R.id.cityDisplayMainLayout);
         LinearLayout cityLayout = findViewById(R.id.cityLayout);
         LinearLayoutCompat underTitleLayout = findViewById(R.id.underTitleLayout);
         LinearLayoutCompat underTitleLayout2 = findViewById(R.id.underTitleLayout2);
+        LinearLayoutCompat underTitleLayout3 = findViewById(R.id.underTitleLayout3);
         LinearLayout distanceListTitle = findViewById(R.id.distanceListTitle);
         RelativeLayout distanceListLayout = findViewById(R.id.distanceListLayout);
         ListView distanceListViewDisplay = findViewById(R.id.distanceListViewDisplay);
@@ -96,6 +97,7 @@ public class CityDisplay extends AppCompatActivity implements MyRecyclerViewAdap
             cityMainLayout.setBackgroundColor(Color.parseColor("#2C2C2C"));
             underTitleLayout.setBackgroundColor(Color.parseColor("#2C2C2C"));
             underTitleLayout2.setBackgroundColor(Color.parseColor("#2C2C2C"));
+            underTitleLayout3.setBackgroundColor(Color.parseColor("#2C2C2C"));
             distanceListTitle.setBackgroundColor(Color.parseColor("#2C2C2C"));
             distanceListLayout.setBackgroundColor(Color.parseColor("#2C2C2C"));
             distanceListViewDisplay.setBackgroundColor(Color.parseColor("#2C2C2C"));
@@ -123,49 +125,39 @@ public class CityDisplay extends AppCompatActivity implements MyRecyclerViewAdap
         cityName.setTextColor(Color.parseColor("#6FD8F8"));
 
         if(!cityInfo.getString(3).equals("Population") && (!cityInfo.getString(3).equals("None"))) {
-            TextView citySize = new TextView(this);
-            citySize.setText(cityInfo.getString(3));
-            citySize.setTextSize(16);
-            citySize.setTypeface(null, Typeface.ITALIC);
+            TextView popLabel = new TextView(this);
+            popLabel.setText(String.format("%s %s", getString(R.string.poplabel), cityInfo.getString(3)));
+            popLabel.setTextSize(16);
+            popLabel.setTypeface(null, Typeface.ITALIC);
             if (!darkMode) {
-                citySize.setTextColor(Color.parseColor("#666666"));
-                citySize.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                popLabel.setTextColor(Color.parseColor("#666666"));
+                popLabel.setBackgroundColor(Color.parseColor("#FFFFFF"));
             } else {
-                citySize.setTextColor(Color.parseColor("#FFFFFF"));
-                citySize.setBackgroundColor(Color.parseColor("#2C2C2C"));
+                popLabel.setTextColor(Color.parseColor("#FFFFFF"));
+                popLabel.setBackgroundColor(Color.parseColor("#2C2C2C"));
             }
-            underTitleLayout.addView(citySize);
-        }
-
-        if((!cityInfo.getString(2).equals("Environment")) && (!cityInfo.getString(3).equals("Population")) && (!cityInfo.getString(3).equals("None"))){
-            ImageView separator = new ImageView(this);
-            separator.setImageDrawable(getResources().getDrawable(R.drawable.dot));
-            if (!darkMode) DrawableCompat.setTint(DrawableCompat.wrap(separator.getDrawable()), ContextCompat.getColor(context, R.color.black));
-                else DrawableCompat.setTint(DrawableCompat.wrap(separator.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
-            LinearLayoutCompat.LayoutParams lparams = new LinearLayoutCompat.LayoutParams(30, 30);
-            lparams.setMargins(30, 0, 30, 0);
-            separator.setLayoutParams(lparams);
-            underTitleLayout.addView(separator);
+            underTitleLayout.addView(popLabel);
         }
 
         if(!cityInfo.getString(2).equals("Environment") && (!cityInfo.getString(2).equals("None"))) {
-            TextView cityEnviron = new TextView(this);
-            cityEnviron.setText(cityInfo.getString(2));
-            cityEnviron.setTextSize(16);
-            cityEnviron.setTypeface(null, Typeface.ITALIC);
+            TextView envLabel = new TextView(this);
+            envLabel.setText(String.format("%s %s", getString(R.string.envlabel), cityInfo.getString(2)));
+            envLabel.setTextSize(16);
+            envLabel.setTypeface(null, Typeface.ITALIC);
             if (!darkMode) {
-                cityEnviron.setTextColor(Color.parseColor("#666666"));
-                cityEnviron.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                envLabel.setTextColor(Color.parseColor("#666666"));
+                envLabel.setBackgroundColor(Color.parseColor("#FFFFFF"));
             } else {
-                cityEnviron.setTextColor(Color.parseColor("#FFFFFF"));
-                cityEnviron.setBackgroundColor(Color.parseColor("#2C2C2C"));
+                envLabel.setTextColor(Color.parseColor("#FFFFFF"));
+                envLabel.setBackgroundColor(Color.parseColor("#2C2C2C"));
             }
-            underTitleLayout.addView(cityEnviron);
+            underTitleLayout2.addView(envLabel);
         }
+
 
         if(!cityInfo.getString(4).equals("") && !cityInfo.getString(4).equals("Economy") && (!cityInfo.getString(4).equals("None"))) {
             TextView econLabel = new TextView(this);
-            econLabel.setText(R.string.economyHeader);
+            econLabel.setText(String.format("%s %s", getString(R.string.economyHeader), cityInfo.getString(4)));
             econLabel.setTextSize(16);
             econLabel.setTypeface(null, Typeface.ITALIC);
             if (!darkMode) {
@@ -175,23 +167,7 @@ public class CityDisplay extends AppCompatActivity implements MyRecyclerViewAdap
                 econLabel.setTextColor(Color.parseColor("#FFFFFF"));
                 econLabel.setBackgroundColor(Color.parseColor("#2C2C2C"));
             }
-            underTitleLayout2.addView(econLabel);
-
-            TextView cityEcon = new TextView(this);
-            cityEcon.setText(cityInfo.getString(4));
-            cityEcon.setTextSize(16);
-            cityEcon.setTypeface(null, Typeface.ITALIC);
-            if (!darkMode) {
-                cityEcon.setTextColor(Color.parseColor("#666666"));
-                cityEcon.setBackgroundColor(Color.parseColor("#FFFFFF"));
-            } else {
-                cityEcon.setTextColor(Color.parseColor("#FFFFFF"));
-                cityEcon.setBackgroundColor(Color.parseColor("#2C2C2C"));
-            }
-            LinearLayoutCompat.LayoutParams lparams = new LinearLayoutCompat.LayoutParams(LinearLayoutCompat.LayoutParams.WRAP_CONTENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
-            lparams.setMargins(25, 0, 0, 0);
-            cityEcon.setLayoutParams(lparams);
-            underTitleLayout2.addView(cityEcon);
+            underTitleLayout3.addView(econLabel);
         }
 
         if(!cityInfo.getString(5).equals("")) {
@@ -302,7 +278,6 @@ public class CityDisplay extends AppCompatActivity implements MyRecyclerViewAdap
         final double scale;
         if (deviceHeight < 2600) scale = .07;
         else scale = .06;
-
         double scaleHeight = distanceListDisplay.size() * scale;
         int height = (int) (deviceHeight * scaleHeight);
         //int height = distanceListDisplay.size() * 155;
@@ -518,7 +493,8 @@ public class CityDisplay extends AppCompatActivity implements MyRecyclerViewAdap
     @Override
     public void onBackPressed() {
         Boolean npcNav = getIntent().getBooleanExtra("npcNav", false);
-        if(npcNav){
+        Boolean miscNav = getIntent().getBooleanExtra("miscNav", false);
+        if(npcNav || miscNav){
             super.onBackPressed();
         } else {
             Intent intent = new Intent(context, CityList.class);

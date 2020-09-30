@@ -2,6 +2,7 @@ package com.redheaddev.gmjournal.loot;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,9 +10,13 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.provider.OpenableColumns;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
@@ -36,11 +41,25 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.redheaddev.gmjournal.R;
+import com.redheaddev.gmjournal.presets.PresetList;
 
+import org.w3c.dom.Text;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URI;
 import java.util.ArrayList;
 
 public class LootInfo extends AppCompatActivity {
 
+    private static final String TAG = "fdsa";
     private lootDBHelper mLootDBHelper;
     private int addLootValue = 0;
     private String lootTitle = null;
@@ -53,6 +72,8 @@ public class LootInfo extends AppCompatActivity {
     private String rarityChoice;
     boolean deleteExists = false;
     private boolean darkMode;
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
 
     @Override
@@ -80,6 +101,9 @@ public class LootInfo extends AppCompatActivity {
         final Spinner lootsRarity = findViewById(R.id.lootsRarity);
         final ScrollView lootMainLayout = findViewById(R.id.lootMainLayout);
         final LinearLayoutCompat buttonLayout = findViewById(R.id.lootButtonLayout);
+        final LinearLayoutCompat groupLayout = findViewById(R.id.groupLayout);
+        final TextView groupTitle = findViewById(R.id.groupTitle);
+        final TextView groupPreset = findViewById(R.id.groupPreset);
         final LinearLayout lootLayout = findViewById(R.id.lootLayout);
         final TextView addImageText = findViewById(R.id.addImageText);
         final TextView nameTitle = findViewById(R.id.nameTitle);
@@ -91,6 +115,8 @@ public class LootInfo extends AppCompatActivity {
         final ImageView lootImage = findViewById(R.id.lootImage);
         final ImageView addImage = findViewById((R.id.addImage));
         Button saveLoot =  findViewById(R.id.saveLoot);
+
+        verifyStoragePermissions(this);
 
         addImageText.setText(R.string.addimage);
         lootImage.setVisibility(View.GONE);
@@ -108,6 +134,7 @@ public class LootInfo extends AppCompatActivity {
             priceTitle.setTextColor(Color.WHITE);
             descTitle.setTextColor(Color.WHITE);
             detailsTitle.setTextColor(Color.WHITE);
+            groupTitle.setTextColor(Color.WHITE);
             addImage.setBackgroundResource(R.drawable.info_bg8);
             lootName.setBackgroundResource(R.drawable.info_bg7);
             lootName.setTextColor(Color.parseColor("#dadada"));
@@ -115,6 +142,8 @@ public class LootInfo extends AppCompatActivity {
             lootPrice.setTextColor(Color.parseColor("#dadada"));
             lootRequirements.setBackgroundResource(R.drawable.info_bg7);
             lootRequirements.setButtonTintList(ColorStateList.valueOf(Color.parseColor("#ffffff")));
+            groupLayout.setBackgroundResource(R.drawable.info_bg7);
+            groupPreset.setTextColor(Color.parseColor("#dadada"));
             lootDescription.setBackgroundResource(R.drawable.info_bg7);
             lootDescription.setTextColor(Color.parseColor("#dadada"));
             lootDetails.setBackgroundResource(R.drawable.info_bg7);
@@ -188,6 +217,15 @@ public class LootInfo extends AppCompatActivity {
             }
         });
 
+        groupLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, PresetList.class);
+                intent.putExtra("presetVariable", "Group");
+                startActivityForResult(intent, 5);
+            }
+        });
+
         saveLoot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -204,6 +242,8 @@ public class LootInfo extends AppCompatActivity {
                 }
                 String description = lootDescription.getText().toString();
                 String details = lootDetails.getText().toString();
+                String group = groupPreset.getText().toString();
+                if (group.equals("")) group = "No Group";
 
                 //if the edit text values are non-zero, and there is no identical entry, then add the Loot data.
                 if (CheckName(lootName)){
@@ -213,7 +253,7 @@ public class LootInfo extends AppCompatActivity {
                     }
 
                     String realAttunement = getAttunement();
-                    AddLoot(name, rarity, price, description, details, image, realAttunement, lootTitle);
+                    AddLoot(name, rarity, price, description, details, image, realAttunement, group, lootTitle);
                     ImageView deleteLootButtonImage = new ImageView(context);
                     deleteLootButtonImage.setImageResource(R.drawable.delete);
                     int deviceWidth = (displayMetrics.widthPixels);
@@ -277,6 +317,7 @@ public class LootInfo extends AppCompatActivity {
             }
             lootDescription.setText(lootInfo.getString(4));
             lootDetails.setText(lootInfo.getString(5));
+            groupPreset.setText(lootInfo.getString(8));
             ImageView deleteLootButtonImage = new ImageView(this);
             deleteLootButtonImage.setImageResource(R.drawable.delete);
             int deviceWidth = (displayMetrics.widthPixels);
@@ -317,8 +358,8 @@ public class LootInfo extends AppCompatActivity {
 
             image = lootInfo.getString(6);
             if (!image.equals("")) {
-                Uri imageUri = Uri.parse(image);
-                lootImage.setImageURI(imageUri);
+                Bitmap bmImg = BitmapFactory.decodeFile(image);
+                lootImage.setImageBitmap(bmImg);
                 lootImage.setVisibility(View.VISIBLE);
                 addImageText.setText(R.string.removeimage);
                 addImage.setImageResource(R.drawable.removeimage);
@@ -360,13 +401,30 @@ public class LootInfo extends AppCompatActivity {
         final ImageView lootImage = findViewById(R.id.lootImage);
         final TextView addImageText = findViewById(R.id.addImageText);
         final ImageView addImage = findViewById(R.id.addImage);
-        if (resultCode == Activity.RESULT_OK)
+
+        if (resultCode == 5){
+            TextView groupPreset = findViewById(R.id.groupPreset);
+            if (!data.getStringExtra("presetValue").equals("none")) {
+                String presetValue = data.getStringExtra("presetValue");
+                groupPreset.setText(presetValue);
+            }
+            else groupPreset.setText("");
+
+        } else if (resultCode == Activity.RESULT_OK)
             if (requestCode == 1) {
                 //data.getData returns the content URI for the selected Image
                 Uri selectedImage = data.getData();
-                image = selectedImage.toString();
                 lootImage.setVisibility(View.VISIBLE);
-                lootImage.setImageURI(selectedImage);
+                String savedImagePath = null;
+                try {
+                    savedImagePath = createFileFromInputStream(selectedImage);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                Log.d(TAG, "onActivityResult: SavedImagePath is " + savedImagePath);
+                image = savedImagePath;
+                Bitmap bmImg = BitmapFactory.decodeFile(savedImagePath);
+                lootImage.setImageBitmap(bmImg);
                 addImageText.setText(R.string.removeimage);
                 addImage.setImageResource(R.drawable.removeimage);
                 if (!darkMode) DrawableCompat.setTint(DrawableCompat.wrap(addImage.getDrawable()), ContextCompat.getColor(context, R.color.black));
@@ -402,21 +460,75 @@ public class LootInfo extends AppCompatActivity {
             }
     }
 
+
+    private String createFileFromInputStream(Uri imageUri) throws FileNotFoundException {
+
+        InputStream in = getContentResolver().openInputStream(imageUri);
+        String imageFileName = getFileName(imageUri);
+        File exportDir = new File(context.getFilesDir(), "/GMJournalData/");
+        if (!exportDir.exists()) {
+            if (exportDir.mkdirs()) Log.d(TAG, "doInBackground: File directory was created");
+            else Log.d(TAG, "doInBackground: File directory wasn't created");
+        }
+        String destinationFilename = context.getFilesDir().getPath() + "/GMJournalData/" + imageFileName;
+
+        try {
+            File f = new File(destinationFilename);
+            f.setWritable(true, false);
+            OutputStream outputStream = new FileOutputStream(f);
+            byte buffer[] = new byte[1024];
+            int length = 0;
+
+            while((length=in.read(buffer)) > 0) {
+                outputStream.write(buffer,0,length);
+            }
+
+            outputStream.close();
+            in.close();
+
+            return destinationFilename;
+        } catch (IOException e) {
+            System.out.println("error in creating a file");
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public String getFileName(Uri uri) {
+        String result = null;
+        if (uri.getScheme().equals("content")) {
+            Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+            try {
+                if (cursor != null && cursor.moveToFirst()) {
+                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                }
+            } finally {
+                cursor.close();
+            }
+        }
+        if (result == null) {
+            result = uri.getPath();
+            int cut = result.lastIndexOf('/');
+            if (cut != -1) {
+                result = result.substring(cut + 1);
+            }
+        }
+        return result;
+    }
+
     //Make sure the text fields are not left blank (may be edited later to omit the notes section)
     private boolean CheckName(EditText name) {
         return ((name.length() != 0));
     }
 
-    private void AddLoot(final String name, final String rarity, final String price, final String description, final String details, final String image, final String requirements, final String lootTitle){
+    private void AddLoot(final String name, final String rarity, final String price, final String description, final String details, final String image, final String requirements, final String itemGroup, final String lootTitle){
         setLootTitle(name);
         if(addLootValue == 0 || !(mLootDBHelper.checkNonExistence(name))) { //if we're updating an existing entry, then edit current DB values
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            //builder.setTitle(R.string.app_name);
             builder.setMessage(R.string.updateinfo);
-            //builder.setIcon(R.drawable.ic_launcher);
             builder.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
-                    boolean insertLoot = mLootDBHelper.addLoot(name, rarity, price, description, details, image, requirements, lootTitle, true);
+                    boolean insertLoot = mLootDBHelper.addLoot(name, rarity, price, description, details, image, requirements, itemGroup, lootTitle, true);
 
                     if (insertLoot) {
                         toast(getString(R.string.itemsaved));
@@ -435,7 +547,7 @@ public class LootInfo extends AppCompatActivity {
             AlertDialog alert = builder.create();
             alert.show();
         }else { //if the npc with the entered name does not exist, proceed as normal
-            boolean insertLoot = mLootDBHelper.addLoot(name, rarity, price, description, details, image, requirements, lootTitle, false);
+            boolean insertLoot = mLootDBHelper.addLoot(name, rarity, price, description, details, image, requirements, itemGroup, lootTitle, false);
             if (insertLoot) {
                 toast(getString(R.string.itemsaved));
                 onBackPressed();
@@ -477,6 +589,15 @@ public class LootInfo extends AppCompatActivity {
         return requirements;
     }
 
+    public static void verifyStoragePermissions(Activity activity) {
+        // Check if we have write permission
+        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(activity, PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
+        }
+    }
 
     private void requestStoragePermission(){
         if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)){

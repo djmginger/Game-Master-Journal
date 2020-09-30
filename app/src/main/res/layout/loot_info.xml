@@ -123,6 +123,42 @@
             android:textSize="15sp" />
 
         <TextView
+            android:id="@+id/groupTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/item_group"
+            android:textSize="20sp" />
+
+        <android.support.v7.widget.LinearLayoutCompat
+            android:id="@+id/groupLayout"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/buttonbg4" >
+
+            <TextView
+                android:id="@+id/groupPreset"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="10dp"
+                android:textColorHint="@color/black"
+                android:hint="No Group"
+                android:textSize="18sp" />
+
+            <ImageView
+                android:id="@+id/downArrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/downarrow"
+                android:padding="10dp"
+                android:layout_gravity="center_vertical"/>
+
+        </android.support.v7.widget.LinearLayoutCompat>
+
+        <TextView
             android:id="@+id/priceTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -138,6 +174,7 @@
             android:ems="10"
             android:inputType="textCapSentences"
             android:padding="10dp"
+            android:text="fdsakl;"
             android:imeOptions="actionNext"
             android:singleLine="true" />
 

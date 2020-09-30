@@ -43,7 +43,7 @@ public class distanceDBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    void addDistance(String cityFrom, String cityTo, String distance){
+    public void addDistance(String cityFrom, String cityTo, String distance){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
@@ -80,7 +80,7 @@ public class distanceDBHelper extends SQLiteOpenHelper {
         return db.rawQuery(query, new String [] {cityFrom});
     }
 
-    Cursor getAllDistances(){
+    public Cursor getAllDistances(){
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT * FROM " + TABLE_NAME ;
         return db.rawQuery(query, new String [] {});

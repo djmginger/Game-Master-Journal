@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
@@ -39,7 +41,7 @@ public class NpcDisplay extends AppCompatActivity{
     private String npcTitle = null;
     private String voice = "";
     private final String TAG = "NPCInfo";
-    private boolean isStopped;
+    private boolean isStopped = true;
     private final ArrayList<String> locations = new ArrayList<>();
     private MediaPlayer mPlayer;
     private Context context;
@@ -110,6 +112,7 @@ public class NpcDisplay extends AppCompatActivity{
 
         //If coming to this activity from clicking on a name, get and fill out all fields with the data for the corresponding npc.
         final Cursor npcInfo = mNpcDBHelper.getSpecificNPC(getIntent().getStringExtra("npcName"));
+        Log.d(TAG, "onCreate: the passed name is " + getIntent().getStringExtra("npcName"));
         npcInfo.moveToFirst();
         npcTitle = npcInfo.getString(1);
         npcName.setText(npcInfo.getString(1));
@@ -117,8 +120,9 @@ public class NpcDisplay extends AppCompatActivity{
 
         if(!npcInfo.getString(8).equals("")){
             ImageView npcImage = new ImageView(this);
-            Uri imageFileUri = Uri.parse(npcInfo.getString(8));
-            npcImage.setImageURI(imageFileUri);
+            String image = npcInfo.getString(8);
+            Bitmap bmImg = BitmapFactory.decodeFile(image);
+            npcImage.setImageBitmap(bmImg);
             LinearLayoutCompat.LayoutParams lparams = new LinearLayoutCompat.LayoutParams(LinearLayoutCompat.LayoutParams.MATCH_PARENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
             lparams.setMargins(0, 20, 0, 0);
             npcImage.setLayoutParams(lparams);
@@ -375,7 +379,8 @@ public class NpcDisplay extends AppCompatActivity{
     @Override
     public void onBackPressed() {
         Boolean npcNav = getIntent().getBooleanExtra("cityNav", false);
-        if(npcNav){
+        Boolean miscNav = getIntent().getBooleanExtra("miscNav", false);
+        if(npcNav || miscNav){
             if (!isStopped){
                 mPlayer.stop();
                 try{

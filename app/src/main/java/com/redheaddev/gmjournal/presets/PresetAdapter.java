@@ -85,6 +85,12 @@ class PresetAdapter extends ArrayAdapter<Preset> {
                     case "Race":
                         result = 4;
                         break;
+                    case "Group":
+                        result = 5;
+                        break;
+                    case "MiscGroup":
+                        result = 6;
+                        break;
                     default:
                         result = 0;
                 }

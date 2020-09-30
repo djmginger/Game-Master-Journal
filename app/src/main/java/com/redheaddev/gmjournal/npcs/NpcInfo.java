@@ -8,12 +8,15 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.OpenableColumns;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -42,7 +45,12 @@ import com.redheaddev.gmjournal.cities.citiesDBHelper;
 import com.redheaddev.gmjournal.R;
 import com.redheaddev.gmjournal.presets.PresetList;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 
 public class NpcInfo extends AppCompatActivity{
@@ -697,9 +705,17 @@ public class NpcInfo extends AppCompatActivity{
                 final ImageView addImage = findViewById(R.id.addImage);
                 //data.getData returns the content URI for the selected Image
                 Uri selectedImage = data.getData();
-                image = selectedImage.toString();
                 npcImage.setVisibility(View.VISIBLE);
-                npcImage.setImageURI(selectedImage);
+                String savedImagePath = null;
+                try {
+                    savedImagePath = createFileFromInputStream(selectedImage);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                Log.d(TAG, "onActivityResult: SavedImagePath is " + savedImagePath);
+                image = savedImagePath;
+                Bitmap bmImg = BitmapFactory.decodeFile(savedImagePath);
+                npcImage.setImageBitmap(bmImg);
                 addImageText.setText(R.string.removeimage);
                 addImage.setImageResource(R.drawable.removeimage);
                 if (!darkMode) DrawableCompat.setTint(DrawableCompat.wrap(addImage.getDrawable()), ContextCompat.getColor(context, R.color.black));
@@ -747,6 +763,61 @@ public class NpcInfo extends AppCompatActivity{
             mPlayer.stop();
             mPlayer.release();
         }
+    }
+
+    private String createFileFromInputStream(Uri imageUri) throws FileNotFoundException {
+
+        InputStream in = getContentResolver().openInputStream(imageUri);
+        String imageFileName = getFileName(imageUri);
+        File exportDir = new File(context.getFilesDir(), "/GMJournalData/");
+        if (!exportDir.exists()) {
+            if (exportDir.mkdirs()) Log.d(TAG, "doInBackground: File directory was created");
+            else Log.d(TAG, "doInBackground: File directory wasn't created");
+        }
+        String destinationFilename = context.getFilesDir().getPath() + "/GMJournalData/" + imageFileName;
+
+        try {
+            File f = new File(destinationFilename);
+            f.setWritable(true, false);
+            OutputStream outputStream = new FileOutputStream(f);
+            byte buffer[] = new byte[1024];
+            int length = 0;
+
+            while((length=in.read(buffer)) > 0) {
+                outputStream.write(buffer,0,length);
+            }
+
+            outputStream.close();
+            in.close();
+
+            return destinationFilename;
+        } catch (IOException e) {
+            System.out.println("error in creating a file");
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public String getFileName(Uri uri) {
+        String result = null;
+        if (uri.getScheme().equals("content")) {
+            Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+            try {
+                if (cursor != null && cursor.moveToFirst()) {
+                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                }
+            } finally {
+                cursor.close();
+            }
+        }
+        if (result == null) {
+            result = uri.getPath();
+            int cut = result.lastIndexOf('/');
+            if (cut != -1) {
+                result = result.substring(cut + 1);
+            }
+        }
+        return result;
     }
 
     //Make sure the text fields are not left blank (may be edited later to omit the notes section)

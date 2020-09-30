@@ -109,7 +109,6 @@ public class NpcList extends AppCompatActivity implements MyRecyclerViewAdapter.
             npcs.close();
         }
 
-
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         DividerItemDecoration itemDecor = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
         //if (theme.equals("dark")) itemDecor.setDrawable(new ColorDrawable(getResources().getColor(R.color.mainBgColor)));

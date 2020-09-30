@@ -11,7 +11,6 @@ import android.util.Log;
 public class npcDBHelper extends SQLiteOpenHelper {
     private static npcDBHelper sInstance;
     private static final String TAG = "npcDBHelper";
-
     private static final String TABLE_NAME = "npc_table";
     private static final String COL1 = "ID";
     private static final String COL2 = "name";
@@ -48,7 +47,7 @@ public class npcDBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    boolean addNPC(String name, String location, String description, String notes, String oldName, String voice, String plothooks, String race, String image, Boolean updateNpc){
+    public boolean addNPC(String name, String location, String description, String notes, String oldName, String voice, String plothooks, String race, String image, Boolean updateNpc){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
@@ -77,7 +76,7 @@ public class npcDBHelper extends SQLiteOpenHelper {
         }
     }
 
-    Cursor getNPCS(){
+    public Cursor getNPCS(){
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "SELECT * FROM " + TABLE_NAME;
         return db.rawQuery(query, null);

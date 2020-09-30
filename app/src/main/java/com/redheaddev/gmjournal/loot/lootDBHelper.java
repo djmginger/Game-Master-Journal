@@ -21,6 +21,7 @@ public class lootDBHelper extends SQLiteOpenHelper {
     private static final String COL6 = "details";
     private static final String COL7 = "image";
     private static final String COL8 = "requirements";
+    private static final String COL9 = "lootgroup";
 
     //* get the context of each instance of lootDBHelper
     public static synchronized lootDBHelper getInstance(Context context) {
@@ -32,23 +33,26 @@ public class lootDBHelper extends SQLiteOpenHelper {
     }
 
     public lootDBHelper(Context context){
-        super(context, TABLE_NAME, null, 1);
+        super(context, TABLE_NAME, null, 2);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
         String createTable = "CREATE TABLE " + TABLE_NAME + " (ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                COL2 + " TEXT, " + COL3 + " TEXT, " + COL4 + " TEXT, " + COL5 + " TEXT," + COL6 + " TEXT, " + COL7 + " TEXT, " + COL8 + " TEXT)";
+                COL2 + " TEXT, " + COL3 + " TEXT, " + COL4 + " TEXT, " + COL5 + " TEXT," + COL6 + " TEXT, " + COL7 + " TEXT, " + COL8 + " TEXT, " + COL9 + " TEXT)";
         db.execSQL(createTable);
     }
 
+    private static final String DATABASE_ALTER_LOOT_GROUP = "ALTER TABLE " + TABLE_NAME + " ADD COLUMN " + COL9 + " TEXT DEFAULT 'No Group';";
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
-        onCreate(db);
+        if (oldVersion < 2){
+            db.execSQL(DATABASE_ALTER_LOOT_GROUP);
+        }
     }
 
-    public boolean addLoot(String name, String rarity, String price, String description, String details, String image, String requirements, String oldName, boolean updateLoot){
+    public boolean addLoot(String name, String rarity, String price, String description, String details, String image, String requirements, String lootGroup, String oldName, boolean updateLoot){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
@@ -60,23 +64,24 @@ public class lootDBHelper extends SQLiteOpenHelper {
             contentValues.put(COL6, details);
             contentValues.put(COL7, image);
             contentValues.put(COL8, requirements);
+            contentValues.put(COL9, lootGroup);
 
-            Log.d(TAG, "addLoot: Adding " + name + ", " + rarity + ", " + price + ", " + description + ", " + details + ", " + requirements + ", " + image + " to " + TABLE_NAME);
+            Log.d(TAG, "addLoot: Adding " + name + ", " + rarity + ", " + price + ", " + description + ", " + details + ", " + requirements + ", " + image + ", " + lootGroup + " to " + TABLE_NAME);
 
             long result = db.insert(TABLE_NAME, null, contentValues); //result will be -1 if data was inserted incorrectly
             return (result != -1);
 
         }else{  //if starting activity from clicking on an existing Loot name
-            String query = "UPDATE " + TABLE_NAME + " SET " + COL2 + "=?" + "," + COL3 + "=?" + "," + COL4 + "=?" + "," + COL5 + "=?" + "," + COL6 + "=?" + "," + COL7 + "=?" + "," + COL8 + "=?" + "WHERE " + COL2 + "=?";
-            db.execSQL(query, new String [] {name, rarity, price, description, details, image, requirements, oldName});
+            String query = "UPDATE " + TABLE_NAME + " SET " + COL2 + "=?" + "," + COL3 + "=?" + "," + COL4 + "=?" + "," + COL5 + "=?" + "," + COL6 + "=?" + "," + COL7 + "=?" + "," + COL8 + "=?" + "," + COL9 + "=?" + "WHERE " + COL2 + "=?";
+            db.execSQL(query, new String [] {name, rarity, price, description, details, image, requirements, lootGroup, oldName});
 
-            Log.d(TAG, "addLoot: Updating " + oldName + " to " + name + ", " + rarity + ", " + price + ", " + description + ", " + details + ", " + image + ", "  + requirements + " to " + TABLE_NAME);
+            Log.d(TAG, "addLoot: Updating " + name + ", " + rarity + ", " + price + ", " + description + ", " + details + ", " + requirements + ", " + image + ", " + lootGroup + " to " + TABLE_NAME);
 
             return true;
         }
     }
 
-    Cursor getLoot(){
+    public Cursor getLoot(){
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "SELECT * FROM " + TABLE_NAME;
         return db.rawQuery(query, null);
@@ -85,6 +90,13 @@ public class lootDBHelper extends SQLiteOpenHelper {
     Cursor getSpecificLoot(String name){
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COL2 + "=?";
+        return db.rawQuery(query, new String [] {name});
+
+    }
+
+    public Cursor getLootGroup(String name){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COL9 + "=?";
         return db.rawQuery(query, new String [] {name});
 
     }
@@ -99,6 +111,18 @@ public class lootDBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         String Query = "Select * from " + TABLE_NAME + " where " + COL2 + "=?";
         Cursor cursor = db.rawQuery(Query, new String [] {entryName});
+        if(cursor.getCount() <= 0){
+            cursor.close();
+            return true;
+        }
+        cursor.close();
+        return false;
+    }
+
+    public boolean checkGroupNonExistence(String groupName){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String Query = "Select * from " + TABLE_NAME + " where " + COL9 + "=?";
+        Cursor cursor = db.rawQuery(Query, new String [] {groupName});
         if(cursor.getCount() <= 0){
             cursor.close();
             return true;

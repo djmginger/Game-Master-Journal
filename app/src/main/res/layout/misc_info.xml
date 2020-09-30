@@ -1,0 +1,451 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/miscMainLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/miscLayout"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="start"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp">
+
+        <android.support.v7.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/backButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:src="@drawable/backarrow" />
+
+            <TextView
+                android:id="@+id/miscMainTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/miscdetails"
+
+                android:textColor="@color/mainColor5"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textSize="25sp" />
+
+            <ImageView
+                android:id="@+id/editIcon6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:src="@drawable/editicon" />
+
+        </android.support.v7.widget.LinearLayoutCompat>
+
+        <TextView
+            android:id="@+id/miscTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="@string/lootname"
+            android:textSize="20sp" />
+
+        <EditText
+            android:id="@+id/miscName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/info_bg9"
+            android:inputType="textCapSentences"
+            android:padding="10dp"
+            android:imeOptions="actionNext"
+            android:singleLine="true"
+            android:layout_marginBottom="15dp"/>
+
+        <ImageView
+            android:id="@+id/miscImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:adjustViewBounds="true"
+            android:layout_gravity="center" />
+
+        <ImageView
+            android:id="@+id/addImage"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:padding="10dp"
+            android:background="@drawable/info_bg10" />
+
+        <TextView
+            android:id="@+id/addImageText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textSize="15sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            android:layout_gravity="left">
+
+            <TextView
+                android:id="@+id/miscHeader1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/miscellaneous_info_1"
+                android:textSize="20sp" />
+
+            <ImageView
+                android:id="@+id/editIcon1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="0"
+                android:src="@drawable/editicon" />
+
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/miscInfo1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/info_bg9"
+            android:ems="10"
+            android:inputType="textCapSentences|textMultiLine"
+            android:padding="10dp"
+            android:imeOptions="actionNext" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            android:layout_gravity="left">
+
+            <TextView
+                android:id="@+id/miscHeader2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/miscellaneous_info_2"
+                android:textSize="20sp" />
+
+            <ImageView
+                android:id="@+id/editIcon2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="0"
+                android:src="@drawable/editicon" />
+
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/miscInfo2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/info_bg9"
+            android:ems="10"
+            android:inputType="textCapSentences|textMultiLine"
+            android:padding="10dp"
+            android:imeOptions="actionNext" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            android:layout_gravity="left">
+
+            <TextView
+                android:id="@+id/miscHeader3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/miscellaneous_info_3"
+                android:textSize="20sp" />
+
+            <ImageView
+                android:id="@+id/editIcon3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="0"
+                android:src="@drawable/editicon" />
+
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/miscInfo3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/info_bg9"
+            android:ems="10"
+            android:inputType="textCapSentences|textMultiLine"
+            android:padding="10dp"
+            android:imeOptions="actionNext" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            android:layout_gravity="left">
+
+            <TextView
+                android:id="@+id/miscHeader4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/miscellaneous_info_4"
+                android:textSize="20sp" />
+
+            <ImageView
+                android:id="@+id/editIcon4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="0"
+                android:src="@drawable/editicon" />
+
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/miscInfo4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/info_bg9"
+            android:ems="10"
+            android:inputType="textCapSentences|textMultiLine"
+            android:padding="10dp"
+            android:imeOptions="actionDone" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            android:layout_gravity="left">
+
+            <TextView
+                android:id="@+id/miscGroupTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/miscellaneous_group"
+                android:textSize="20sp" />
+
+            <ImageView
+                android:id="@+id/editIcon5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="0"
+                android:src="@drawable/editicon" />
+
+        </LinearLayout>
+
+        <android.support.v7.widget.LinearLayoutCompat
+            android:id="@+id/groupLayout"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/buttonbg5" >
+
+            <TextView
+                android:id="@+id/groupPreset"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="10dp"
+                android:textColorHint="@color/black"
+                android:hint="No Group"
+                android:textSize="18sp" />
+
+            <ImageView
+                android:id="@+id/downArrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/downarrow"
+                android:padding="10dp"
+                android:layout_gravity="center_vertical" />
+
+        </android.support.v7.widget.LinearLayoutCompat>
+
+        <TextView
+            android:id="@+id/linkedNpcTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/linked_npc"
+            android:textSize="20sp" />
+
+        <View
+            android:id="@+id/line1"
+            android:background="#000000"
+            android:layout_width = "match_parent"
+            android:layout_height="1dp" />
+
+        <ListView
+            android:id="@+id/npcListLayout"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:layout_width="match_parent"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="10dp"
+            android:layout_height="0dp"
+            android:nestedScrollingEnabled="true" />
+
+        <TextView
+            android:id="@+id/linkedNpc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:background="@drawable/buttonbg5"
+            android:text="@string/add_a_linked_npc"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/linkedCityTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/linked_city"
+            android:textSize="20sp" />
+
+        <View
+            android:id="@+id/line2"
+            android:background="#000000"
+            android:layout_width = "match_parent"
+            android:layout_height="1dp" />
+
+        <ListView
+            android:id="@+id/cityListLayout"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:layout_width="match_parent"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="10dp"
+            android:layout_height="0dp"
+            android:nestedScrollingEnabled="true" />
+
+        <TextView
+            android:id="@+id/linkedCity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:background="@drawable/buttonbg5"
+            android:text="@string/add_a_linked_city"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/linkedItemTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/linked_item"
+            android:textSize="20sp" />
+
+        <View
+            android:id="@+id/line3"
+            android:background="#000000"
+            android:layout_width = "match_parent"
+            android:layout_height="1dp" />
+
+        <ListView
+            android:id="@+id/itemListLayout"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:layout_width="match_parent"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="10dp"
+            android:layout_height="0dp"
+            android:nestedScrollingEnabled="true" />
+
+        <TextView
+            android:id="@+id/linkedItem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:background="@drawable/buttonbg5"
+            android:text="@string/add_a_linked_item"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/linkedItemGroupTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="@string/linked_item_group"
+            android:textSize="20sp" />
+
+        <android.support.v7.widget.LinearLayoutCompat
+            android:id="@+id/linkedItemGroupLayout"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/buttonbg5" >
+
+            <TextView
+                android:id="@+id/linkedItemGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="10dp"
+                android:textColorHint="@color/black"
+                android:hint="@string/no_item_group"
+                android:textSize="18sp" />
+
+            <ImageView
+                android:id="@+id/downArrow5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/downarrow"
+                android:padding="10dp"
+                android:layout_gravity="center_vertical"/>
+
+        </android.support.v7.widget.LinearLayoutCompat>
+
+        <android.support.v7.widget.LinearLayoutCompat
+            android:id="@+id/lootButtonLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="35dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/saveMisc"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/savechanges"
+                    android:padding="10dp"
+                    android:background="@drawable/buttonbg"/>
+
+        </android.support.v7.widget.LinearLayoutCompat>
+
+    </LinearLayout>
+</android.support.v4.widget.NestedScrollView>

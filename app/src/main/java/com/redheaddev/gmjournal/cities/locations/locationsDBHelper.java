@@ -82,6 +82,12 @@ public class locationsDBHelper extends SQLiteOpenHelper {
         return true;
     }
 
+    public Cursor getAllLocations(){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_NAME ;
+        return db.rawQuery(query, new String [] {});
+    }
+
     public Cursor getLocations(String cityName){
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COL2 + "=?";

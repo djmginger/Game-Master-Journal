@@ -9,28 +9,31 @@ import android.widget.TextView;
 
 import java.util.List;
 
-public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAdapter.ViewHolder> {
+public class MyMiscRecyclerViewAdapter extends RecyclerView.Adapter<MyMiscRecyclerViewAdapter.ViewHolder> {
 
     private final List<String> mData;
     private final LayoutInflater mInflater;
     //For clickable rows
     private final OnNoteListener mOnNoteListener;
     private final Boolean mDarkMode;
+    private final String mListType;
 
 
     // data is passed into the constructor
-    public MyRecyclerViewAdapter(Context context, List<String> data, OnNoteListener onNoteListener) {
+    public MyMiscRecyclerViewAdapter(Context context, List<String> data, OnNoteListener onNoteListener) {
         this.mInflater = LayoutInflater.from(context);
         this.mData = data;
         this.mOnNoteListener = onNoteListener;
         this.mDarkMode = false;
+        this.mListType = "";
     }
 
-    public MyRecyclerViewAdapter(Context context, List<String> data, OnNoteListener onNoteListener, Boolean darkMode) {
+    public MyMiscRecyclerViewAdapter(Context context, List<String> data, OnNoteListener onNoteListener, Boolean darkMode, String listType) {
         this.mInflater = LayoutInflater.from(context);
         this.mData = data;
         this.mOnNoteListener = onNoteListener;
         this.mDarkMode = darkMode;
+        this.mListType = listType;
     }
 
     // inflates the row layout from xml when needed
@@ -75,7 +78,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 
         @Override
         public void onClick(View view) {
-            onNoteListener.onNoteClick(getAdapterPosition());
+            onNoteListener.onNoteClick(getAdapterPosition(), mListType);
         }
 
     }
@@ -88,7 +91,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     // allows clicks events to be caught
 
     public interface OnNoteListener {
-        void onNoteClick(int position);
+        void onNoteClick(int position, String mListType);
     }
 
 }

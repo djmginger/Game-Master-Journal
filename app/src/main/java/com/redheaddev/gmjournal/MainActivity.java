@@ -7,7 +7,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.media.Image;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,13 +21,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.anjlab.android.iab.v3.BillingProcessor;
 import com.anjlab.android.iab.v3.TransactionDetails;
 import com.redheaddev.gmjournal.cities.CityList;
+import com.redheaddev.gmjournal.cities.distances.Distance;
+import com.redheaddev.gmjournal.cities.distances.distanceDBHelper;
 import com.redheaddev.gmjournal.loot.LootList;
+import com.redheaddev.gmjournal.misc.MiscList;
 import com.redheaddev.gmjournal.npcs.NpcList;
 import com.redheaddev.gmjournal.npcs.npcDBHelper;
 
@@ -55,6 +61,8 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         final Button npcs = findViewById(R.id.npcs);
         final Button cities = findViewById(R.id.cities);
         final Button loot = findViewById(R.id.loot);
+        final Button misc = findViewById(R.id.misc);
+        final ImageView edit = findViewById(R.id.editIcon);
         final Button databaseManagement = findViewById(R.id.databaseManagement);
         final Button themeSwitch = findViewById(R.id.themeSwitch);
 
@@ -80,10 +88,15 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             theme = sharedPreferences.getString("Theme", "none");
         }
 
+        String miscName = sharedPreferences.getString("miscName", "none");
+        if (!miscName.equals("none")) misc.setText(miscName);
 
         if (theme.equals("dark")) {
             mainLayout.setBackgroundColor(Color.parseColor("#2C2C2C"));
             title1.setTextColor(Color.WHITE);
+            DrawableCompat.setTint(DrawableCompat.wrap(edit.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
+        } else {
+            DrawableCompat.setTint(DrawableCompat.wrap(edit.getDrawable()), ContextCompat.getColor(context, R.color.black));
         }
 
         LinearLayoutCompat.LayoutParams lparams = new LinearLayoutCompat.LayoutParams(buttonWidth, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
@@ -112,6 +125,39 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, LootList.class);
                 startActivity(intent);
+            }
+        });
+
+        misc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, MiscList.class);
+                startActivity(intent);
+            }
+        });
+
+        edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder alert = new AlertDialog.Builder(context);
+                final EditText edittext = new EditText(context);
+                alert.setTitle("Edit Page Title");
+                alert.setView(edittext);
+
+                alert.setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        editor.putString("miscName", edittext.getText().toString());
+                        editor.apply();
+                        String miscName = sharedPreferences.getString("miscName", "none");
+                        misc.setText(miscName);
+                    }
+                });
+                alert.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        dialog.dismiss();
+                    }
+                });
+                alert.show();
             }
         });
 
@@ -158,6 +204,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 
                         mainLayout.setBackgroundColor(Color.parseColor("#2C2C2C"));
                         title1.setTextColor(Color.WHITE);
+                        DrawableCompat.setTint(DrawableCompat.wrap(edit.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
 
                     } else if (theme.equals("dark")) {
                         themeSwitch.setText(R.string.darkmode);
@@ -166,6 +213,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 
                         mainLayout.setBackgroundColor(getResources().getColor(R.color.mainBgColor));
                         title1.setTextColor(Color.BLACK);
+                        DrawableCompat.setTint(DrawableCompat.wrap(edit.getDrawable()), ContextCompat.getColor(context, R.color.black));
                     }
                 } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -186,6 +234,19 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
                 }
             }
         });
+
+        //This code is to fix the distance display. The only reason it's here is to make sure people who've already made distances see the new changes. The distanceList activity has been updated with new logic
+        distanceDBHelper mDistanceDBHelper = new distanceDBHelper(context);
+        Cursor distanceCursor = mDistanceDBHelper.getAllDistances();
+        if (distanceCursor.moveToNext()) {
+            do {
+                //If the distance value isn't in the DB as city1 > city2 AND city2 > city1, then add it
+                boolean isNotBackwards = mDistanceDBHelper.checkNonExistence(distanceCursor.getString(2), distanceCursor.getString(1));
+                if(isNotBackwards){
+                    mDistanceDBHelper.addDistance(distanceCursor.getString(2), distanceCursor.getString(1), distanceCursor.getString(3));
+                }
+            } while (distanceCursor.moveToNext());
+        }
     }
 
     @Override

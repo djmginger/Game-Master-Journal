@@ -3,6 +3,7 @@
     package="com.redheaddev.gmjournal">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="com.android.vending.BILLING" />
 
     <application
@@ -57,6 +58,21 @@
         <activity android:name="com.redheaddev.gmjournal.npcs.NpcDisplay" />
         <activity android:name="com.redheaddev.gmjournal.loot.LootDisplay" />
         <activity android:name="com.redheaddev.gmjournal.cities.CityDisplay" />
+        <activity android:name=".misc.MiscDisplay" />
+        <activity android:name=".misc.MiscInfo" />
+        <activity android:name=".misc.MiscList" />
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="ccom.redheaddev.gmjournal.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <!-- ressource file to create -->
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths">
+            </meta-data>
+        </provider>
 
     </application>
 
