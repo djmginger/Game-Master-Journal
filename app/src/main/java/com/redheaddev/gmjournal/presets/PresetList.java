@@ -1,12 +1,16 @@
 package com.redheaddev.gmjournal.presets;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.LocaleList;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AlertDialog;
@@ -31,6 +35,7 @@ import com.redheaddev.gmjournal.npcs.npcDBHelper;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class PresetList extends AppCompatActivity {
 
@@ -80,6 +85,13 @@ public class PresetList extends AppCompatActivity {
             backButton.setBackgroundColor(Color.parseColor("#2C2C2C"));
         } else {
             DrawableCompat.setTint(DrawableCompat.wrap(backButton.getDrawable()), ContextCompat.getColor(context, R.color.black));
+        }
+
+        String localeText = sharedPreferences.getString("Locale", "none");
+        String loadLocale = String.valueOf(getResources().getConfiguration().locale);
+        if(!localeText.equals(loadLocale)){
+            Locale locale = new Locale(localeText);
+            updateLocale(locale);
         }
 
         //set the title of the preset list
@@ -313,7 +325,7 @@ public class PresetList extends AppCompatActivity {
                                     Cursor cities = mCityDBHelper.getCities();
                                     if (!customPresetValue.equals("")) {
                                         if (mCityDBHelper.checkNonExistence(customPresetValue)) {
-                                            mCityDBHelper.addCity(customPresetValue, "None", "None", "", "", "", false);
+                                            mCityDBHelper.addCity(customPresetValue, "None", "None", "", "", "", "", false);
                                             dataList.clear();
                                             try {
                                                 if (cities.moveToNext()) {
@@ -384,6 +396,31 @@ public class PresetList extends AppCompatActivity {
 
     private void toast(String message){
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    @SuppressLint("NewApi")
+    public void updateLocale(Locale locale) {
+        Resources res = getResources();
+        Locale.setDefault(locale);
+
+        Configuration configuration = res.getConfiguration();
+
+        if (Integer.parseInt(android.os.Build.VERSION.SDK) >= 24) {
+            LocaleList localeList = new LocaleList(locale);
+
+            LocaleList.setDefault(localeList);
+            configuration.setLocales(localeList);
+            configuration.setLocale(locale);
+
+        } else if (Integer.parseInt(android.os.Build.VERSION.SDK) >= 17){
+            configuration.setLocale(locale);
+
+        } else {
+            configuration.locale = locale;
+        }
+
+        res.updateConfiguration(configuration, res.getDisplayMetrics());
+        recreate();
     }
 }
 

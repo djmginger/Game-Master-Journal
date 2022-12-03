@@ -1,8 +1,11 @@
 package com.redheaddev.gmjournal.misc;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,6 +14,7 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.LocaleList;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -41,6 +45,7 @@ import com.redheaddev.gmjournal.npcs.NpcDisplay;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Locale;
 
 public class MiscDisplay extends AppCompatActivity implements MyMiscRecyclerViewAdapter.OnNoteListener{
 
@@ -49,7 +54,7 @@ public class MiscDisplay extends AppCompatActivity implements MyMiscRecyclerView
     private lootDBHelper mLootDBHelper;
     private int addMiscValue = 0;
     private String miscTitle = null;
-    private final String TAG = "MiscInfo";
+    private final String TAG = "MiscDisplay";
     private Context context;
     private Uri imageUri;
     private Boolean darkMode;
@@ -66,6 +71,9 @@ public class MiscDisplay extends AppCompatActivity implements MyMiscRecyclerView
         final SharedPreferences sharedPreferences = getSharedPreferences("Settings", Context.MODE_PRIVATE);
         String theme = sharedPreferences.getString("Theme", "none");
         String infoHeader5 = sharedPreferences.getString("infoHeader5", "none");
+        String headerText1 = sharedPreferences.getString("headerText1", "none");
+        String headerText2 = sharedPreferences.getString("headerText2", "none");
+        String headerText4 = sharedPreferences.getString("headerText4", "none");
         darkMode = theme.equals("dark");
 
         mMiscDBHelper = new miscDBHelper(this);
@@ -97,6 +105,13 @@ public class MiscDisplay extends AppCompatActivity implements MyMiscRecyclerView
             DrawableCompat.setTint(DrawableCompat.wrap(editIcon.getDrawable()), ContextCompat.getColor(context, R.color.black));
         }
 
+        String localeText = sharedPreferences.getString("Locale", "none");
+        String loadLocale = String.valueOf(getResources().getConfiguration().locale);
+        if(!localeText.equals(loadLocale)){
+            Locale locale = new Locale(localeText);
+            updateLocale(locale);
+        }
+
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -111,7 +126,9 @@ public class MiscDisplay extends AppCompatActivity implements MyMiscRecyclerView
         miscInfo.moveToFirst();
         miscTitle = miscInfo.getString(1);
         miscName.setText(miscInfo.getString(1));
-        miscName.setTextColor(Color.parseColor("#8f6ff8"));
+        String headerColor5 = sharedPreferences.getString("headerColor5", "none");
+        if(!headerColor5.equals("none")) miscName.setTextColor(Color.parseColor(headerColor5));
+        else miscName.setTextColor(Color.parseColor("#8f6ff8"));
 
         if(!miscInfo.getString(6).equals("")){
             ImageView itemImage = new ImageView(this);
@@ -317,13 +334,12 @@ public class MiscDisplay extends AppCompatActivity implements MyMiscRecyclerView
             String npcString = miscInfo.getString(7);
             npcString = npcString.replaceAll(",\\s", ",");
             String[] npcArray = npcString.split(",");
-            Log.d(TAG, "onCreate: Array is " + Arrays.toString(npcArray));
             linkedNpcs = new ArrayList<>(Arrays.asList(npcArray));
-            Log.d(TAG, "onCreate: Arraylist is " + linkedNpcs);
 
             LinearLayout npcListTitleLayout = findViewById(R.id.npcListTitleLayout);
             TextView npcTitle = new TextView(this);
-            npcTitle.setText(getString(R.string.linked_npc));
+            if(!headerText1.equals("none")) npcTitle.setText(String.format("Linked %s", headerText1));
+            else npcTitle.setText(getString(R.string.linked_npc));
             npcTitle.setTextSize(20);
             npcTitle.setTextColor(Color.parseColor("#FE5F55"));
             if (!darkMode) npcTitle.setBackgroundColor(Color.parseColor("#FFFFFF"));
@@ -365,7 +381,8 @@ public class MiscDisplay extends AppCompatActivity implements MyMiscRecyclerView
 
             LinearLayout cityListTitleLayout = findViewById(R.id.cityListTitleLayout);
             TextView cityTitle = new TextView(this);
-            cityTitle.setText(getString(R.string.linked_city));
+            if(!headerText2.equals("none")) cityTitle.setText(String.format("Linked %s", headerText2));
+            else cityTitle.setText(getString(R.string.linked_city));
             cityTitle.setTextSize(20);
             cityTitle.setTextColor(Color.parseColor("#FE5F55"));
             if (!darkMode) cityTitle.setBackgroundColor(Color.parseColor("#FFFFFF"));
@@ -402,13 +419,12 @@ public class MiscDisplay extends AppCompatActivity implements MyMiscRecyclerView
         if (!miscInfo.getString(9).equals("")) {
             String itemString = miscInfo.getString(9);
             itemString = itemString.replaceAll(",\\s", ",");
-            Log.d(TAG, "onCreate: the item string is " + itemString);
             String[] itemArray = itemString.split(",");
             linkedItems = new ArrayList<>(Arrays.asList(itemArray));
-
             LinearLayout itemListTitleLayout = findViewById(R.id.itemListTitleLayout);
             TextView itemTitle = new TextView(this);
-            itemTitle.setText(getString(R.string.linked_item));
+            if(!headerText4.equals("none")) itemTitle.setText(String.format("Linked %s", headerText4));
+            else itemTitle.setText(getString(R.string.linked_item));
             itemTitle.setTextSize(20);
             itemTitle.setTextColor(Color.parseColor("#FE5F55"));
             if (!darkMode) itemTitle.setBackgroundColor(Color.parseColor("#FFFFFF"));
@@ -477,6 +493,7 @@ public class MiscDisplay extends AppCompatActivity implements MyMiscRecyclerView
         switch (mListType){
             case "npc":
                 String npcName = linkedNpcs.get(position);
+                npcName = npcName.replaceAll("%", ",");
                 Intent intent1 = new Intent(this, NpcDisplay.class);
                 Log.d(TAG, "onNoteClick: Passing the name" + npcName + "to npcDisplay");
                 intent1.putExtra("npcName", npcName);
@@ -501,5 +518,30 @@ public class MiscDisplay extends AppCompatActivity implements MyMiscRecyclerView
                 startActivity(intent3);
                 break;
         }
+    }
+
+    @SuppressLint("NewApi")
+    public void updateLocale(Locale locale) {
+        Resources res = getResources();
+        Locale.setDefault(locale);
+
+        Configuration configuration = res.getConfiguration();
+
+        if (Integer.parseInt(android.os.Build.VERSION.SDK) >= 24) {
+            LocaleList localeList = new LocaleList(locale);
+
+            LocaleList.setDefault(localeList);
+            configuration.setLocales(localeList);
+            configuration.setLocale(locale);
+
+        } else if (Integer.parseInt(android.os.Build.VERSION.SDK) >= 17){
+            configuration.setLocale(locale);
+
+        } else {
+            configuration.locale = locale;
+        }
+
+        res.updateConfiguration(configuration, res.getDisplayMetrics());
+        recreate();
     }
 }

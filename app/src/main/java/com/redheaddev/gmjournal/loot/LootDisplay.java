@@ -1,8 +1,11 @@
 package com.redheaddev.gmjournal.loot;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,6 +14,7 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.LocaleList;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -30,6 +34,7 @@ import com.redheaddev.gmjournal.cities.CityDisplay;
 import com.redheaddev.gmjournal.cities.CityList;
 
 import java.io.IOException;
+import java.util.Locale;
 
 public class LootDisplay extends AppCompatActivity{
 
@@ -79,6 +84,13 @@ public class LootDisplay extends AppCompatActivity{
             DrawableCompat.setTint(DrawableCompat.wrap(editIcon.getDrawable()), ContextCompat.getColor(context, R.color.black));
         }
 
+        String localeText = sharedPreferences.getString("Locale", "none");
+        String loadLocale = String.valueOf(getResources().getConfiguration().locale);
+        if(!localeText.equals(loadLocale)){
+            Locale locale = new Locale(localeText);
+            updateLocale(locale);
+        }
+
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -93,7 +105,9 @@ public class LootDisplay extends AppCompatActivity{
         lootInfo.moveToFirst();
         lootTitle = lootInfo.getString(1);
         lootName.setText(lootInfo.getString(1));
-        lootName.setTextColor(Color.parseColor("#6F94F8"));
+        String headerColor4 = sharedPreferences.getString("headerColor4", "none");
+        if(!headerColor4.equals("none")) lootName.setTextColor(Color.parseColor(headerColor4));
+        else lootName.setTextColor(Color.parseColor("#6F94F8"));
 
         Log.d(TAG, "onCreate: The value of attunement is " + lootInfo.getString(7));
 
@@ -124,7 +138,7 @@ public class LootDisplay extends AppCompatActivity{
             underTitleLayout.addView(lootRarity);
         }
 
-        if((!lootInfo.getString(2).equals("")) && (!lootInfo.getString(3).equals(""))){
+        if((!lootInfo.getString(2).equals("none")) && (!lootInfo.getString(3).equals(""))){
             ImageView separator = new ImageView(this);
             separator.setImageDrawable(getResources().getDrawable(R.drawable.dot));
             if (!darkMode) DrawableCompat.setTint(DrawableCompat.wrap(separator.getDrawable()), ContextCompat.getColor(context, R.color.black));
@@ -287,5 +301,30 @@ public class LootDisplay extends AppCompatActivity{
     }
     private void setLootTitle(String value){
         lootTitle = value;
+    }
+
+    @SuppressLint("NewApi")
+    public void updateLocale(Locale locale) {
+        Resources res = getResources();
+        Locale.setDefault(locale);
+
+        Configuration configuration = res.getConfiguration();
+
+        if (Integer.parseInt(android.os.Build.VERSION.SDK) >= 24) {
+            LocaleList localeList = new LocaleList(locale);
+
+            LocaleList.setDefault(localeList);
+            configuration.setLocales(localeList);
+            configuration.setLocale(locale);
+
+        } else if (Integer.parseInt(android.os.Build.VERSION.SDK) >= 17){
+            configuration.setLocale(locale);
+
+        } else {
+            configuration.locale = locale;
+        }
+
+        res.updateConfiguration(configuration, res.getDisplayMetrics());
+        recreate();
     }
 }

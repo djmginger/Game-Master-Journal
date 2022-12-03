@@ -29,6 +29,7 @@
                 android:src="@drawable/backarrow" />
 
             <TextView
+                android:id="@+id/pageHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/citydetails"
@@ -53,11 +54,34 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/info_bg2"
-
+            android:layout_marginBottom="@dimen/_15sdp"
             android:inputType="textCapSentences"
             android:padding="10dp"
             android:imeOptions="actionDone"
             android:singleLine="true" />
+
+        <ImageView
+            android:id="@+id/cityImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:adjustViewBounds="true"
+            android:layout_gravity="center" />
+
+        <ImageView
+            android:id="@+id/addImage"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:padding="10dp"
+            android:background="@drawable/info_bg11" />
+
+        <TextView
+            android:id="@+id/addImageText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textSize="15sp" />
 
         <TextView
             android:id="@+id/cityOverviewTitle"

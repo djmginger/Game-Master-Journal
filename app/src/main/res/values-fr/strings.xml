@@ -129,7 +129,6 @@
     <string name="yousurecity">"Êtes-vous sûr de vouloir supprimer ces données ? La suppression des villes entraîne également la suppression des localisations et des distances pour cette ville"</string>
     <string name="deletecities">"Suppression réussie de toutes les villes"</string>
     <string name="deletenpcs">"A réussi à supprimer tous les PNJ"</string>
-    <string name="app_name">Journal du maître de jeu</string>
     <string name="purchasedark">Soutenez le développeur! Achetez le mode sombre pour 0,99 USD.</string>
     <string name="poplabel">"Population: "</string>
     <string name="envlabel">"Environment: "</string>
@@ -171,4 +170,27 @@
     <string name="export_misc">Export Divers</string>
     <string name="deleteall">Tout supprimer</string>
     <string name="export">Exportation</string>
+    <string name="presets">Présélections</string>
+    <string name="importy">Import</string>
+    <string name="permissionneededdb">Cette autorisation est nécessaire pour importer et exporter correctement des fichiers.</string>
+    <string name="filtercity">Filtrez par ville:</string>
+    <string name="nocity">Pas de ville</string>
+    <string name="selectLocation">Emplacement :</string>
+    <string name="placedetails">Détails de l\'emplacement</string>
+    <string name="placename">Nom du lieu</string>
+    <string name="none">Aucun</string>
+    <string name="edittitle">Modifier le titre</string>
+    <string name="colorchange">Modifier la couleur</string>
+    <string name="entercolor">Entrez une valeur de couleur hexadécimale</string>
+    <string name="settings">Paramètres</string>
+    <string name="editcolor">Modifier la couleur</string>
+    <string name="editheader">Modifier le titre</string>
+    <string name="reset">Réinitialiser les valeurs</string>
+    <string name="resetHeader">Réinitialiser les valeurs?</string>
+    <string name="enterheader">Saisissez un nouveau titre. Il s\'appliquera partout où ce titre est utilisé.</string>
+    <string name="located">Situé à l\'intérieur :</string>
+    <string name="editinfocolor">Modifier la couleur de la boîte d\'informations</string>
+    <string name="infocolorchange">Modifier la couleur de la boîte d\'informations</string>
+    <string name="unsaved">Vous avez des modifications non sauvegardées, voulez-vous les sauvegarder?</string>
+    <string name="language">Langue</string>
 </resources>

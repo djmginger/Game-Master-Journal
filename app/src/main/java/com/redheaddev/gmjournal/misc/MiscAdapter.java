@@ -53,6 +53,8 @@ class MiscAdapter extends ArrayAdapter<String> {
         }
 
         String currentPreset = dataList.get(position);
+        currentPreset = currentPreset.replaceAll("%", ",");
+
         final TextView name = listItem.findViewById(R.id.dataValue);
         ImageButton delete = listItem.findViewById(R.id.deleteIcon);
         Log.d(TAG, "getView: Current preset is " + currentPreset);

@@ -1,21 +1,27 @@
 package com.redheaddev.gmjournal.npcs;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.LocaleList;
 import android.provider.OpenableColumns;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
@@ -33,6 +39,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -52,6 +59,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class NpcInfo extends AppCompatActivity{
 
@@ -72,6 +80,13 @@ public class NpcInfo extends AppCompatActivity{
     private ArrayAdapter<String> locationAdapter;
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 672;
     private Boolean darkMode;
+    private Boolean hasSaved = false;
+    private String initName = "";
+    private String initDesc = "";
+    private String initPlotHooks = "";
+    private String initNotes = "";
+    private String initRace = "";
+    private String initImage = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +95,7 @@ public class NpcInfo extends AppCompatActivity{
         context = this;
 
         final SharedPreferences sharedPreferences = getSharedPreferences("Settings", Context.MODE_PRIVATE);
+        final SharedPreferences.Editor editor = sharedPreferences.edit();
         String theme = sharedPreferences.getString("Theme", "none");
         darkMode = theme.equals("dark");
 
@@ -95,6 +111,7 @@ public class NpcInfo extends AppCompatActivity{
         final ScrollView npcMainLayout = findViewById(R.id.npcMainLayout);
         final LinearLayout npcLayout = findViewById(R.id.npcLayout);
         final TextView addImageText = findViewById(R.id.addImageText);
+        TextView pageHeader = findViewById(R.id.pageHeader);
         final TextView npcDescTitle = findViewById(R.id.npcDescTitle);
         final TextView npcNameTitle = findViewById(R.id.npcNameTitle);
         final TextView npcPlotTitle = findViewById(R.id.npcPlotTitle);
@@ -116,6 +133,18 @@ public class NpcInfo extends AppCompatActivity{
         npcImage.setVisibility(View.GONE);
         addImage.setImageResource(R.drawable.addanimage);
         npcMainLayout.setBackgroundColor(Color.WHITE);
+
+        String headerText1 = sharedPreferences.getString("headerText1", "none");
+        String headerColor1 = sharedPreferences.getString("headerColor1", "none");
+        String infoboxcolor1 = sharedPreferences.getString("infoboxcolor1", "none");
+        if(!headerText1.equals("none")) {
+            pageHeader.setText(headerText1 + " details");
+            npcNameTitle.setText(headerText1 + " Name");
+        }
+        if(!headerColor1.equals("none")) pageHeader.setTextColor(Color.parseColor(headerColor1));
+        if(!infoboxcolor1.equals("none")){
+            setDrawableColors(infoboxcolor1);
+        }
 
         if (theme.equals("dark")){
 
@@ -157,6 +186,13 @@ public class NpcInfo extends AppCompatActivity{
             DrawableCompat.setTint(DrawableCompat.wrap(addImage.getDrawable()), ContextCompat.getColor(context, R.color.black));
         }
 
+        String localeText = sharedPreferences.getString("Locale", "none");
+        String loadLocale = String.valueOf(getResources().getConfiguration().locale);
+        if(!localeText.equals(loadLocale)){
+            Locale locale = new Locale(localeText);
+            updateLocale(locale);
+        }
+
         mPlayer = new MediaPlayer();
 
         //if starting the activity from clicking an item, addNPCValue will be 0, otherwise, it's -1
@@ -176,14 +212,7 @@ public class NpcInfo extends AppCompatActivity{
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(addNPCValue == 0) {
-                    Intent intent = new Intent(context, NpcDisplay.class);
-                    intent.putExtra("npcName", npcTitle);
-                    intent.putExtra("addNPCValue", 0);
-                    startActivity(intent);
-                    finish();
-                }
-                else onBackPressed();
+                onBackPressed();
             }
         });
 
@@ -305,54 +334,18 @@ public class NpcInfo extends AppCompatActivity{
             Log.d(TAG, "onCreate: The npc value passed is " + npcTitle);
             Cursor npcInfo = mNpcDBHelper.getSpecificNPC(npcTitle);
             npcInfo.moveToFirst();
-            npcName.setText(npcInfo.getString(1));
-            npcRace.setText(npcInfo.getString(7));
-            npcDescription.setText(npcInfo.getString(3));
-            npcNotes.setText(npcInfo.getString(4));
-            Log.d(TAG, "onCreate: the value of plothooks is " + npcInfo.getString(6));
-            ImageView deleteNPCButtonImage = new ImageView(this);
-            deleteNPCButtonImage.setImageResource(R.drawable.delete);
-            if (darkMode) DrawableCompat.setTint(DrawableCompat.wrap(deleteNPCButtonImage.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
-                else DrawableCompat.setTint(DrawableCompat.wrap(deleteNPCButtonImage.getDrawable()), ContextCompat.getColor(context, R.color.delete));
-            DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
-            int deviceWidth = (displayMetrics.widthPixels);
-            LinearLayout.LayoutParams lparams = new LinearLayout.LayoutParams((int)(deviceWidth * .11), ViewGroup.LayoutParams.WRAP_CONTENT);
-            lparams.setMargins(0,0,0,25);
-            lparams.gravity = Gravity.CENTER_HORIZONTAL;
-            deleteNPCButtonImage.setLayoutParams(lparams);
-            deleteNPCButtonImage.setAdjustViewBounds(true);
-            deleteNPCButtonImage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    String name = npcName.getText().toString();
-
-                    if (!(mNpcDBHelper.checkNonExistence(name))) {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                        builder.setMessage(R.string.areyou);
-                        builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.dismiss();
-                                mNpcDBHelper.removeNPC(npcTitle);
-                                Intent intent = new Intent(context, NpcList.class);
-                                startActivity(intent);
-                                finish();
-                            }
-                        });
-                        builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.dismiss();
-                            }
-                        });
-                        AlertDialog alert = builder.create();
-                        alert.show();
-
-                    }else toast(getString(R.string.noitemtodelete));
-                }
-            });
-            npcLayout.addView(deleteNPCButtonImage);
-            npcPlotHooks.setText(npcInfo.getString(6));
-
-            image = npcInfo.getString(8);
+            initName = npcInfo.getString(1);
+            npcName.setText(initName);
+            initRace = npcInfo.getString(7);
+            npcRace.setText(initRace);
+            initDesc = npcInfo.getString(3);
+            npcDescription.setText(initDesc);
+            initNotes = npcInfo.getString(4);
+            npcNotes.setText(initNotes);
+            initPlotHooks = npcInfo.getString(6);
+            npcPlotHooks.setText(initPlotHooks);
+            initImage = npcInfo.getString(8);
+            image = initImage;
             if (!image.equals("")) {
                 Uri imageUri = Uri.parse(image);
                 npcImage.setImageURI(imageUri);
@@ -556,7 +549,7 @@ public class NpcInfo extends AppCompatActivity{
                             } else{
                                 dialog.dismiss();
 
-                                mCityDBHelper.addCity(newCityName, "Environment", "Population", "Economy", "", "", false);
+                                mCityDBHelper.addCity(newCityName, "Environment", "Population", "Economy", "", "", "", false);
 
                                 try (Cursor cities = mCityDBHelper.getCities()) {
                                     locations.clear();
@@ -755,6 +748,34 @@ public class NpcInfo extends AppCompatActivity{
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    public void setDrawableColors(String color){
+        final EditText npcName = findViewById(R.id.npcName);
+        final LinearLayoutCompat raceLayout = findViewById(R.id.raceLayout);
+        final EditText npcDescription = findViewById(R.id.npcDescription);
+        final EditText npcPlotHooks = findViewById(R.id.npcPlotHooks);
+        final EditText npcNotes = findViewById(R.id.npcNotes);
+        final ImageView addImage = findViewById(R.id.addImage);
+
+        GradientDrawable drawable1 = (GradientDrawable)npcName.getBackground().getCurrent();
+        drawable1.setColor(Color.parseColor(color));
+        drawable1.setStroke(4, Color.BLACK);
+        GradientDrawable drawable2 = (GradientDrawable)raceLayout.getBackground().getCurrent();
+        drawable2.setColor(Color.parseColor(color));
+        drawable2.setStroke(4, Color.BLACK);
+        GradientDrawable drawable3 = (GradientDrawable)addImage.getBackground().getCurrent();
+        drawable3.setColor(Color.parseColor(color));
+        drawable3.setStroke(4, Color.BLACK, 5, 5);
+        GradientDrawable drawable4 = (GradientDrawable)npcDescription.getBackground().getCurrent();
+        drawable4.setColor(Color.parseColor(color));
+        drawable4.setStroke(4, Color.BLACK);
+        GradientDrawable drawable5 = (GradientDrawable)npcPlotHooks.getBackground().getCurrent();
+        drawable5.setColor(Color.parseColor(color));
+        drawable5.setStroke(4, Color.BLACK);
+        GradientDrawable drawable6 = (GradientDrawable)npcNotes.getBackground().getCurrent();
+        drawable6.setColor(Color.parseColor(color));
+        drawable6.setStroke(4, Color.BLACK);
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -828,30 +849,18 @@ public class NpcInfo extends AppCompatActivity{
     private void AddNPC(final String name, final String location, final String description, final String notes, final String npcTitle, final String voice, final String plotHooks, final String race, final String image){
         setNPCTitle(name);
         if(addNPCValue == 0 || !(mNpcDBHelper.checkNonExistence(name))) { //if an npc with the entered name already exists, ask the user if they wish to update the entry
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage(R.string.updateinfo);
-            builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    boolean insertNPC = mNpcDBHelper.addNPC(name, location, description, notes, npcTitle, voice, plotHooks, race, image, true);
-                    if (insertNPC) {
-                        toast(getString(R.string.npcsaved));
-                        onBackPressed();
-                    } else {
-                        toast(getString(R.string.error));
-                    }
-                    dialog.dismiss();
-                }
-            });
-            builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    dialog.dismiss();
-                }
-            });
-            AlertDialog alert = builder.create();
-            alert.show();
+            boolean insertNPC = mNpcDBHelper.addNPC(name, location, description, notes, npcTitle, voice, plotHooks, race, image, true);
+            if (insertNPC) {
+                hasSaved = true;
+                toast(getString(R.string.npcsaved));
+                onBackPressed();
+            } else {
+                toast(getString(R.string.error));
+            }
         }else { //if the npc with the entered name does not exist, proceed as normal
             boolean insertNPC = mNpcDBHelper.addNPC(name, location, description, notes, npcTitle, voice, plotHooks, race, image, false);
             if (insertNPC) {
+                hasSaved = true;
                 toast(getString(R.string.npcsaved));
                 onBackPressed();
             } else {
@@ -866,12 +875,66 @@ public class NpcInfo extends AppCompatActivity{
             Intent intent = new Intent(context, NpcDisplay.class);
             intent.putExtra("npcName", npcTitle);
             intent.putExtra("addNPCValue", 0);
-            startActivity(intent);
-            finish();
+            if (!hasSaved) notSaved(intent);
+            else {
+                startActivity(intent);
+                finish();
+            }
         }
         else {
             Intent intent = new Intent(this, NpcList.class);
-            startActivity(intent);
+            if (!hasSaved) notSaved(intent);
+            else startActivity(intent);
+        }
+    }
+
+    public void notSaved(Intent intent) {
+
+        EditText npcName = findViewById(R.id.npcName);
+        EditText npcDescription = findViewById(R.id.npcDescription);
+        EditText npcPlotHooks = findViewById(R.id.npcPlotHooks);
+        EditText npcNotes = findViewById(R.id.npcNotes);
+        TextView racePreset = findViewById(R.id.racePreset);
+
+        if (!(npcName.getText().toString().equals(initName)) || !(npcDescription.getText().toString().equals(initDesc)) || !(npcPlotHooks.getText().toString().equals(initPlotHooks)) || !(npcNotes.getText().toString().equals(initNotes)) || !(racePreset.getText().toString().equals(initRace)) || !(image.equals(initImage)) & !hasSaved) {
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setMessage(R.string.unsaved);
+            builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    String name = npcName.getText().toString();
+                    String race = racePreset.getText().toString();
+                    String description = npcDescription.getText().toString();
+                    String plotHooks = npcPlotHooks.getText().toString();
+                    String notes = npcNotes.getText().toString();
+                    dialog.dismiss();
+                    saveFunctionality(name, npcSpinnerLocation, description, notes, voice, plotHooks, race, image);
+                }
+            });
+            builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.dismiss();
+                    startActivity(intent);
+                }
+            });
+            AlertDialog alert = builder.create();
+            alert.show();
+        } else startActivity(intent);
+    }
+
+    public void saveFunctionality(String name, String location, String description, String notes, String voice, String plotHooks, String race, String image){
+
+        //if the edit text values are non-zero, and there is no identical entry, then add the loot NPC
+        EditText npcName = findViewById(R.id.npcName);
+        if (CheckName(npcName)){
+
+            if (addNPCValue != 0){
+                setNPCTitle(name); //if attempting to add a new NPC, we set this value to pass to the DBHelper in order to check if we need to update an existing entry
+            }
+
+            AddNPC(name, location, description, notes, npcTitle, voice, plotHooks, race, image);
+        } else {
+            toast("Please provide a name for your NPC");
         }
     }
 
@@ -908,6 +971,31 @@ public class NpcInfo extends AppCompatActivity{
                 startActivityForResult(intent, 1);
             }
         }
+    }
+
+    @SuppressLint("NewApi")
+    public void updateLocale(Locale locale) {
+        Resources res = getResources();
+        Locale.setDefault(locale);
+
+        Configuration configuration = res.getConfiguration();
+
+        if (Integer.parseInt(android.os.Build.VERSION.SDK) >= 24) {
+            LocaleList localeList = new LocaleList(locale);
+
+            LocaleList.setDefault(localeList);
+            configuration.setLocales(localeList);
+            configuration.setLocale(locale);
+
+        } else if (Integer.parseInt(android.os.Build.VERSION.SDK) >= 17){
+            configuration.setLocale(locale);
+
+        } else {
+            configuration.locale = locale;
+        }
+
+        res.updateConfiguration(configuration, res.getDisplayMetrics());
+        recreate();
     }
 
     private void toast(String message){

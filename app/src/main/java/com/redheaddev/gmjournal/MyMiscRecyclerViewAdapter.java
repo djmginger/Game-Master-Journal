@@ -52,6 +52,7 @@ public class MyMiscRecyclerViewAdapter extends RecyclerView.Adapter<MyMiscRecycl
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         String listItem = mData.get(position);
+        listItem = listItem.replaceAll("%", ",");
         holder.myTextView.setText(listItem);
     }
 

@@ -1,12 +1,16 @@
 package com.redheaddev.gmjournal.npcs;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.LocaleList;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -32,6 +36,7 @@ import com.redheaddev.gmjournal.MyRecyclerViewAdapter;
 import com.redheaddev.gmjournal.R;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class NpcList extends AppCompatActivity implements MyRecyclerViewAdapter.OnNoteListener {
 
@@ -51,6 +56,9 @@ public class NpcList extends AppCompatActivity implements MyRecyclerViewAdapter.
         String theme = sharedPreferences.getString("Theme", "none");
         Boolean darkMode = theme.equals("dark");
 
+        Configuration config = getBaseContext().getResources().getConfiguration();
+        Log.d(TAG, "setLocale: New config is " + config);
+
         context = this;
         LinearLayoutCompat layout = findViewById(R.id.npc_layout);
         LinearLayoutCompat headerLayout = findViewById(R.id.headerLayout);
@@ -66,6 +74,18 @@ public class NpcList extends AppCompatActivity implements MyRecyclerViewAdapter.
 
         DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
         int deviceHeight = (displayMetrics.heightPixels);
+
+        String headerText1 = sharedPreferences.getString("headerText1", "none");
+        String headerColor1 = sharedPreferences.getString("headerColor1", "none");
+        if(!headerText1.equals("none")) npcHeader.setText(headerText1);
+        if(!headerColor1.equals("none")) npcHeader.setTextColor(Color.parseColor(headerColor1));
+
+        String localeText = sharedPreferences.getString("Locale", "none");
+        String loadLocale = String.valueOf(getResources().getConfiguration().locale);
+        if(!localeText.equals(loadLocale)){
+            Locale locale = new Locale(localeText);
+            updateLocale(locale);
+        }
 
         if (theme.equals("dark")){
 
@@ -93,8 +113,6 @@ public class NpcList extends AppCompatActivity implements MyRecyclerViewAdapter.
             }
             else{
                 TextView noNPC = new TextView(this);
-                //innerLayout.setGravity(Gravity.CENTER);
-
                 RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
                 params.setMargins(0,100,0,0);
                 noNPC.setLayoutParams(params);
@@ -242,6 +260,31 @@ public class NpcList extends AppCompatActivity implements MyRecyclerViewAdapter.
         intent.putExtra("npcName", npcName);
         intent.putExtra("addNPCValue", 0);
         startActivity(intent);
+    }
+
+    @SuppressLint("NewApi")
+    public void updateLocale(Locale locale) {
+        Resources res = getResources();
+        Locale.setDefault(locale);
+
+        Configuration configuration = res.getConfiguration();
+
+        if (Integer.parseInt(android.os.Build.VERSION.SDK) >= 24) {
+            LocaleList localeList = new LocaleList(locale);
+
+            LocaleList.setDefault(localeList);
+            configuration.setLocales(localeList);
+            configuration.setLocale(locale);
+
+        } else if (Integer.parseInt(android.os.Build.VERSION.SDK) >= 17){
+            configuration.setLocale(locale);
+
+        } else {
+            configuration.locale = locale;
+        }
+
+        res.updateConfiguration(configuration, res.getDisplayMetrics());
+        recreate();
     }
 }
 

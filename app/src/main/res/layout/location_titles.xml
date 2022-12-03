@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="10dp"
         android:gravity="center"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
@@ -35,15 +35,25 @@
 
     </android.support.v7.widget.LinearLayoutCompat>
 
+    <Spinner
+        android:id="@+id/filter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="5dp"
+        android:background="@android:drawable/btn_dropdown"
+        android:spinnerMode="dropdown" />
+
     <RelativeLayout
         android:id="@+id/innerLayout"
+        android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/info_content"
             android:layout_width="match_parent"
-            android:layout_height="0dp"/>
+            android:layout_height="500dp"/>
     </RelativeLayout>
 
     <ImageView

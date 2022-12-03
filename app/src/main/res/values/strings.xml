@@ -170,4 +170,27 @@
     <string name="export_misc">Export Misc</string>
     <string name="deleteall">Delete all</string>
     <string name="export">Export</string>
+    <string name="presets">Presets</string>
+    <string name="importy">Import</string>
+    <string name="permissionneededdb">This permission is needed in order to properly import and export files</string>
+    <string name="filtercity">Filter by city:</string>
+    <string name="nocity">No city</string>
+    <string name="selectLocation">Location:</string>
+    <string name="placedetails">Place Details</string>
+    <string name="placename">Place name</string>
+    <string name="none">None</string>
+    <string name="edittitle">Edit Title</string>
+    <string name="colorchange">Edit Color</string>
+    <string name="settings">Settings</string>
+    <string name="entercolor">Enter a hex color value</string>
+    <string name="editcolor">Edit color</string>
+    <string name="enterheader">Enter a new title. This will apply everywhere this title is used.</string>
+    <string name="editheader">Edit Title</string>
+    <string name="reset">Reset Values</string>
+    <string name="resetHeader">Reset values?</string>
+    <string name="located">Located within:</string>
+    <string name="editinfocolor">Edit infobox color</string>
+    <string name="infocolorchange">Edit infobox color</string>
+    <string name="unsaved">You have unsaved changes, would you like to save?</string>
+    <string name="language">Language</string>
 </resources>

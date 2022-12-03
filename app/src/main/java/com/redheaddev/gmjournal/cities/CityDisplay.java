@@ -1,12 +1,18 @@
 package com.redheaddev.gmjournal.cities;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.LocaleList;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.widget.NestedScrollView;
@@ -38,6 +44,7 @@ import com.redheaddev.gmjournal.npcs.npcDBHelper;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 
 public class CityDisplay extends AppCompatActivity implements MyRecyclerViewAdapter.OnNoteListener{
 
@@ -87,6 +94,7 @@ public class CityDisplay extends AppCompatActivity implements MyRecyclerViewAdap
         LinearLayout distanceListTitle = findViewById(R.id.distanceListTitle);
         RelativeLayout distanceListLayout = findViewById(R.id.distanceListLayout);
         ListView distanceListViewDisplay = findViewById(R.id.distanceListViewDisplay);
+        LinearLayoutCompat imageLayout = findViewById(R.id.imageLayout);
 
         if (theme.equals("dark")){
 
@@ -107,6 +115,13 @@ public class CityDisplay extends AppCompatActivity implements MyRecyclerViewAdap
             DrawableCompat.setTint(DrawableCompat.wrap(editIcon.getDrawable()), ContextCompat.getColor(context, R.color.black));
         }
 
+        String localeText = sharedPreferences.getString("Locale", "none");
+        String loadLocale = String.valueOf(getResources().getConfiguration().locale);
+        if(!localeText.equals(loadLocale)){
+            Locale locale = new Locale(localeText);
+            updateLocale(locale);
+        }
+
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -122,9 +137,23 @@ public class CityDisplay extends AppCompatActivity implements MyRecyclerViewAdap
         cityInfo.moveToFirst();
         cityTitle = cityInfo.getString(1);
         cityName.setText(cityInfo.getString(1));
-        cityName.setTextColor(Color.parseColor("#6FD8F8"));
+        String headerColor2 = sharedPreferences.getString("headerColor2", "none");
+        if(!headerColor2.equals("none")) cityName.setTextColor(Color.parseColor(headerColor2));
+        else cityName.setTextColor(Color.parseColor("#6FD8F8"));
 
-        if(!cityInfo.getString(3).equals("Population") && (!cityInfo.getString(3).equals("None"))) {
+        if(!cityInfo.getString(6).equals("")){
+            ImageView itemImage = new ImageView(this);
+            String image = cityInfo.getString(6);
+            Bitmap bmImg = BitmapFactory.decodeFile(image);
+            itemImage.setImageBitmap(bmImg);
+            LinearLayoutCompat.LayoutParams lparams = new LinearLayoutCompat.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            lparams.setMargins(0, 20, 0, 0);
+            itemImage.setLayoutParams(lparams);
+            itemImage.setAdjustViewBounds(true);
+            imageLayout.addView(itemImage);
+        }
+
+        if(!cityInfo.getString(3).equals(getString(R.string.pop)) && (!cityInfo.getString(3).equals("None"))) {
             TextView popLabel = new TextView(this);
             popLabel.setText(String.format("%s %s", getString(R.string.poplabel), cityInfo.getString(3)));
             popLabel.setTextSize(16);
@@ -139,7 +168,7 @@ public class CityDisplay extends AppCompatActivity implements MyRecyclerViewAdap
             underTitleLayout.addView(popLabel);
         }
 
-        if(!cityInfo.getString(2).equals("Environment") && (!cityInfo.getString(2).equals("None"))) {
+        if(!cityInfo.getString(2).equals(getString(R.string.environment)) && (!cityInfo.getString(2).equals("None"))) {
             TextView envLabel = new TextView(this);
             envLabel.setText(String.format("%s %s", getString(R.string.envlabel), cityInfo.getString(2)));
             envLabel.setTextSize(16);
@@ -155,7 +184,7 @@ public class CityDisplay extends AppCompatActivity implements MyRecyclerViewAdap
         }
 
 
-        if(!cityInfo.getString(4).equals("") && !cityInfo.getString(4).equals("Economy") && (!cityInfo.getString(4).equals("None"))) {
+        if(!cityInfo.getString(4).equals("") && !cityInfo.getString(4).equals(getString(R.string.eco)) && (!cityInfo.getString(4).equals("None"))) {
             TextView econLabel = new TextView(this);
             econLabel.setText(String.format("%s %s", getString(R.string.economyHeader), cityInfo.getString(4)));
             econLabel.setTextSize(16);
@@ -501,5 +530,30 @@ public class CityDisplay extends AppCompatActivity implements MyRecyclerViewAdap
             startActivity(intent);
             finish();
         }
+    }
+
+    @SuppressLint("NewApi")
+    public void updateLocale(Locale locale) {
+        Resources res = getResources();
+        Locale.setDefault(locale);
+
+        Configuration configuration = res.getConfiguration();
+
+        if (Integer.parseInt(android.os.Build.VERSION.SDK) >= 24) {
+            LocaleList localeList = new LocaleList(locale);
+
+            LocaleList.setDefault(localeList);
+            configuration.setLocales(localeList);
+            configuration.setLocale(locale);
+
+        } else if (Integer.parseInt(android.os.Build.VERSION.SDK) >= 17){
+            configuration.setLocale(locale);
+
+        } else {
+            configuration.locale = locale;
+        }
+
+        res.updateConfiguration(configuration, res.getDisplayMetrics());
+        recreate();
     }
 }

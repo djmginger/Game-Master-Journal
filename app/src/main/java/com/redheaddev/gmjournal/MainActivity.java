@@ -1,5 +1,6 @@
 package com.redheaddev.gmjournal;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -8,6 +9,9 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.media.Image;
+import android.os.Build;
+import android.os.LocaleList;
+import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AlertDialog;
@@ -24,12 +28,16 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import java.util.Locale;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 
 import com.anjlab.android.iab.v3.BillingProcessor;
 import com.anjlab.android.iab.v3.TransactionDetails;
 import com.redheaddev.gmjournal.cities.CityList;
 import com.redheaddev.gmjournal.cities.distances.Distance;
 import com.redheaddev.gmjournal.cities.distances.distanceDBHelper;
+import com.redheaddev.gmjournal.cities.locations.LocationList;
 import com.redheaddev.gmjournal.loot.LootList;
 import com.redheaddev.gmjournal.misc.MiscList;
 import com.redheaddev.gmjournal.npcs.NpcList;
@@ -43,11 +51,23 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
     BillingProcessor bp;
     Context context;
     Activity activity;
+    Resources resources;
     Boolean darkModePurchased;
+    private boolean hasUpdatedLocale = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        final SharedPreferences sharedPreferences = getSharedPreferences("Settings", Context.MODE_PRIVATE);
+        String localeText = sharedPreferences.getString("Locale", "none");
+        String loadLocale = String.valueOf(getResources().getConfiguration().locale);
+        Log.d(TAG, "onCreate: The stored Locale is " + localeText);
+        if(!localeText.equals(loadLocale)){
+            Locale locale = new Locale(localeText);
+            updateLocale(locale);
+        }
+
         setContentView(R.layout.activity_main);
         context = this;
         activity = MainActivity.this;
@@ -60,12 +80,14 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         final TextView title1 = findViewById(R.id.title1);
         final Button npcs = findViewById(R.id.npcs);
         final Button cities = findViewById(R.id.cities);
+        final Button locations = findViewById(R.id.locations);
         final Button loot = findViewById(R.id.loot);
         final Button misc = findViewById(R.id.misc);
         final ImageView edit = findViewById(R.id.editIcon);
         final Button databaseManagement = findViewById(R.id.databaseManagement);
         final Button themeSwitch = findViewById(R.id.themeSwitch);
-
+        ImageView settings = findViewById(R.id.settings);
+        ImageView language = findViewById(R.id.language);
         DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
         int deviceHeight = (displayMetrics.heightPixels);
         int deviceWidth = (displayMetrics.widthPixels);
@@ -76,9 +98,39 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         int margin2 = (int)(deviceHeight * .06);
         int margin3 = (int)(deviceHeight * .04);
         int margin4 = (int)(deviceHeight * .05);
+        Log.d(TAG, "onCreate: the locale on load is: " + getResources().getConfiguration().locale);
 
-        final SharedPreferences sharedPreferences = getSharedPreferences("Settings", Context.MODE_PRIVATE);
         final SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        String headerText1 = sharedPreferences.getString("headerText1", "none");
+        String headerText2 = sharedPreferences.getString("headerText2", "none");
+        String headerText3 = sharedPreferences.getString("headerText3", "none");
+        String headerText4 = sharedPreferences.getString("headerText4", "none");
+        String miscName = sharedPreferences.getString("miscName", "none");
+        String headerColor1 = sharedPreferences.getString("headerColor1", "none");
+        String headerColor2 = sharedPreferences.getString("headerColor2", "none");
+        String headerColor3 = sharedPreferences.getString("headerColor3", "none");
+        String headerColor4 = sharedPreferences.getString("headerColor4", "none");
+        String headerColor5 = sharedPreferences.getString("headerColor5", "none");
+        /*String localeText = sharedPreferences.getString("Locale", "none");
+        String loadLocale = String.valueOf(getResources().getConfiguration().locale);
+        Log.d(TAG, "onCreate: The stored Locale is " + localeText);
+        if(!localeText.equals(loadLocale)){
+            Locale locale = new Locale(localeText);
+            updateLocale(locale);
+            recreate();
+        }*/
+
+        if(!headerColor1.equals("none")) DrawableCompat.setTint(DrawableCompat.wrap(npcs.getBackground()), Color.parseColor(headerColor1));
+        if(!headerColor2.equals("none")) DrawableCompat.setTint(DrawableCompat.wrap(cities.getBackground()), Color.parseColor(headerColor2));
+        if(!headerColor3.equals("none")) DrawableCompat.setTint(DrawableCompat.wrap(locations.getBackground()), Color.parseColor(headerColor3));
+        if(!headerColor4.equals("none")) DrawableCompat.setTint(DrawableCompat.wrap(loot.getBackground()), Color.parseColor(headerColor4));
+        if(!headerColor5.equals("none")) DrawableCompat.setTint(DrawableCompat.wrap(misc.getBackground()), Color.parseColor(headerColor5));
+        if(!headerText1.equals("none")) npcs.setText(headerText1);
+        if(!headerText2.equals("none")) cities.setText(headerText2);
+        if(!headerText3.equals("none")) locations.setText(headerText3);
+        if(!headerText4.equals("none")) loot.setText(headerText4);
+        if(!miscName.equals("none")) misc.setText(miscName);
 
         darkModePurchased = sharedPreferences.getBoolean("Dark Mode Purchased", false);
         String theme = sharedPreferences.getString("Theme", "none");
@@ -88,15 +140,14 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             theme = sharedPreferences.getString("Theme", "none");
         }
 
-        String miscName = sharedPreferences.getString("miscName", "none");
-        if (!miscName.equals("none")) misc.setText(miscName);
-
         if (theme.equals("dark")) {
             mainLayout.setBackgroundColor(Color.parseColor("#2C2C2C"));
             title1.setTextColor(Color.WHITE);
-            DrawableCompat.setTint(DrawableCompat.wrap(edit.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
+            DrawableCompat.setTint(DrawableCompat.wrap(settings.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
+            DrawableCompat.setTint(DrawableCompat.wrap(language.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
         } else {
-            DrawableCompat.setTint(DrawableCompat.wrap(edit.getDrawable()), ContextCompat.getColor(context, R.color.black));
+            DrawableCompat.setTint(DrawableCompat.wrap(settings.getDrawable()), ContextCompat.getColor(context, R.color.black));
+            DrawableCompat.setTint(DrawableCompat.wrap(language.getDrawable()), ContextCompat.getColor(context, R.color.black));
         }
 
         LinearLayoutCompat.LayoutParams lparams = new LinearLayoutCompat.LayoutParams(buttonWidth, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
@@ -120,6 +171,15 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             }
         });
 
+        locations.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, LocationList.class);
+                intent.putExtra("cityName", "None");
+                startActivity(intent);
+            }
+        });
+
         loot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -131,41 +191,95 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         misc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                editor.putBoolean("hasBeenUpdated", false);
                 Intent intent = new Intent(MainActivity.this, MiscList.class);
                 startActivity(intent);
-            }
-        });
-
-        edit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                AlertDialog.Builder alert = new AlertDialog.Builder(context);
-                final EditText edittext = new EditText(context);
-                alert.setTitle("Edit Page Title");
-                alert.setView(edittext);
-
-                alert.setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        editor.putString("miscName", edittext.getText().toString());
-                        editor.apply();
-                        String miscName = sharedPreferences.getString("miscName", "none");
-                        misc.setText(miscName);
-                    }
-                });
-                alert.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        dialog.dismiss();
-                    }
-                });
-                alert.show();
             }
         });
 
         databaseManagement.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, databaseManagement.class);
+                Intent intent = new Intent(context, databaseManagement.class);
                 startActivity(intent);
+            }
+        });
+
+        settings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, OptionPage.class);
+                startActivity(intent);
+            }
+        });
+
+        language.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle(R.string.language);
+
+                String[] languages = {"English", "Español", "Deutsch", "Français", "日本語", "Русский"};
+                builder.setItems(languages, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which) {
+                            case 0:
+                                Locale usLocale = new Locale("en");
+                                editor.putString("Locale", "en");
+                                editor.apply();
+                                updateLocale(usLocale);
+                                dialog.dismiss();
+                                break;// english
+                            case 1:
+                                Locale esLocale = new Locale("es");
+                                editor.putString("Locale", "es");
+                                editor.apply();
+                                updateLocale(esLocale);
+                                dialog.dismiss();
+                                break;// spanish
+                            case 2:
+                                Locale deLocale = new Locale("de");
+                                editor.putString("Locale", "de");
+                                editor.apply();
+                                updateLocale(deLocale);
+                                dialog.dismiss();
+                                break;// german
+                            case 3:
+                                Locale frLocale = new Locale("fr");
+                                editor.putString("Locale", "fr");
+                                editor.apply();
+                                updateLocale(frLocale);
+                                dialog.dismiss();
+                                break;// french
+                            case 4:
+                                Locale jaLocale = new Locale("ja");
+                                editor.putString("Locale", "ja");
+                                editor.apply();
+                                updateLocale(jaLocale);
+                                dialog.dismiss();
+                                break;// japanese
+                            case 5:
+                                Locale ruLocale = new Locale("ru");
+                                editor.putString("Locale", "ru");
+                                editor.apply();
+                                updateLocale(ruLocale);
+                                dialog.dismiss();
+                                break;// russian
+                        }
+                        recreate();
+                    }
+                });
+
+                builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.dismiss();
+                    }
+                });
+
+                // create and show the alert dialog
+                AlertDialog dialog = builder.create();
+                dialog.show();
             }
         });
 
@@ -204,7 +318,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 
                         mainLayout.setBackgroundColor(Color.parseColor("#2C2C2C"));
                         title1.setTextColor(Color.WHITE);
-                        DrawableCompat.setTint(DrawableCompat.wrap(edit.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
+                        DrawableCompat.setTint(DrawableCompat.wrap(settings.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
 
                     } else if (theme.equals("dark")) {
                         themeSwitch.setText(R.string.darkmode);
@@ -213,7 +327,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 
                         mainLayout.setBackgroundColor(getResources().getColor(R.color.mainBgColor));
                         title1.setTextColor(Color.BLACK);
-                        DrawableCompat.setTint(DrawableCompat.wrap(edit.getDrawable()), ContextCompat.getColor(context, R.color.black));
+                        DrawableCompat.setTint(DrawableCompat.wrap(settings.getDrawable()), ContextCompat.getColor(context, R.color.black));
                     }
                 } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -267,6 +381,58 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
     }
 
     @Override
+    public void onResume(){
+        super.onResume();
+
+        final SharedPreferences sharedPreferences = getSharedPreferences("Settings", Context.MODE_PRIVATE);
+        String headerText1 = sharedPreferences.getString("headerText1", "none");
+        String headerText2 = sharedPreferences.getString("headerText2", "none");
+        String headerText3 = sharedPreferences.getString("headerText3", "none");
+        String headerText4 = sharedPreferences.getString("headerText4", "none");
+        String miscName = sharedPreferences.getString("miscName", "none");
+        String headerColor1 = sharedPreferences.getString("headerColor1", "none");
+        String headerColor2 = sharedPreferences.getString("headerColor2", "none");
+        String headerColor3 = sharedPreferences.getString("headerColor3", "none");
+        String headerColor4 = sharedPreferences.getString("headerColor4", "none");
+        String headerColor5 = sharedPreferences.getString("headerColor5", "none");
+
+        final Button npcs = findViewById(R.id.npcs);
+        final Button cities = findViewById(R.id.cities);
+        final Button locations = findViewById(R.id.locations);
+        final Button loot = findViewById(R.id.loot);
+        final Button misc = findViewById(R.id.misc);
+        if(!headerColor1.equals("none")) DrawableCompat.setTint(DrawableCompat.wrap(npcs.getBackground()), Color.parseColor(headerColor1));
+        else DrawableCompat.setTint(DrawableCompat.wrap(npcs.getBackground()), ContextCompat.getColor(context, R.color.mainColor1));
+
+        if(!headerColor2.equals("none")) DrawableCompat.setTint(DrawableCompat.wrap(cities.getBackground()), Color.parseColor(headerColor2));
+        else DrawableCompat.setTint(DrawableCompat.wrap(cities.getBackground()), ContextCompat.getColor(context, R.color.mainColor2));
+
+        if(!headerColor3.equals("none")) DrawableCompat.setTint(DrawableCompat.wrap(locations.getBackground()), Color.parseColor(headerColor3));
+        else DrawableCompat.setTint(DrawableCompat.wrap(locations.getBackground()), ContextCompat.getColor(context, R.color.mainColor2));
+
+        if(!headerColor4.equals("none")) DrawableCompat.setTint(DrawableCompat.wrap(loot.getBackground()), Color.parseColor(headerColor4));
+        else DrawableCompat.setTint(DrawableCompat.wrap(loot.getBackground()), ContextCompat.getColor(context, R.color.mainColor3));
+
+        if(!headerColor5.equals("none")) DrawableCompat.setTint(DrawableCompat.wrap(misc.getBackground()), Color.parseColor(headerColor5));
+        else DrawableCompat.setTint(DrawableCompat.wrap(misc.getBackground()), ContextCompat.getColor(context, R.color.mainColor5));
+
+        if(!headerText1.equals("none")) npcs.setText(headerText1);
+        else npcs.setText(getString(R.string.npcs));
+
+        if(!headerText2.equals("none")) cities.setText(headerText2);
+        else cities.setText(getString(R.string.cities));
+
+        if(!headerText3.equals("none")) locations.setText(headerText3);
+        else locations.setText(getString(R.string.locations));
+
+        if(!headerText4.equals("none")) loot.setText(headerText4);
+        else loot.setText(getString(R.string.loot));
+
+        if(!miscName.equals("none")) misc.setText(miscName);
+        else misc.setText(getString(R.string.misc));
+    }
+
+    @Override
     public void onBillingInitialized() {
         /*
          * Called when BillingProcessor was initialized and it's ready to purchase
@@ -304,12 +470,38 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
          */
     }
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (!bp.handleActivityResult(requestCode, resultCode, data)) {
             super.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    @SuppressLint("NewApi")
+    public void updateLocale(Locale locale) {
+        Resources res = getResources();
+        Locale.setDefault(locale);
+
+        Configuration configuration = res.getConfiguration();
+
+        if (Integer.parseInt(android.os.Build.VERSION.SDK) >= 24) {
+            Log.e(TAG, "updateLocale: the os version is " + Integer.parseInt(android.os.Build.VERSION.SDK));
+            LocaleList localeList = new LocaleList(locale);
+
+            LocaleList.setDefault(localeList);
+            configuration.setLocales(localeList);
+            configuration.setLocale(locale);
+
+        } else if (Integer.parseInt(android.os.Build.VERSION.SDK) >= 17){
+            Log.e(TAG, "updateLocale: the os version is " + Integer.parseInt(android.os.Build.VERSION.SDK));
+            configuration.setLocale(locale);
+
+        } else {
+            configuration.locale = locale;
+        }
+
+        res.updateConfiguration(configuration, res.getDisplayMetrics());
+        recreate();
     }
 
     private void toast(String message){

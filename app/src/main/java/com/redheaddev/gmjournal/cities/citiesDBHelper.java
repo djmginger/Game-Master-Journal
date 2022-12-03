@@ -18,6 +18,8 @@ public class citiesDBHelper extends SQLiteOpenHelper {
     private static final String COL4 = "population";
     private static final String COL5 = "economy";
     private static final String COL6 = "notes";
+    private static final String COL7 = "image";
+
     //* get the context of each instance of citiesDBHelper
     public static synchronized citiesDBHelper getInstance(Context context) {
 
@@ -28,23 +30,26 @@ public class citiesDBHelper extends SQLiteOpenHelper {
     }
 
     public citiesDBHelper(Context context){
-        super(context, TABLE_NAME, null, 1);
+        super(context, TABLE_NAME, null, 2);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
         String createTable = "CREATE TABLE " + TABLE_NAME + " (ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                COL2 + " TEXT, " + COL3 + " TEXT, " + COL4 + " TEXT, " + COL5 + " TEXT, " + COL6 + " TEXT)";
+                COL2 + " TEXT, " + COL3 + " TEXT, " + COL4 + " TEXT, " + COL5 + " TEXT, " + COL6 + " TEXT, " + COL7 + " TEXT)";
         db.execSQL(createTable);
     }
 
+    private static final String DATABASE_ALTER_CITY_IMAGE = "ALTER TABLE " + TABLE_NAME + " ADD COLUMN " + COL7 + " TEXT DEFAULT '';";
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
-        onCreate(db);
+        if (oldVersion < 2){
+            db.execSQL(DATABASE_ALTER_CITY_IMAGE);
+        }
     }
 
-    public boolean addCity(String name, String environment, String population, String economy, String notes, String oldName, boolean updateCity){
+    public boolean addCity(String name, String environment, String population, String economy, String notes, String image, String oldName, boolean updateCity){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
@@ -54,17 +59,18 @@ public class citiesDBHelper extends SQLiteOpenHelper {
             contentValues.put(COL4, population);
             contentValues.put(COL5, economy);
             contentValues.put(COL6, notes);
+            contentValues.put(COL7, image);
 
-            Log.d(TAG, "addCity: Adding " + name + ", " + environment + ", " + population + ", " + economy + " to " + TABLE_NAME);
+            Log.d(TAG, "addCity: Adding " + name + ", " + environment + ", " + population + ", " + economy + ", " + notes + ", " + image + " to " + TABLE_NAME);
 
             long result = db.insert(TABLE_NAME, null, contentValues); //result will be -1 if data was inserted incorrectly
             return (result != -1);
 
         }else{  //if the npc does exist, update the current entry
-            String query = "UPDATE " + TABLE_NAME + " SET " + COL2 + "=?" + "," + COL3 + "=?" + "," + COL4 + "=?" + "," + COL5 + "=?" + "," + COL6 + "=?" + "WHERE " + COL2 + "=?";
-            db.execSQL(query, new String [] {name, environment, population, economy, notes, oldName});
+            String query = "UPDATE " + TABLE_NAME + " SET " + COL2 + "=?" + "," + COL3 + "=?" + "," + COL4 + "=?" + "," + COL5 + "=?" + "," + COL6 + "=?" + "," + COL7 + "=?" + "WHERE " + COL2 + "=?";
+            db.execSQL(query, new String [] {name, environment, population, economy, notes, image, oldName});
 
-            Log.d(TAG, "addCity: Updating " + oldName + " to " + name + ", " + environment + ", " + population + ", " + economy + ", " + notes + " to " + TABLE_NAME);
+            Log.d(TAG, "addCity: Updating " + oldName + " to " + name + ", " + environment + ", " + population + ", " + economy + ", " + notes + ", " + image + " to " + TABLE_NAME);
 
             return true;
         }

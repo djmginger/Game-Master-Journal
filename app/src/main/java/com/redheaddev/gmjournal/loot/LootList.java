@@ -1,12 +1,16 @@
 package com.redheaddev.gmjournal.loot;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.LocaleList;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -32,6 +36,7 @@ import com.redheaddev.gmjournal.R;
 import com.redheaddev.gmjournal.npcs.npcDBHelper;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class LootList extends AppCompatActivity implements MyRecyclerViewAdapter.OnNoteListener {
 
@@ -81,6 +86,13 @@ public class LootList extends AppCompatActivity implements MyRecyclerViewAdapter
             DrawableCompat.setTint(DrawableCompat.wrap(addEntry.getDrawable()), ContextCompat.getColor(context, R.color.black));
         }
 
+        String localeText = sharedPreferences.getString("Locale", "none");
+        String loadLocale = String.valueOf(getResources().getConfiguration().locale);
+        if(!localeText.equals(loadLocale)){
+            Locale locale = new Locale(localeText);
+            updateLocale(locale);
+        }
+
         // set up the RecyclerView with data from the database
         Cursor loot = mLootDBHelper.getLoot();
 
@@ -121,8 +133,13 @@ public class LootList extends AppCompatActivity implements MyRecyclerViewAdapter
         params.height = (int)(deviceHeight * .70);
         recyclerView.setLayoutParams(params);
 
-        listTitle.setText(R.string.loot);
-        listTitle.setTextColor(Color.parseColor("#6F94F8"));
+        String headerText4 = sharedPreferences.getString("headerText4", "none");
+        String headerColor4 = sharedPreferences.getString("headerColor4", "none");
+
+        if(!headerText4.equals("none")) listTitle.setText(headerText4);
+        else listTitle.setText(R.string.loot);
+        if(!headerColor4.equals("none")) listTitle.setTextColor(Color.parseColor(headerColor4));
+        else listTitle.setTextColor(Color.parseColor("#6F94F8"));
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -246,6 +263,31 @@ public class LootList extends AppCompatActivity implements MyRecyclerViewAdapter
         intent.putExtra("lootName", lootName);
         intent.putExtra("addLootValue", 0);
         startActivity(intent);
+    }
+
+    @SuppressLint("NewApi")
+    public void updateLocale(Locale locale) {
+        Resources res = getResources();
+        Locale.setDefault(locale);
+
+        Configuration configuration = res.getConfiguration();
+
+        if (Integer.parseInt(android.os.Build.VERSION.SDK) >= 24) {
+            LocaleList localeList = new LocaleList(locale);
+
+            LocaleList.setDefault(localeList);
+            configuration.setLocales(localeList);
+            configuration.setLocale(locale);
+
+        } else if (Integer.parseInt(android.os.Build.VERSION.SDK) >= 17){
+            configuration.setLocale(locale);
+
+        } else {
+            configuration.locale = locale;
+        }
+
+        res.updateConfiguration(configuration, res.getDisplayMetrics());
+        recreate();
     }
 }
 

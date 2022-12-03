@@ -69,8 +69,8 @@
     <string name="travelTimeHeader">"Reisezeiten nach... "</string>
     <string name="locationTitle">"Standorte innerhalb von"</string>
     <string name="location">"Standort"</string>
-    <string name="race">"Rennen"</string>
-    <string name="raceHeader">"Rennen:"</string>
+    <string name="race">Rasse</string>
+    <string name="raceHeader">Rasse:</string>
     <string name="npclisttitle">"NSC in "</string>
     <string name="updateinfo">"Möchten Sie den bestehenden Eintrag mit dieser Information aktualisieren?"</string>
     <string name="nonpctext">Es gibt noch keine NSC</string>
@@ -129,7 +129,6 @@
     <string name="yousurecity">"Sind Sie sicher, dass Sie diese Daten löschen möchten? Wenn Sie Städte löschen, werden auch die Orte und Entfernungen für diese Stadt gelöscht."</string>
     <string name="deletecities">"Erfolgreiche Löschung aller Städte"</string>
     <string name="deletenpcs">Erfolgreiche Löschung aller NSCs</string>
-    <string name="app_name">Spielleiter Tagebuch</string>
     <string name="purchasedark">Unterstütze den Entwickler! Kaufen Sie Dark Mode für 0,99 USD.</string>
     <string name="envlabel">"Umgebung: "</string>
     <string name="poplabel">"Population: "</string>
@@ -171,4 +170,27 @@
     <string name="export_misc">Exportieren Sonstiges</string>
     <string name="deleteall">Alles löschen</string>
     <string name="export">Export</string>
+    <string name="unsaved">Sie haben nicht gespeicherte Änderungen, möchten Sie diese speichern?</string>
+    <string name="infocolorchange">Farbe der Infobox bearbeiten</string>
+    <string name="editinfocolor">Farbe der Infobox bearbeiten</string>
+    <string name="located">Gelegen in:</string>
+    <string name="reset">Werte zurücksetzen</string>
+    <string name="resetHeader">Werte zurücksetzen?</string>
+    <string name="editheader">Titel bearbeiten</string>
+    <string name="enterheader">Geben Sie einen neuen Titel ein. Dieser gilt überall dort, wo dieser Titel verwendet wird.</string>
+    <string name="editcolor">Farbe bearbeiten</string>
+    <string name="entercolor">Geben Sie einen hexadezimalen Farbwert ein</string>
+    <string name="settings">Einstellungen</string>
+    <string name="colorchange">Farbe bearbeiten</string>
+    <string name="edittitle">Titel bearbeiten</string>
+    <string name="none">Keine</string>
+    <string name="placename">Name des Ortes</string>
+    <string name="placedetails">Details zum Ort</string>
+    <string name="selectLocation">Standort:</string>
+    <string name="nocity">Keine Stadt</string>
+    <string name="filtercity">Nach Stadt filtern:</string>
+    <string name="permissionneededdb">Diese Berechtigung ist erforderlich, um Dateien ordnungsgemäß importieren und exportieren zu können.</string>
+    <string name="importy">Importieren</string>
+    <string name="presets">Voreinstellungen</string>
+    <string name="language">Sprache</string>
 </resources>

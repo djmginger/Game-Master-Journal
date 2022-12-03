@@ -1,8 +1,11 @@
 package com.redheaddev.gmjournal.npcs;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,6 +16,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.LocaleList;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -32,6 +36,7 @@ import com.redheaddev.gmjournal.cities.citiesDBHelper;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class NpcDisplay extends AppCompatActivity{
 
@@ -40,7 +45,7 @@ public class NpcDisplay extends AppCompatActivity{
     private int addNPCValue = 0;
     private String npcTitle = null;
     private String voice = "";
-    private final String TAG = "NPCInfo";
+    private final String TAG = "NpcDisplay";
     private boolean isStopped = true;
     private final ArrayList<String> locations = new ArrayList<>();
     private MediaPlayer mPlayer;
@@ -96,6 +101,13 @@ public class NpcDisplay extends AppCompatActivity{
             DrawableCompat.setTint(DrawableCompat.wrap(pause.getDrawable()), ContextCompat.getColor(context, R.color.black));
         }
 
+        String localeText = sharedPreferences.getString("Locale", "none");
+        String loadLocale = String.valueOf(getResources().getConfiguration().locale);
+        if(!localeText.equals(loadLocale)){
+            Locale locale = new Locale(localeText);
+            updateLocale(locale);
+        }
+
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -116,7 +128,9 @@ public class NpcDisplay extends AppCompatActivity{
         npcInfo.moveToFirst();
         npcTitle = npcInfo.getString(1);
         npcName.setText(npcInfo.getString(1));
-        npcName.setTextColor(Color.parseColor("#5BCBAE"));
+        String headerColor1 = sharedPreferences.getString("headerColor1", "none");
+        if(!headerColor1.equals("none")) npcName.setTextColor(Color.parseColor(headerColor1));
+        else npcName.setTextColor(Color.parseColor("#5BCBAE"));
 
         if(!npcInfo.getString(8).equals("")){
             ImageView npcImage = new ImageView(this);
@@ -396,6 +410,31 @@ public class NpcDisplay extends AppCompatActivity{
             startActivity(intent);
             finish();
         }
+    }
+
+    @SuppressLint("NewApi")
+    public void updateLocale(Locale locale) {
+        Resources res = getResources();
+        Locale.setDefault(locale);
+
+        Configuration configuration = res.getConfiguration();
+
+        if (Integer.parseInt(android.os.Build.VERSION.SDK) >= 24) {
+            LocaleList localeList = new LocaleList(locale);
+
+            LocaleList.setDefault(localeList);
+            configuration.setLocales(localeList);
+            configuration.setLocale(locale);
+
+        } else if (Integer.parseInt(android.os.Build.VERSION.SDK) >= 17){
+            configuration.setLocale(locale);
+
+        } else {
+            configuration.locale = locale;
+        }
+
+        res.updateConfiguration(configuration, res.getDisplayMetrics());
+        recreate();
     }
 
     private void toast(String message){

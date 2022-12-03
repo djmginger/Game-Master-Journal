@@ -1,6 +1,7 @@
 package com.redheaddev.gmjournal.misc;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -8,12 +9,16 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.LocaleList;
 import android.provider.OpenableColumns;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -51,6 +56,8 @@ import com.redheaddev.gmjournal.loot.LootList;
 import com.redheaddev.gmjournal.loot.lootDBHelper;
 import com.redheaddev.gmjournal.presets.PresetList;
 
+import org.w3c.dom.Text;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -59,6 +66,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -86,7 +94,18 @@ public class MiscInfo extends AppCompatActivity{
     private boolean darkMode;
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
     private static String[] PERMISSIONS_STORAGE = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
-
+    private String initName = "";
+    private String initInfo1 = "";
+    private String initInfo2 = "";
+    private String initInfo3 = "";
+    private String initInfo4 = "";
+    private String initImage = "";
+    private String initGroup = "";
+    private String initCities = "";
+    private String initNPCs = "";
+    private String initItems = "";
+    private String initItemGroup = "";
+    private boolean hasSaved = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +117,7 @@ public class MiscInfo extends AppCompatActivity{
 
         final SharedPreferences sharedPreferences = getSharedPreferences("Settings", Context.MODE_PRIVATE);
         final SharedPreferences.Editor editor = sharedPreferences.edit();
+
         String theme = sharedPreferences.getString("Theme", "none");
         final String infoHeader1 = sharedPreferences.getString("infoHeader1", "none");
         String infoHeader2 = sharedPreferences.getString("infoHeader2", "none");
@@ -144,7 +164,6 @@ public class MiscInfo extends AppCompatActivity{
         final ImageView editIcon3 = findViewById(R.id.editIcon3);
         final ImageView editIcon4 = findViewById(R.id.editIcon4);
         final ImageView editIcon5 = findViewById(R.id.editIcon5);
-        final ImageView editIcon6 = findViewById(R.id.editIcon6);
         final ImageView miscImage = findViewById(R.id.miscImage);
         final ImageView addImage = findViewById((R.id.addImage));
         final ListView npcListLayout = findViewById(R.id.npcListLayout);
@@ -164,10 +183,35 @@ public class MiscInfo extends AppCompatActivity{
         if (!infoHeader5.equals("none")) miscGroupHeader.setText(infoHeader5);
         if(!miscInfoTitle.equals("none")) miscMainTitle.setText(miscInfoTitle);
 
+        String headerColor5 = sharedPreferences.getString("headerColor5", "none");
+        String headerText1 = sharedPreferences.getString("headerText1", "none");
+        String headerText2 = sharedPreferences.getString("headerText2", "none");
+        String headerText4 = sharedPreferences.getString("headerText4", "none");
+        String headerText5 = sharedPreferences.getString("miscName", "none");
+        String infoboxcolor5 = sharedPreferences.getString("infoboxcolor5", "none");
+        if(!headerColor5.equals("none")) miscMainTitle.setTextColor(Color.parseColor(headerColor5));
+        if(!headerText5.equals("none")) miscMainTitle.setText(String.format("%s Details", headerText5));
+        if(!headerText1.equals("none")) {
+            linkedNpcTitle.setText(String.format("Linked %s", headerText1));
+            linkedNpc.setText(String.format("Add a linked %s", headerText1));
+        }
+        if(!headerText2.equals("none")) {
+            linkedCityTitle.setText(String.format("Linked %s", headerText2));
+            linkedCity.setText(String.format("Add a linked %s", headerText2));
+        }
+        if(!headerText4.equals("none")) {
+            linkedItemTitle.setText(String.format("Linked %s", headerText4));
+            linkedItem.setText(String.format("Add a linked %s", headerText4));
+            linkedItemGroupTitle.setText(String.format("Linked %s group", headerText4));
+            linkedItemGroup.setHint(String.format("No %s group", headerText4));
+        }
+        if(!infoboxcolor5.equals("none")) {
+            setDrawableColors(infoboxcolor5);
+        }
+
         addImageText.setText(R.string.addimage);
         miscImage.setVisibility(View.GONE);
         addImage.setImageResource(R.drawable.addanimage);
-
 
         // basically, constantly refresh the sizes of these lists based on the children. This is done to handle when things are removed.
         /*timer.scheduleAtFixedRate(new TimerTask() {
@@ -270,6 +314,13 @@ public class MiscInfo extends AppCompatActivity{
             DrawableCompat.setTint(DrawableCompat.wrap(editIcon3.getDrawable()), ContextCompat.getColor(context, R.color.black));
             DrawableCompat.setTint(DrawableCompat.wrap(editIcon4.getDrawable()), ContextCompat.getColor(context, R.color.black));
             DrawableCompat.setTint(DrawableCompat.wrap(editIcon5.getDrawable()), ContextCompat.getColor(context, R.color.black));
+        }
+
+        String localeText = sharedPreferences.getString("Locale", "none");
+        String loadLocale = String.valueOf(getResources().getConfiguration().locale);
+        if(!localeText.equals(loadLocale)){
+            Locale locale = new Locale(localeText);
+            updateLocale(locale);
         }
 
         miscImage.setMaxHeight((int)(deviceHeight*.40));
@@ -479,32 +530,6 @@ public class MiscInfo extends AppCompatActivity{
             }
         });
 
-        editIcon6.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlertDialog.Builder alert = new AlertDialog.Builder(context);
-                final EditText edittext = new EditText(context);
-                alert.setMessage("Renaming this header applies it to all other items");
-                alert.setTitle("Edit Page Title");
-                alert.setView(edittext);
-
-                alert.setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        editor.putString("miscInfoTitle", edittext.getText().toString());
-                        editor.apply();
-                        miscMainTitle.setText(sharedPreferences.getString("miscInfoTitle", "none"));
-                    }
-                });
-                alert.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        dialog.dismiss();
-                    }
-                });
-
-                alert.show();
-            }
-        });
-
         linkedItemGroupLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -531,15 +556,20 @@ public class MiscInfo extends AppCompatActivity{
                 for (int i = 0; i < npcListLayout.getCount(); i++) {
                     View v = npcListLayout.getChildAt(i);
                     TextView text = v.findViewById(R.id.dataValue);
-                    savedNpcList.add(text.getText().toString());
+                    String listViewText = text.getText().toString();
+                    String commaSafeText = listViewText.replaceAll(",", "%");
+                    savedNpcList.add(commaSafeText);
                 }
                 String savedNpcListString = savedNpcList.toString().replace("[", "").replace("]", "").trim();
+                Log.d(TAG, "onClick: when saving, the savedNPCListString is: " + savedNpcListString);
 
                 ArrayList<String> savedCityList = new ArrayList<>();
                 for (int i = 0; i < cityListLayout.getCount(); i++) {
                     View v = cityListLayout.getChildAt(i);
                     TextView text = v.findViewById(R.id.dataValue);
-                    savedCityList.add(text.getText().toString());
+                    String listViewText = text.getText().toString();
+                    String commaSafeText = listViewText.replaceAll(",", "%");
+                    savedCityList.add(commaSafeText);
                 }
                 String savedCityListString = savedCityList.toString().replace("[", "").replace("]", "").trim();
 
@@ -547,7 +577,9 @@ public class MiscInfo extends AppCompatActivity{
                 for (int i = 0; i < itemListLayout.getCount(); i++) {
                     View v = itemListLayout.getChildAt(i);
                     TextView text = v.findViewById(R.id.dataValue);
-                    savedItemList.add(text.getText().toString());
+                    String listViewText = text.getText().toString();
+                    String commaSafeText = listViewText.replaceAll(",", "%");
+                    savedItemList.add(commaSafeText);
                 }
                 String savedItemListString = savedItemList.toString().replace("[", "").replace("]", "").trim();
 
@@ -606,19 +638,26 @@ public class MiscInfo extends AppCompatActivity{
             }
         });
 
-        //if coming to the activity from clicking on an existing piece of loot, pull all relevant info
+        //if coming to the activity from clicking on an existing misc object, pull all relevant info
         if (addMiscValue != -1) {
             deleteExists = true;
             Cursor miscInfo = mMiscDBHelper.getSpecificMisc(miscTitle);
             miscInfo.moveToFirst();
-            miscName.setText(miscInfo.getString(1));
-            miscInfo1.setText(miscInfo.getString(2));
-            miscInfo2.setText(miscInfo.getString(3));
-            miscInfo3.setText(miscInfo.getString(4));
-            miscInfo4.setText(miscInfo.getString(5));
-            groupPreset.setText(miscInfo.getString(11));
+            initName = miscInfo.getString(1);
+            miscName.setText(initName);
+            initInfo1 = miscInfo.getString(2);
+            miscInfo1.setText(initInfo1);
+            initInfo2 = miscInfo.getString(3);
+            miscInfo2.setText(initInfo2);
+            initInfo3 = miscInfo.getString(4);
+            miscInfo3.setText(initInfo3);
+            initInfo4 = miscInfo.getString(5);
+            miscInfo4.setText(initInfo4);
+            initGroup = miscInfo.getString(11);
+            groupPreset.setText(initGroup);
 
-            String npcString = miscInfo.getString(7);
+            initNPCs = miscInfo.getString(7);
+            String npcString = initNPCs;
             if (!npcString.equals("")) {
                 npcString = npcString.replaceAll(",\\s", ",");
                 String[] npcArray = npcString.split(",");
@@ -628,7 +667,8 @@ public class MiscInfo extends AppCompatActivity{
                 setListViewHeightBasedOnChildren(npcListLayout);
             }
 
-            String cityString = miscInfo.getString(8);
+            initCities = miscInfo.getString(8);
+            String cityString = initCities;
             if (!cityString.equals("")) {
                 cityString = cityString.replaceAll(",\\s", ",");
                 String[] cityArray = cityString.split(",");
@@ -638,7 +678,8 @@ public class MiscInfo extends AppCompatActivity{
                 setListViewHeightBasedOnChildren(cityListLayout);
             }
 
-            String itemString = miscInfo.getString(9);
+            initItems = miscInfo.getString(9);
+            String itemString = initItems;
             if (!itemString.equals("")) {
                 itemString = itemString.replaceAll(",\\s", ",");
                 String[] itemArray = itemString.split(",");
@@ -648,46 +689,11 @@ public class MiscInfo extends AppCompatActivity{
                 setListViewHeightBasedOnChildren(itemListLayout);
             }
 
-            linkedItemGroup.setText(miscInfo.getString(10));
-            ImageView deleteMiscButtonImage = new ImageView(this);
-            deleteMiscButtonImage.setImageResource(R.drawable.delete);
-            int deviceWidth = (displayMetrics.widthPixels);
-            LinearLayout.LayoutParams lparams = new LinearLayout.LayoutParams((int)(deviceWidth * .11), ViewGroup.LayoutParams.WRAP_CONTENT);
-            lparams.setMargins(0,0,0,25);
-            lparams.gravity = Gravity.CENTER_HORIZONTAL;
-            deleteMiscButtonImage.setLayoutParams(lparams);
-            deleteMiscButtonImage.setAdjustViewBounds(true);
-            deleteMiscButtonImage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    String name = miscName.getText().toString();
+            initItemGroup = miscInfo.getString(10);
+            linkedItemGroup.setText(initItemGroup);
 
-                    if (!(mMiscDBHelper.checkNonExistence(name))) {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                        builder.setMessage(R.string.areyou);
-                        builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.dismiss();
-                                mMiscDBHelper.removeMisc(miscTitle);
-                                Intent intent = new Intent(context, MiscList.class);
-                                startActivity(intent);
-                                finish();
-                            }
-                        });
-                        builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.dismiss();
-                            }
-                        });
-                        AlertDialog alert = builder.create();
-                        alert.show();
-
-                    }else toast(getString(R.string.noitemtodelete));
-                }
-            });
-            miscLayout.addView(deleteMiscButtonImage);
-
-            image = miscInfo.getString(6);
+            initImage = miscInfo.getString(6);
+            image = initImage;
             if (!image.equals("")) {
                 Bitmap bmImg = BitmapFactory.decodeFile(image);
                 miscImage.setImageBitmap(bmImg);
@@ -727,6 +733,54 @@ public class MiscInfo extends AppCompatActivity{
         }
     }
 
+    public void setDrawableColors(String color){
+        final EditText miscName = findViewById(R.id.miscName);
+        LinearLayoutCompat groupLayout = findViewById(R.id.groupLayout);
+        LinearLayoutCompat linkedItemGroupLayout = findViewById(R.id.linkedItemGroupLayout);
+        final EditText miscInfo1 = findViewById(R.id.miscInfo1);
+        final EditText miscInfo2 = findViewById(R.id.miscInfo2);
+        final EditText miscInfo3 = findViewById(R.id.miscInfo3);
+        final EditText miscInfo4 = findViewById(R.id.miscInfo4);
+        TextView linkedNpc = findViewById(R.id.linkedNpc);
+        TextView linkedCity = findViewById(R.id.linkedCity);
+        TextView linkedItem = findViewById(R.id.linkedItem);
+        final ImageView addImage = findViewById(R.id.addImage);
+
+        GradientDrawable drawable1 = (GradientDrawable)miscName.getBackground().getCurrent();
+        drawable1.setColor(Color.parseColor(color));
+        drawable1.setStroke(4, Color.BLACK);
+        GradientDrawable drawable2 = (GradientDrawable)miscInfo1.getBackground().getCurrent();
+        drawable2.setColor(Color.parseColor(color));
+        drawable2.setStroke(4, Color.BLACK);
+        GradientDrawable drawable3 = (GradientDrawable)miscInfo2.getBackground().getCurrent();
+        drawable3.setColor(Color.parseColor(color));
+        drawable3.setStroke(4, Color.BLACK);
+        GradientDrawable drawable4 = (GradientDrawable)addImage.getBackground().getCurrent();
+        drawable4.setColor(Color.parseColor(color));
+        drawable4.setStroke(4, Color.BLACK, 5, 5);
+        GradientDrawable drawable5 = (GradientDrawable)miscInfo3.getBackground().getCurrent();
+        drawable5.setColor(Color.parseColor(color));
+        drawable5.setStroke(4, Color.BLACK);
+        GradientDrawable drawable6 = (GradientDrawable)miscInfo4.getBackground().getCurrent();
+        drawable6.setColor(Color.parseColor(color));
+        drawable6.setStroke(4, Color.BLACK);
+        GradientDrawable drawable7 = (GradientDrawable)groupLayout.getBackground().getCurrent();
+        drawable7.setColor(Color.parseColor(color));
+        drawable7.setStroke(4, Color.BLACK);
+        GradientDrawable drawable8 = (GradientDrawable)linkedItemGroupLayout.getBackground().getCurrent();
+        drawable8.setColor(Color.parseColor(color));
+        drawable8.setStroke(4, Color.BLACK);
+        GradientDrawable drawable9 = (GradientDrawable)linkedNpc.getBackground().getCurrent();
+        drawable9.setColor(Color.parseColor(color));
+        drawable9.setStroke(4, Color.BLACK);
+        GradientDrawable drawable10 = (GradientDrawable)linkedCity.getBackground().getCurrent();
+        drawable10.setColor(Color.parseColor(color));
+        drawable10.setStroke(4, Color.BLACK);
+        GradientDrawable drawable11 = (GradientDrawable)linkedItem.getBackground().getCurrent();
+        drawable11.setColor(Color.parseColor(color));
+        drawable11.setStroke(4, Color.BLACK);
+    }
+
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Result code is RESULT_OK only if the user selects an Image
         final ImageView miscImage = findViewById(R.id.miscImage);
@@ -744,6 +798,9 @@ public class MiscInfo extends AppCompatActivity{
         } else if (resultCode == 7){
             if (!data.getStringExtra("presetValue").equals("none")) {
                 String dataValue = data.getStringExtra("presetValue");
+                Log.d(TAG, "onActivityResult: Pre-replacement string is: " + dataValue);
+                dataValue = dataValue.replaceAll(",", "%");
+                Log.d(TAG, "onActivityResult: Post-replacement string is: " + dataValue);
                 linkedNpcs.add(dataValue);
                 npcAdapter.notifyDataSetChanged();
                 ListView npcListLayout = findViewById(R.id.npcListLayout);
@@ -753,6 +810,7 @@ public class MiscInfo extends AppCompatActivity{
         } else if (resultCode == 8){
             if (!data.getStringExtra("presetValue").equals("none")) {
                 String dataValue = data.getStringExtra("presetValue");
+                dataValue = dataValue.replaceAll(",", "%");
                 linkedCities.add(dataValue);
                 cityAdapter.notifyDataSetChanged();
                 ListView cityListLayout = findViewById(R.id.cityListLayout);
@@ -762,6 +820,7 @@ public class MiscInfo extends AppCompatActivity{
         } else if (resultCode == 9){
             if (!data.getStringExtra("presetValue").equals("none")) {
                 String dataValue = data.getStringExtra("presetValue");
+                dataValue = dataValue.replaceAll(",", "%");
                 linkedItems.add(dataValue);
                 itemAdapter.notifyDataSetChanged();
                 ListView itemListLayout = findViewById(R.id.itemListLayout);
@@ -890,32 +949,19 @@ public class MiscInfo extends AppCompatActivity{
     private void AddMisc(final String name, final String info1, final String info2, final String info3, final String info4, final String image, final String linkedNpc, final String linkedCity, final String linkedLoot, final String linkedItemGroup, final String miscGroup, final String miscTitle){
         setMiscTitle(name);
         if(addMiscValue == 0 || !(mMiscDBHelper.checkNonExistence(name))) { //if we're updating an existing entry, then edit current DB values
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage(R.string.updateinfo);
-            builder.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    boolean insertMisc = mMiscDBHelper.addMisc(name, info1, info2, info3, info4, image, linkedNpc, linkedCity, linkedLoot, linkedItemGroup, miscGroup, miscTitle, true);
+            boolean insertMisc = mMiscDBHelper.addMisc(name, info1, info2, info3, info4, image, linkedNpc, linkedCity, linkedLoot, linkedItemGroup, miscGroup, miscTitle, true);
 
-                    if (insertMisc) {
-                        toast(getString(R.string.itemsaved));
-                        onBackPressed();
-                    } else {
-                        toast(getString(R.string.error));
-                    }
-                    dialog.dismiss();
-                }
-            });
-            builder.setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    dialog.dismiss();
-                }
-            });
-            AlertDialog alert = builder.create();
-            alert.show();
+            if (insertMisc) {
+                hasSaved = true;
+                toast(getString(R.string.itemsaved));
+                onBackPressed();
+            } else {
+                toast(getString(R.string.error));
+            }
         }else { //if the npc with the entered name does not exist, proceed as normal
             boolean insertMisc = mMiscDBHelper.addMisc(name, info1, info2, info3, info4, image, linkedNpc, linkedCity, linkedLoot, linkedItemGroup, miscGroup, miscTitle, false);
             if (insertMisc) {
-                Log.d(TAG, "onClick: Saving " + name + ", " + info1 + ", " + info2 + ", " + info3 + ", " + info4 + ", " + image + ", " + linkedNpc + ", " + linkedCity + ", " + linkedLoot + ", " + linkedItemGroup + ", " + miscGroup + ", " + miscTitle + " " + " to the MiscList");
+                hasSaved = true;
                 toast(getString(R.string.itemsaved));
                 onBackPressed();
             } else {
@@ -931,13 +977,105 @@ public class MiscInfo extends AppCompatActivity{
             Intent intent = new Intent(context, MiscDisplay.class);
             intent.putExtra("miscName", miscTitle);
             intent.putExtra("addMiscValue", 0);
-            startActivity(intent);
-            finish();
+            if (!hasSaved) notSaved(intent);
+            else {
+                startActivity(intent);
+                finish();
+            }
         }
         else {
             Intent intent = new Intent(this, MiscList.class);
-            startActivity(intent);
-            finish();
+            if (!hasSaved) notSaved(intent);
+            else {
+                startActivity(intent);
+                finish();
+            }
+        }
+    }
+
+    public void notSaved(Intent intent) {
+
+        EditText miscName = findViewById(R.id.miscName);
+        EditText miscInfo1 = findViewById(R.id.miscInfo1);
+        EditText miscInfo2 = findViewById(R.id.miscInfo2);
+        EditText miscInfo3 = findViewById(R.id.miscInfo3);
+        EditText miscInfo4 = findViewById(R.id.miscInfo4);
+        TextView groupPreset = findViewById(R.id.groupPreset);
+        ListView npcListLayout = findViewById(R.id.npcListLayout);
+        ListView cityListLayout = findViewById(R.id.cityListLayout);
+        ListView itemListLayout = findViewById(R.id.itemListLayout);
+        TextView linkedItemGroup = findViewById(R.id.linkedItemGroup);
+
+        ArrayList<String> savedNpcList = new ArrayList<>();
+        for (int i = 0; i < npcListLayout.getCount(); i++) {
+            View v = npcListLayout.getChildAt(i);
+            TextView text = v.findViewById(R.id.dataValue);
+            String listViewText = text.getText().toString();
+            String commaSafeText = listViewText.replaceAll(",", "%");
+            savedNpcList.add(commaSafeText);
+        }
+        String savedNpcListString = savedNpcList.toString().replace("[", "").replace("]", "").trim();
+
+        ArrayList<String> savedCityList = new ArrayList<>();
+        for (int i = 0; i < cityListLayout.getCount(); i++) {
+            View v = cityListLayout.getChildAt(i);
+            TextView text = v.findViewById(R.id.dataValue);
+            String listViewText = text.getText().toString();
+            String commaSafeText = listViewText.replaceAll(",", "%");
+            savedCityList.add(commaSafeText);
+        }
+        String savedCityListString = savedCityList.toString().replace("[", "").replace("]", "").trim();
+
+        ArrayList<String> savedItemList = new ArrayList<>();
+        for (int i = 0; i < itemListLayout.getCount(); i++) {
+            View v = itemListLayout.getChildAt(i);
+            TextView text = v.findViewById(R.id.dataValue);
+            String listViewText = text.getText().toString();
+            String commaSafeText = listViewText.replaceAll(",", "%");
+            savedItemList.add(commaSafeText);
+        }
+        String savedItemListString = savedItemList.toString().replace("[", "").replace("]", "").trim();
+
+        if (!(miscName.getText().toString().equals(initName)) || !(miscInfo1.getText().toString().equals(initInfo1)) || !(miscInfo2.getText().toString().equals(initInfo2)) || !(miscInfo3.getText().toString().equals(initInfo3)) || !(miscInfo4.getText().toString().equals(initInfo4)) || !(savedNpcListString.equals(initNPCs)) || !(savedCityListString.equals(initCities)) || !(savedItemListString.equals(initItems)) || !(groupPreset.getText().toString().equals(initGroup))& !hasSaved) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setMessage(R.string.unsaved);
+            builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    String name = miscName.getText().toString();
+                    String info1 = miscInfo1.getText().toString();
+                    String info2 = miscInfo2.getText().toString();
+                    String info3 = miscInfo3.getText().toString();
+                    String info4 = miscInfo4.getText().toString();
+                    String linkedItemGroupValue = linkedItemGroup.getText().toString();
+                    String groupPresetValue = groupPreset.getText().toString();
+                    dialog.dismiss();
+                    saveFunctionality(name, info1, info2, info3, info4, image, savedNpcListString, savedCityListString, savedItemListString, linkedItemGroupValue, groupPresetValue);
+                }
+            });
+            builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.dismiss();
+                    startActivity(intent);
+                }
+            });
+            AlertDialog alert = builder.create();
+            alert.show();
+        } else startActivity(intent);
+    }
+
+    public void saveFunctionality(String name, String info1, String info2, String info3, String info4, String image, String linkedNpc, String linkedCity, String linkedLoot, String linkedItemGroup, String miscGroup){
+
+        //if the edit text values are non-zero, and there is no identical entry, then add the loot NPC
+        EditText miscName = findViewById(R.id.miscName);
+        if (CheckName(miscName)){
+
+            if (addMiscValue != 0){
+                setMiscTitle(name); //if attempting to add a new NPC, we set this value to pass to the DBHelper in order to check if we need to update an existing entry
+            }
+
+            AddMisc(name, info1, info2, info3, info4, image, linkedNpc, linkedCity, linkedLoot, linkedItemGroup, miscGroup, miscTitle);
+        } else {
+            toast("Please provide a name for your entry");
         }
     }
 
@@ -1021,18 +1159,30 @@ public class MiscInfo extends AppCompatActivity{
         params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
         listView.setLayoutParams(params);
         listView.requestLayout();
-
     }
 
-    /*@Override
-    public void onUserInteraction() {
-        final ListView npcListLayout = findViewById(R.id.npcListLayout);
-        final ListView cityListLayout = findViewById(R.id.cityListLayout);
-        final ListView itemListLayout = findViewById(R.id.itemListLayout);
-        setListViewHeightBasedOnChildren(npcListLayout);
-        setListViewHeightBasedOnChildren(cityListLayout);
-        setListViewHeightBasedOnChildren(itemListLayout);
-        super.onUserInteraction();
-    }*/
+    @SuppressLint("NewApi")
+    public void updateLocale(Locale locale) {
+        Resources res = getResources();
+        Locale.setDefault(locale);
 
+        Configuration configuration = res.getConfiguration();
+
+        if (Integer.parseInt(android.os.Build.VERSION.SDK) >= 24) {
+            LocaleList localeList = new LocaleList(locale);
+
+            LocaleList.setDefault(localeList);
+            configuration.setLocales(localeList);
+            configuration.setLocale(locale);
+
+        } else if (Integer.parseInt(android.os.Build.VERSION.SDK) >= 17){
+            configuration.setLocale(locale);
+
+        } else {
+            configuration.locale = locale;
+        }
+
+        res.updateConfiguration(configuration, res.getDisplayMetrics());
+        recreate();
+    }
 }

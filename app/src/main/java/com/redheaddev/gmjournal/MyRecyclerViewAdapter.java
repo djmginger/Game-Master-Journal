@@ -2,6 +2,7 @@ package com.redheaddev.gmjournal;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     //For clickable rows
     private final OnNoteListener mOnNoteListener;
     private final Boolean mDarkMode;
+    private final String TAG = "RecycleryViewAdapter";
 
 
     // data is passed into the constructor
@@ -31,6 +33,11 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
         this.mData = data;
         this.mOnNoteListener = onNoteListener;
         this.mDarkMode = darkMode;
+
+        for(int i = 0; i < data.size(); i++)
+        {
+            Log.d(TAG, "MyRecyclerViewAdapter: The values in the Location array are: " + data.get(i));
+        }
     }
 
     // inflates the row layout from xml when needed
@@ -49,6 +56,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         String listItem = mData.get(position);
+        Log.d(TAG, "onBindViewHolder: The list Item added is " + listItem);
         holder.myTextView.setText(listItem);
     }
 

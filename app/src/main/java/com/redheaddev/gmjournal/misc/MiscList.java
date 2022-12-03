@@ -1,12 +1,16 @@
 package com.redheaddev.gmjournal.misc;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.LocaleList;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -34,6 +38,7 @@ import com.redheaddev.gmjournal.loot.LootInfo;
 import com.redheaddev.gmjournal.loot.lootDBHelper;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class MiscList extends AppCompatActivity implements MyRecyclerViewAdapter.OnNoteListener {
 
@@ -83,6 +88,13 @@ public class MiscList extends AppCompatActivity implements MyRecyclerViewAdapter
             DrawableCompat.setTint(DrawableCompat.wrap(addEntry.getDrawable()), ContextCompat.getColor(context, R.color.black));
         }
 
+        String localeText = sharedPreferences.getString("Locale", "none");
+        String loadLocale = String.valueOf(getResources().getConfiguration().locale);
+        if(!localeText.equals(loadLocale)){
+            Locale locale = new Locale(localeText);
+            updateLocale(locale);
+        }
+
         // set up the RecyclerView with data from the database
         Cursor misc = mMiscDBHelper.getMisc();
         groups.add(getString(R.string.filtergroup2));
@@ -122,10 +134,12 @@ public class MiscList extends AppCompatActivity implements MyRecyclerViewAdapter
         params.height = (int)(deviceHeight * .70);
         recyclerView.setLayoutParams(params);
 
+        String headerColor5 = sharedPreferences.getString("headerColor5", "none");
         String miscName = sharedPreferences.getString("miscName", "none");
         if (!miscName.equals("none")) listTitle.setText(miscName);
         else listTitle.setText(R.string.misc);
-        listTitle.setTextColor(Color.parseColor("#8f6ff8"));
+        if (!headerColor5.equals("none")) listTitle.setTextColor(Color.parseColor(headerColor5));
+        else listTitle.setTextColor(Color.parseColor("#8f6ff8"));
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -248,6 +262,31 @@ public class MiscList extends AppCompatActivity implements MyRecyclerViewAdapter
         intent.putExtra("miscName", miscName);
         intent.putExtra("addMiscValue", 0);
         startActivity(intent);
+    }
+
+    @SuppressLint("NewApi")
+    public void updateLocale(Locale locale) {
+        Resources res = getResources();
+        Locale.setDefault(locale);
+
+        Configuration configuration = res.getConfiguration();
+
+        if (Integer.parseInt(android.os.Build.VERSION.SDK) >= 24) {
+            LocaleList localeList = new LocaleList(locale);
+
+            LocaleList.setDefault(localeList);
+            configuration.setLocales(localeList);
+            configuration.setLocale(locale);
+
+        } else if (Integer.parseInt(android.os.Build.VERSION.SDK) >= 17){
+            configuration.setLocale(locale);
+
+        } else {
+            configuration.locale = locale;
+        }
+
+        res.updateConfiguration(configuration, res.getDisplayMetrics());
+        recreate();
     }
 }
 

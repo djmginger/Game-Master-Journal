@@ -37,10 +37,26 @@
 
     </android.support.v7.widget.LinearLayoutCompat>
 
+    <TextView
+        android:id="@+id/dbheader1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:textSize="20dp"
+        android:textColor="@color/black"
+        android:text="@string/npcs"/>
+
+    <View
+        android:layout_height="1dp"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:background="#6b6b6b" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="70dp"
         android:orientation="horizontal"
         android:gravity="center">
 
@@ -50,7 +66,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:textSize="12sp"
-            android:text="@string/deletenpcdata" />
+            android:text="@string/deleteall" />
 
         <Button
             android:id="@+id/exportNPCs"
@@ -58,39 +74,38 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:textSize="12sp"
-            android:text="Export NPCs" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:orientation="horizontal"
-        android:gravity="center">
+            android:text="@string/export" />
 
         <Button
-            android:id="@+id/deleteLocations"
+            android:id="@+id/importNpcs"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:textSize="12sp"
-            android:text="@string/deletelocationdata" />
-
-        <Button
-            android:id="@+id/exportLocations"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:textSize="12sp"
-            android:text="Export Locations" />
+            android:text="@string/importy" />
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/dbheader2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="5dp"
+        android:textSize="20dp"
+        android:textColor="@color/black"
+        android:text="@string/cities"/>
+
+    <View
+        android:layout_height="1dp"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:background="#6b6b6b" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
         android:orientation="horizontal"
         android:gravity="center">
 
@@ -100,7 +115,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:textSize="12sp"
-            android:text="@string/deletecitydata" />
+            android:text="@string/deleteall" />
 
         <Button
             android:id="@+id/exportCities"
@@ -108,23 +123,112 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:textSize="12sp"
-            android:text="Export Cities" />
+            android:text="@string/export" />
+
+        <Button
+            android:id="@+id/importCities"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textSize="12sp"
+            android:text="@string/importy" />
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/dbheader3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="5dp"
+        android:textSize="20dp"
+        android:textColor="@color/black"
+        android:text="@string/locations"/>
+
+    <View
+        android:layout_height="1dp"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:background="#6b6b6b" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/deleteLocations"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textSize="12sp"
+            android:text="@string/deleteall" />
+
+        <Button
+            android:id="@+id/exportLocations"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textSize="12sp"
+            android:text="@string/export" />
+
+        <Button
+            android:id="@+id/importLocations"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textSize="12sp"
+            android:text="@string/importy" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/dbheader4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="5dp"
+        android:textSize="20dp"
+        android:textColor="@color/black"
+        android:text="@string/distance"/>
+
+    <View
+        android:layout_height="1dp"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:background="#6b6b6b" />
 
     <Button
         android:id="@+id/deleteDistances"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
         android:layout_gravity="center"
         android:textSize="12sp"
-        android:text="@string/deletedistancedata" />
+        android:text="@string/deleteall" />
+
+    <TextView
+        android:id="@+id/dbheader5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="5dp"
+        android:textSize="20dp"
+        android:textColor="@color/black"
+        android:text="@string/loot"/>
+
+    <View
+        android:layout_height="1dp"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:background="#6b6b6b" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
         android:orientation="horizontal"
         android:gravity="center">
 
@@ -134,7 +238,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:textSize="12sp"
-            android:text="@string/deletelootdata" />
+            android:text="@string/deleteall" />
 
         <Button
             android:id="@+id/exportLoot"
@@ -142,14 +246,38 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:textSize="12sp"
-            android:text="Export Loot" />
+            android:text="@string/export" />
+
+        <Button
+            android:id="@+id/importLoot"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textSize="12sp"
+            android:text="@string/importy" />
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/dbheader6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="5dp"
+        android:textSize="20dp"
+        android:textColor="@color/black"
+        android:text="Miscellaneous"/>
+
+    <View
+        android:layout_height="1dp"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:background="#6b6b6b" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
         android:orientation="horizontal"
         android:gravity="center">
 
@@ -159,7 +287,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:textSize="12sp"
-            android:text="@string/delete_all_misc" />
+            android:text="@string/deleteall" />
 
         <Button
             android:id="@+id/exportMisc"
@@ -167,15 +295,39 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:textSize="12sp"
-            android:text="@string/export_misc" />
+            android:text="@string/export" />
+
+        <Button
+            android:id="@+id/importMisc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textSize="12sp"
+            android:text="@string/importy" />
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/dbheader7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:textSize="20dp"
+        android:textColor="@color/black"
+        android:text="@string/presets"/>
+
+    <View
+        android:layout_height="1dp"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:background="#6b6b6b" />
 
     <Button
         android:id="@+id/deletePresets"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
         android:layout_gravity="center"
         android:textSize="12sp"
         android:text="@string/reset_all_presets" />

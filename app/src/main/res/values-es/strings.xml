@@ -69,8 +69,8 @@
     <string name="travelTimeHeader">"Tiempos de viaje a..."</string>
     <string name="locationTitle">"Ubicaciones dentro de"</string>
     <string name="location">"Ubicación"</string>
-    <string name="race">"Carrera"</string>
-    <string name="raceHeader">"La carrera:"</string>
+    <string name="race">raza</string>
+    <string name="raceHeader">La raza:</string>
     <string name="npclisttitle">"Los PNJ en "</string>
     <string name="updateinfo">"¿Le gustaría actualizar la entrada existente con esta información?"</string>
     <string name="nonpctext">"No hay ningún PNJ todavía"</string>
@@ -129,7 +129,6 @@
     <string name="yousurecity">"¿Estás seguro de que quieres borrar estos datos? Al borrar las ciudades también se borrarán las ubicaciones y distancias de esa ciudad"</string>
     <string name="deletecities">"Eliminó con éxito todas las ciudades"</string>
     <string name="deletenpcs">"Eliminó con éxito todos los PNJ"</string>
-    <string name="app_name">Diario del maestro del juego</string>
     <string name="purchasedark">¡Apoye al desarrollador! Compra el modo oscuro por 0,99 USD.</string>
     <string name="envlabel">"Ambiente: "</string>
     <string name="poplabel">"Población: "</string>
@@ -171,4 +170,27 @@
     <string name="export_misc">Exportación Misc</string>
     <string name="deleteall">Borrar todo</string>
     <string name="export">Exportación</string>
+    <string name="presets">Presets</string>
+    <string name="importy">Importar</string>
+    <string name="permissionneededdb">Este permiso es necesario para poder importar y exportar correctamente los archivos</string>
+    <string name="filtercity">Filtrar por ciudad:</string>
+    <string name="nocity">Ninguna ciudad</string>
+    <string name="selectLocation">Ubicación:</string>
+    <string name="placedetails">Detalles del lugar</string>
+    <string name="placename">Nombre del lugar</string>
+    <string name="none">Ninguno</string>
+    <string name="edittitle">Editar título</string>
+    <string name="editheader">Editar título</string>
+    <string name="colorchange">Editar el color</string>
+    <string name="editcolor">Editar el color</string>
+    <string name="settings">Ajustes</string>
+    <string name="entercolor">Introduzca un valor de color hexadecimal</string>
+    <string name="enterheader">Introduzca un nuevo título. Se aplicará en todos los lugares en los que se utilice este título.</string>
+    <string name="reset">Restablecer valores</string>
+    <string name="resetHeader">¿Restablecer valores?</string>
+    <string name="located">Situado en el interior:</string>
+    <string name="editinfocolor">Editar el color del infobox</string>
+    <string name="infocolorchange">Editar el color del infobox</string>
+    <string name="unsaved">Tienes cambios sin guardar, ¿quieres guardarlos?</string>
+    <string name="language">Lenguaje</string>
 </resources>

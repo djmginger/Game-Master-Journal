@@ -29,6 +29,7 @@
                 android:src="@drawable/backarrow" />
 
             <TextView
+                android:id="@+id/pageHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/lootdetails"
@@ -174,7 +175,7 @@
             android:ems="10"
             android:inputType="textCapSentences"
             android:padding="10dp"
-            android:text="fdsakl;"
+            android:text=""
             android:imeOptions="actionNext"
             android:singleLine="true" />
 

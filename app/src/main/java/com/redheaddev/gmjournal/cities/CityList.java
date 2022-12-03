@@ -1,12 +1,16 @@
 package com.redheaddev.gmjournal.cities;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.LocaleList;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -28,6 +32,7 @@ import com.redheaddev.gmjournal.MyRecyclerViewAdapter;
 import com.redheaddev.gmjournal.R;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class CityList extends AppCompatActivity implements MyRecyclerViewAdapter.OnNoteListener {
 
@@ -73,6 +78,13 @@ public class CityList extends AppCompatActivity implements MyRecyclerViewAdapter
             DrawableCompat.setTint(DrawableCompat.wrap(addEntry.getDrawable()), ContextCompat.getColor(context, R.color.black));
         }
 
+        String localeText = sharedPreferences.getString("Locale", "none");
+        String loadLocale = String.valueOf(getResources().getConfiguration().locale);
+        if(!localeText.equals(loadLocale)){
+            Locale locale = new Locale(localeText);
+            updateLocale(locale);
+        }
+
         // set up the RecyclerView with data from the database
         Cursor cities = mCitiesDBHelper.getCities();
         try {
@@ -105,8 +117,12 @@ public class CityList extends AppCompatActivity implements MyRecyclerViewAdapter
         ViewGroup.LayoutParams params = recyclerView.getLayoutParams();
         params.height = (int)(deviceHeight * .75);
         recyclerView.setLayoutParams(params);
-        listTitle.setText(R.string.cities);
-        listTitle.setTextColor(Color.parseColor("#6FD8F8"));
+        String headerText2 = sharedPreferences.getString("headerText2", "none");
+        String headerColor2 = sharedPreferences.getString("headerColor2", "none");
+        if (!headerText2.equals("none")) listTitle.setText(headerText2);
+        else listTitle.setText(R.string.cities);
+        if(!headerColor2.equals("none")) listTitle.setTextColor(Color.parseColor(headerColor2));
+        else listTitle.setTextColor(Color.parseColor("#6FD8F8"));
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -164,6 +180,31 @@ public class CityList extends AppCompatActivity implements MyRecyclerViewAdapter
         intent.putExtra("cityName", cityName);
         intent.putExtra("addCityValue", 0);
         startActivity(intent);
+    }
+
+    @SuppressLint("NewApi")
+    public void updateLocale(Locale locale) {
+        Resources res = getResources();
+        Locale.setDefault(locale);
+
+        Configuration configuration = res.getConfiguration();
+
+        if (Integer.parseInt(android.os.Build.VERSION.SDK) >= 24) {
+            LocaleList localeList = new LocaleList(locale);
+
+            LocaleList.setDefault(localeList);
+            configuration.setLocales(localeList);
+            configuration.setLocale(locale);
+
+        } else if (Integer.parseInt(android.os.Build.VERSION.SDK) >= 17){
+            configuration.setLocale(locale);
+
+        } else {
+            configuration.locale = locale;
+        }
+
+        res.updateConfiguration(configuration, res.getDisplayMetrics());
+        recreate();
     }
 }
 

@@ -30,6 +30,7 @@
                 android:src="@drawable/backarrow" />
 
             <TextView
+                android:id="@+id/pageHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/locationdetails"
@@ -58,6 +59,23 @@
             android:imeOptions="actionNext"
             android:singleLine="true"
             android:padding="10dp" />
+
+        <TextView
+            android:id="@+id/locationHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="@string/located"
+            android:textSize="20sp" />
+
+        <Spinner
+            android:id="@+id/filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+
+            android:background="@android:drawable/btn_dropdown"
+            android:spinnerMode="dropdown" />
 
         <TextView
             android:id="@+id/descTitle"

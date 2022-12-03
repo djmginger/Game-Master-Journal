@@ -69,8 +69,8 @@
     <string name="travelTimeHeader">"Travel Times, чтобы... "</string>
     <string name="locationTitle">"Места в пределах"</string>
     <string name="location">"Местоположение"</string>
-    <string name="race">"Гонка"</string>
-    <string name="raceHeader">"Гонка:"</string>
+    <string name="race">раса</string>
+    <string name="raceHeader">раса:</string>
     <string name="npclisttitle">"NPC в "</string>
     <string name="updateinfo">"Хотите обновить существующую запись этой информацией?"</string>
     <string name="nonpctext">"Пока нет NPC"</string>
@@ -129,7 +129,6 @@
     <string name="yousurecity">"Вы уверены, что хотите удалить эти данные? Удаление городов также удалит Местоположения и Расстояния для этого города."</string>
     <string name="deletecities">"Успешно удалены все города"</string>
     <string name="deletenpcs">"Успешно удалены все NPC"</string>
-    <string name="app_name">Мастер игры дневник</string>
     <string name="purchasedark">Поддержите разработчика! Купите темный режим за 0,99 доллара США.</string>
     <string name="poplabel">"населения: "</string>
     <string name="envlabel">"Окружающая среда: "</string>
@@ -171,4 +170,27 @@
     <string name="export_misc">Экспорт Мицца</string>
     <string name="deleteall">Удалить все</string>
     <string name="export">Экспорт</string>
+    <string name="presets">Предустановки</string>
+    <string name="importy">Импорт</string>
+    <string name="permissionneededdb">Это разрешение необходимо для того, чтобы правильно импортировать и экспортировать файлы</string>
+    <string name="filtercity">Фильтр по городам:</string>
+    <string name="nocity">Нет города</string>
+    <string name="selectLocation">Местонахождение:</string>
+    <string name="placedetails">Место Подробности</string>
+    <string name="placename">Название места</string>
+    <string name="none">ни один</string>
+    <string name="edittitle">Редактировать название</string>
+    <string name="editheader">Редактировать название</string>
+    <string name="colorchange">Редактировать цвет</string>
+    <string name="editcolor">Редактировать цвет</string>
+    <string name="settings">Настройки</string>
+    <string name="entercolor">Введите шестнадцатеричное значение цвета</string>
+    <string name="enterheader">Введите новое название. Оно будет применяться везде, где используется это название.</string>
+    <string name="reset">Сброс значений</string>
+    <string name="resetHeader">Сброс значений?</string>
+    <string name="located">Находится в пределах:</string>
+    <string name="editinfocolor">Редактировать цвет инфоблока</string>
+    <string name="infocolorchange">Редактировать цвет инфоблока</string>
+    <string name="unsaved">вас есть несохраненные изменения, хотите ли вы их сохранить?</string>
+    <string name="language">Язык</string>
 </resources>
