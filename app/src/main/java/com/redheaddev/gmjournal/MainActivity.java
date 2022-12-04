@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         context = this;
         activity = MainActivity.this;
 
-        bp = new BillingProcessor(this, "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqsg06Z8AmS00KH/fv+ucKHPQoxiIhjE5iNbMa92BQuip+928+vLib1jKiG+QjMUq2mHm2Igl1JpqawuFT0Fjp//vSH1j13W89ASBMZ62Plj9OxbWwKrQhxnQxDGirx7NZT6UcyxKTcgv4dGM4aW+UN5c6Pesfh9PLLLEPRXn+JEQp6rKdvttc/aB7dbv6ZTCMs51lVl5jKZ9lua/Ro9sGuwy9fY03baA2jnyIVYawNdG0YxMed7XRA8jEiPTWCc/kWQfmhPEc3s9VGu7kc6C8NcfV0m8RCY3mSkPEIHs4c7tmkXBcfPG7BOMorye28IVMxV7G831JUou0rmpqIUk7wIDAQAB", this);
+        bp = new BillingProcessor(this, "YouDontNeedToKnowThisValue", this);
         bp.initialize();
 
         npcDBHelper myNPC = npcDBHelper.getInstance(getApplicationContext());
