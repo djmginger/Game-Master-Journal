@@ -6,8 +6,8 @@ android {
         applicationId "com.redheaddev.gmjournal"
         minSdkVersion 21
         targetSdkVersion 31
-        versionCode 21
-        versionName "21"
+        versionCode 22
+        versionName "22"
         resConfigs "en", "de", "es", "fr", "ja", "ru"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }

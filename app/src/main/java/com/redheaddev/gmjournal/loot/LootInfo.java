@@ -167,6 +167,7 @@ public class LootInfo extends AppCompatActivity {
             descTitle.setTextColor(Color.WHITE);
             detailsTitle.setTextColor(Color.WHITE);
             groupTitle.setTextColor(Color.WHITE);
+            groupPreset.setTextColor(Color.WHITE);
             addImage.setBackgroundResource(R.drawable.info_bg8);
             lootName.setBackgroundResource(R.drawable.info_bg7);
             lootName.setTextColor(Color.parseColor("#dadada"));

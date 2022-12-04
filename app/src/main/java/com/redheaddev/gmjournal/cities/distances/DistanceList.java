@@ -74,7 +74,7 @@ public class DistanceList extends AppCompatActivity {
         final Spinner customToCity = findViewById(R.id.customToCity);
 
         ViewGroup.LayoutParams params = distanceListView.getLayoutParams();
-        params.height = (int)(deviceHeight * .73);
+        params.height = (int)(deviceHeight * .68);
         distanceListView.setLayoutParams(params);
 
         distanceTitle.setText(String.format("%s %s", getString(R.string.traveltimefrom), getPassedCityFrom()));
@@ -97,7 +97,8 @@ public class DistanceList extends AppCompatActivity {
         }
 
         String localeText = sharedPreferences.getString("Locale", "none");
-        if(!localeText.equals("none")){
+        String loadLocale = String.valueOf(getResources().getConfiguration().locale);
+        if(!localeText.equals(loadLocale)){
             Locale locale = new Locale(localeText);
             updateLocale(locale);
         }

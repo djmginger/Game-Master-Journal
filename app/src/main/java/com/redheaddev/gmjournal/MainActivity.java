@@ -319,6 +319,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
                         mainLayout.setBackgroundColor(Color.parseColor("#2C2C2C"));
                         title1.setTextColor(Color.WHITE);
                         DrawableCompat.setTint(DrawableCompat.wrap(settings.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
+                        DrawableCompat.setTint(DrawableCompat.wrap(language.getDrawable()), ContextCompat.getColor(context, R.color.mainBgColor));
 
                     } else if (theme.equals("dark")) {
                         themeSwitch.setText(R.string.darkmode);
@@ -328,6 +329,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
                         mainLayout.setBackgroundColor(getResources().getColor(R.color.mainBgColor));
                         title1.setTextColor(Color.BLACK);
                         DrawableCompat.setTint(DrawableCompat.wrap(settings.getDrawable()), ContextCompat.getColor(context, R.color.black));
+                        DrawableCompat.setTint(DrawableCompat.wrap(language.getDrawable()), ContextCompat.getColor(context, R.color.black));
                     }
                 } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(context);
